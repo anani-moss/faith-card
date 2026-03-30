@@ -443,7 +443,7 @@
   function selectElement(id) {
     if (selectedId === id) return; // Prevent unnecessary class changes
     selectedId = id;
-    
+
     // Update visual selection borders without destroying the DOM elements
     canvasEl.querySelectorAll('.canvas-element').forEach(elDiv => {
       if (parseInt(elDiv.dataset.id) === id) {
@@ -452,19 +452,19 @@
         elDiv.classList.remove('selected');
       }
     });
-    
+
     updatePropertiesPanel();
   }
 
   function deselectAll() {
     if (selectedId === null) return;
     selectedId = null;
-    
+
     // Remove visual selection without destroying DOM mapping
     canvasEl.querySelectorAll('.canvas-element').forEach(elDiv => {
       elDiv.classList.remove('selected');
     });
-    
+
     propertiesPanel.classList.add('hidden');
     const btnSettings = document.getElementById('btn-element-settings');
     if (btnSettings) {
