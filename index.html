@@ -14,10 +14,15 @@
 
 <body>
   <div id="app">
+
     <!-- Header -->
-    <header id="app-header">
-      <h1>🕊️FaithCard</h1>
-      <div class="header-actions">
+    <header id="app-header" style="display: flex; align-items: center;">
+
+      <div>
+        <h1>🕊️FaithCard</h1>
+      </div>
+
+      <div class=" header-actions">
         <div class="overlay-control" title="Overlay">
           <label class="switch">
             <input type="checkbox" id="jy-overlay-toggle" checked>
@@ -55,6 +60,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Fit Canvas Button -->
+        <button id="btn-fit-screen" class="btn m3-btn-tonal" title="Fit Canvas to Screen"
+          style="position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 50; padding: 0 16px; height: 36px; min-height: 36px; border-radius: 18px; font-size: 0.8rem; box-shadow: var(--md-sys-elevation-2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            style="margin-right: -4px;">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+          </svg>
+          Fit Canvas
+        </button>
 
       </section>
 

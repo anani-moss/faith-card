@@ -1,55 +1,59 @@
 /* ===== Design Tokens (Material 3 Dynamic Vivid Dark) ===== */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
 
 :root {
   /* Vivid Colors (Dark Theme Base) */
-  --md-sys-color-primary: #D0BCFF;
+  --md-sys-color-primary: #d0bcff;
   /* Vivid Purple */
-  --md-sys-color-on-primary: #381E72;
-  --md-sys-color-primary-container: #4F378B;
-  --md-sys-color-on-primary-container: #EADDFF;
+  --md-sys-color-on-primary: #381e72;
+  --md-sys-color-primary-container: #4f378b;
+  --md-sys-color-on-primary-container: #eaddff;
 
-  --md-sys-color-secondary: #F9A8D4;
+  --md-sys-color-secondary: #f9a8d4;
   /* Vivid Pink */
-  --md-sys-color-on-secondary: #4A1934;
-  --md-sys-color-secondary-container: #682A51;
-  --md-sys-color-on-secondary-container: #FBCFE8;
+  --md-sys-color-on-secondary: #4a1934;
+  --md-sys-color-secondary-container: #682a51;
+  --md-sys-color-on-secondary-container: #fbcfe8;
 
-  --md-sys-color-tertiary: #FDE047;
+  --md-sys-color-tertiary: #fde047;
   /* Vivid Yellow */
-  --md-sys-color-on-tertiary: #4A4100;
-  --md-sys-color-tertiary-container: #665C00;
-  --md-sys-color-on-tertiary-container: #FEF08A;
+  --md-sys-color-on-tertiary: #4a4100;
+  --md-sys-color-tertiary-container: #665c00;
+  --md-sys-color-on-tertiary-container: #fef08a;
 
-  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-error: #ffb4ab;
   --md-sys-color-on-error: #690005;
-  --md-sys-color-error-container: #93000A;
-  --md-sys-color-on-error-container: #FFDAD6;
+  --md-sys-color-error-container: #93000a;
+  --md-sys-color-on-error-container: #ffdad6;
 
   /* Surfaces */
   --md-sys-color-background: #141218;
-  --md-sys-color-on-background: #E6E1E5;
+  --md-sys-color-on-background: #e6e1e5;
   --md-sys-color-surface: #141218;
-  --md-sys-color-on-surface: #E6E1E5;
-  --md-sys-color-on-surface-variant: #CAC4D0;
+  --md-sys-color-on-surface: #e6e1e5;
+  --md-sys-color-on-surface-variant: #cac4d0;
 
-  --md-sys-color-surface-container-lowest: #0F0D13;
-  --md-sys-color-surface-container-low: #1D1B20;
-  --md-sys-color-surface-container: #211F26;
-  --md-sys-color-surface-container-high: #2B2930;
-  --md-sys-color-surface-container-highest: #36343B;
+  --md-sys-color-surface-container-lowest: #0f0d13;
+  --md-sys-color-surface-container-low: #1d1b20;
+  --md-sys-color-surface-container: #211f26;
+  --md-sys-color-surface-container-high: #2b2930;
+  --md-sys-color-surface-container-highest: #36343b;
 
-  --md-sys-color-outline: #938F99;
-  --md-sys-color-outline-variant: #49454F;
-  --md-sys-color-inverse-surface: #E6E1E5;
+  --md-sys-color-outline: #938f99;
+  --md-sys-color-outline-variant: #49454f;
+  --md-sys-color-inverse-surface: #e6e1e5;
   --md-sys-color-inverse-on-surface: #313033;
-  --md-sys-color-inverse-primary: #6750A4;
+  --md-sys-color-inverse-primary: #6750a4;
 
   /* Elevations */
-  --md-sys-elevation-1: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
-  --md-sys-elevation-2: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
-  --md-sys-elevation-3: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
-  --md-sys-elevation-4: 0 2px 3px 0 rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-1:
+    0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-2:
+    0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-3:
+    0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-4:
+    0 2px 3px 0 rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
 
   /* Shapes */
   --radius-xs: 6px;
@@ -88,7 +92,7 @@ html {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background: var(--md-sys-color-background);
   color: var(--md-sys-color-on-background);
   overflow: hidden;
@@ -97,7 +101,6 @@ body {
   touch-action: manipulation;
   /* Disable double-tap zoom for better touch response */
 }
-
 
 .switch {
   display: flex;
@@ -120,7 +123,9 @@ body {
   background: #ef4444;
   /* red (OFF) */
   border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background 150ms ease, box-shadow 150ms ease;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .switch-box {
@@ -149,7 +154,6 @@ body {
   pointer-events: none;
 }
 
-
 /* ON state → green */
 .switch input:checked+.switch-box {
   background: #22c55e;
@@ -167,12 +171,6 @@ body {
   font-size: 0.85rem;
   color: var(--text-primary);
 }
-
-
-
-
-
-
 
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar {
@@ -249,7 +247,7 @@ body {
   gap: 8px;
   border: none;
   border-radius: var(--radius-full);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.1px;
@@ -264,7 +262,7 @@ body {
 
 /* Ensure 48px touch targets for small buttons */
 .btn::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -298,7 +296,9 @@ body {
 }
 
 .m3-btn-error:hover {
-  box-shadow: 0 6px 16px rgba(255, 180, 171, 0.3), inset 0 0 0 100px var(--hover-overlay);
+  box-shadow:
+    0 6px 16px rgba(255, 180, 171, 0.3),
+    inset 0 0 0 100px var(--hover-overlay);
   transform: translateY(-1px);
 }
 
@@ -321,7 +321,9 @@ body {
   border: none;
   cursor: pointer;
   position: relative;
-  transition: background-color var(--transition), color var(--transition);
+  transition:
+    background-color var(--transition),
+    color var(--transition);
 }
 
 .m3-icon-btn:hover {
@@ -354,15 +356,18 @@ body {
   justify-content: center;
   border-radius: var(--radius-lg);
   box-shadow: var(--md-sys-elevation-3);
-  transition: box-shadow var(--transition), background-color var(--transition), transform 150ms ease;
-  font-family: 'Roboto', sans-serif;
+  transition:
+    box-shadow var(--transition),
+    background-color var(--transition),
+    transform 150ms ease;
+  font-family: "Roboto", sans-serif;
   font-weight: 500;
   position: relative;
   overflow: hidden;
 }
 
 .fab::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -510,7 +515,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  color: #7A757F;
+  color: #7a757f;
   /* A neutral gray */
   pointer-events: none;
   user-select: none;
@@ -552,7 +557,7 @@ body {
 }
 
 .canvas-element.selected::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border: 2px dashed var(--md-sys-color-primary);
@@ -580,7 +585,9 @@ body {
   right: -16px;
   z-index: 10;
   opacity: 0;
-  transition: opacity 150ms ease, transform 150ms ease;
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
   box-shadow: var(--md-sys-elevation-2);
   touch-action: none;
 }
@@ -630,7 +637,7 @@ body {
   background: none;
   border: none;
   color: var(--md-sys-color-on-surface-variant);
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   cursor: pointer;
   position: relative;
   -webkit-tap-highlight-color: transparent;
@@ -670,7 +677,9 @@ body {
   font-size: 0.75rem;
   letter-spacing: 0.2px;
   font-weight: 500;
-  transition: color 200ms ease, font-weight 200ms ease;
+  transition:
+    color 200ms ease,
+    font-weight 200ms ease;
 }
 
 #panel-content {
@@ -689,14 +698,16 @@ body {
 
 /* Scroll Hint Motion Gradient */
 #panel-content::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: 0;
   width: 48px;
   height: 100%;
   pointer-events: none;
-  background: linear-gradient(to right, transparent, var(--md-sys-color-surface-container-low) 90%);
+  background: linear-gradient(to right,
+      transparent,
+      var(--md-sys-color-surface-container-low) 90%);
   animation: scrollHintPulse 2s ease-in-out infinite alternate;
   z-index: 10;
   transition: opacity 0.3s ease;
@@ -775,7 +786,7 @@ body {
 
 /* Placed overlay indicator */
 .image-thumb::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: rgba(208, 188, 255, 0.2);
@@ -842,7 +853,9 @@ body {
   max-height: 80dvh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
-  transition: background-color 200ms ease, box-shadow 200ms ease;
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease;
 }
 
 /* Slider active fading (10% opacity for non-slider parts) */
@@ -919,8 +932,6 @@ body {
   background-color: var(--md-sys-color-surface-container-highest);
 }
 
-
-
 .panel-body {
   padding: 8px 24px 24px;
   display: flex;
@@ -996,7 +1007,9 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   margin-top: -6px;
   /* Centered on track */
-  transition: transform 100ms ease, box-shadow 100ms ease;
+  transition:
+    transform 100ms ease,
+    box-shadow 100ms ease;
   box-shadow: var(--md-sys-elevation-1);
 }
 
@@ -1018,7 +1031,9 @@ input[type="text"] {
   font-size: 1rem;
   padding: 12px 16px;
   outline: none;
-  transition: border-color var(--transition), background-color var(--transition);
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
   width: 100%;
   min-height: 48px;
   /* MIN TOUCH HEIGHT */
