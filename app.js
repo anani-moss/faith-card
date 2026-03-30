@@ -20,6 +20,11 @@
     ]
   };
 
+  const JY_OVERLAYS = [
+    { src: 'img/jy-overlay/JY-1.png', label: 'JY-1' },
+    { src: 'img/jy-overlay/JY-2.png', label: 'JY-2' }
+  ];
+
   // ─── State ─────────────────────────────────────────────
   const CANVAS_SIZE = 1080;
   let elements = [];
@@ -53,6 +58,7 @@
     bindCanvasEvents();
     bindKeyboard();
     bindModal();
+    bindOverlayControl();
     fitCanvasToScreen();
 
     window.addEventListener('resize', fitCanvasToScreen);
@@ -65,6 +71,34 @@
         cacheImage(imgData.src);
       });
     }
+    JY_OVERLAYS.forEach(imgData => cacheImage(imgData.src));
+  }
+
+  function bindOverlayControl() {
+    const toggle = document.getElementById('jy-overlay-toggle');
+    const select = document.getElementById('jy-overlay-select');
+    const imgOverlay = document.getElementById('jy-overlay-img');
+    
+    if (!toggle || !select || !imgOverlay) return;
+
+    toggle.addEventListener('change', (e) => {
+      select.disabled = !e.target.checked;
+      if (e.target.checked) {
+        imgOverlay.src = select.value;
+        imgOverlay.classList.remove('hidden');
+      } else {
+        imgOverlay.classList.add('hidden');
+      }
+    });
+
+    select.addEventListener('change', (e) => {
+      if (toggle.checked) {
+        imgOverlay.src = e.target.value;
+      }
+    });
+
+    // Preset the image src directly if checked by default (persisted state)
+    if (toggle.checked) imgOverlay.src = select.value;
   }
 
   function cacheImage(src) {
@@ -705,8 +739,24 @@
       }
     });
 
+    const overlayToggle = document.getElementById('jy-overlay-toggle');
+    const overlaySelect = document.getElementById('jy-overlay-select');
+    if (overlayToggle && overlayToggle.checked && overlaySelect) {
+      const src = overlaySelect.value;
+      const p = new Promise((resolve) => {
+        const cached = imageCache.get(src);
+        const img = new Image();
+        img.onload = () => resolve({ isOverlay: true, img });
+        img.onerror = () => resolve({ isOverlay: true, img: null });
+        img.src = cached ? cached.blobUrl : src;
+      });
+      loadPromises.push(p);
+    }
+
     Promise.all(loadPromises).then(results => {
-      results.forEach(({ el, img }) => {
+      results.forEach((res) => {
+        if (res.isOverlay) return;
+        const { el, img } = res;
         ctx.save();
         ctx.globalAlpha = el.opacity / 100;
 
@@ -736,6 +786,13 @@
 
         ctx.restore();
       });
+
+      // Overlay rendering must go on top
+      const overlayRes = results.find(r => r.isOverlay);
+      if (overlayRes && overlayRes.img) {
+        ctx.globalAlpha = 1; // force 100% opacity for top overlay
+        ctx.drawImage(overlayRes.img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      }
 
       // Trigger download
       offscreen.toBlob((blob) => {
