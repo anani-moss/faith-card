@@ -836,11 +836,7 @@ body {
   background-color: var(--md-sys-color-surface-container-highest);
 }
 
-@media (min-width: 768px) {
-  .hidden-desktop {
-    display: none !important;
-  }
-}
+
 
 .panel-body {
   padding: 8px 24px 24px;
@@ -1044,6 +1040,10 @@ input[type="color"] {
 
 /* ===== Desktop Layout Restructuring ===== */
 @media (min-width: 600px) {
+  .hidden-desktop {
+    display: none !important;
+  }
+
   #workspace {
     flex-direction: row;
   }
@@ -1057,9 +1057,10 @@ input[type="color"] {
     order: 2; /* Move panel to right side */
   }
 
-  /* Since bottom panel is moved right, text/save fabs should be near it or inside the canvas area bottom right */
+  /* Since fab container is inside canvas area, right: 16px places it properly */
   .fab-container {
-    right: 380px; /* Push to the left of the side panel */
+    right: 24px;
+    bottom: 24px;
   }
 
   #panel-tabs {
@@ -1068,8 +1069,14 @@ input[type="color"] {
     height: auto;
     padding: 16px 0;
     justify-content: flex-start;
-    gap: 16px;
+    align-items: center;
     border-right: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .tabs-container {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
   }
 
   .tab-indicator {
@@ -1091,6 +1098,11 @@ input[type="color"] {
 
   .image-thumb {
     width: 100px;
+    height: 100px;
+  }
+
+  .text-thumb {
+    width: 100%;
     height: 100px;
   }
 

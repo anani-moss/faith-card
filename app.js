@@ -61,31 +61,31 @@
     const choice = localStorage.getItem('faithCardOverlayChoice');
 
     if (choice === 'disabled') {
-       if (toggle) toggle.checked = false;
+      if (toggle) toggle.checked = false;
     } else {
-       if (toggle) toggle.checked = true;
-       // Only show if nothing saved yet
-       if (choice === null && modal) {
-          modal.classList.remove('hidden');
-          
-          document.getElementById('btn-overlay-keep').addEventListener('click', () => {
-             if (document.getElementById('remember-overlay-choice').checked) {
-                localStorage.setItem('faithCardOverlayChoice', 'enabled');
-             }
-             modal.classList.add('hidden');
-          });
-          
-          document.getElementById('btn-overlay-disable').addEventListener('click', () => {
-             if (document.getElementById('remember-overlay-choice').checked) {
-                localStorage.setItem('faithCardOverlayChoice', 'disabled');
-             }
-             if (toggle) {
-                 toggle.checked = false;
-                 toggle.dispatchEvent(new Event('change'));
-             }
-             modal.classList.add('hidden');
-          });
-       }
+      if (toggle) toggle.checked = true;
+      // Only show if nothing saved yet
+      if (choice === null && modal) {
+        modal.classList.remove('hidden');
+
+        document.getElementById('btn-overlay-keep').addEventListener('click', () => {
+          if (document.getElementById('remember-overlay-choice').checked) {
+            localStorage.setItem('faithCardOverlayChoice', 'enabled');
+          }
+          modal.classList.add('hidden');
+        });
+
+        document.getElementById('btn-overlay-disable').addEventListener('click', () => {
+          if (document.getElementById('remember-overlay-choice').checked) {
+            localStorage.setItem('faithCardOverlayChoice', 'disabled');
+          }
+          if (toggle) {
+            toggle.checked = false;
+            toggle.dispatchEvent(new Event('change'));
+          }
+          modal.classList.add('hidden');
+        });
+      }
     }
   }
 
@@ -93,15 +93,15 @@
     const expandBtn = document.getElementById('btn-expand-panel');
     const panelContent = document.getElementById('panel-content');
     const chevron = document.getElementById('expand-chevron');
-    
+
     if (expandBtn && panelContent) {
       expandBtn.addEventListener('click', () => {
-         panelContent.classList.toggle('expanded');
-         if (panelContent.classList.contains('expanded')) {
-            chevron.style.transform = 'translateY(-50%) rotate(0deg)';
-         } else {
-            chevron.style.transform = 'translateY(-50%) rotate(180deg)';
-         }
+        panelContent.classList.toggle('expanded');
+        if (panelContent.classList.contains('expanded')) {
+          chevron.style.transform = 'translateY(-50%) rotate(0deg)';
+        } else {
+          chevron.style.transform = 'translateY(-50%) rotate(180deg)';
+        }
       });
     }
 
@@ -111,32 +111,32 @@
     if (!propPanel) return;
     const header = propPanel.querySelector('.panel-header');
     const handle = propPanel.querySelector('.panel-drag-handle');
-    
+
     const handleTouchStart = (e) => {
-       swipeStartY = e.touches[0].clientY;
+      swipeStartY = e.touches[0].clientY;
     };
-    
+
     const handleTouchEnd = (e) => {
-       const swipeEndY = e.changedTouches[0].clientY;
-       // Swiped down sufficiently while not scrolling inner contents?
-       // To be safe, any swipe down on header/handle closes it.
-       if (swipeEndY - swipeStartY > 40) {
-          propPanel.classList.add('hidden');
-          const settingsBtn = document.getElementById('btn-element-settings');
-          if (settingsBtn) {
-             settingsBtn.querySelector('.icon-settings').classList.remove('hidden');
-             settingsBtn.querySelector('.icon-close').classList.add('hidden');
-          }
-       }
+      const swipeEndY = e.changedTouches[0].clientY;
+      // Swiped down sufficiently while not scrolling inner contents?
+      // To be safe, any swipe down on header/handle closes it.
+      if (swipeEndY - swipeStartY > 40) {
+        propPanel.classList.add('hidden');
+        const settingsBtn = document.getElementById('btn-element-settings');
+        if (settingsBtn) {
+          settingsBtn.querySelector('.icon-settings').classList.remove('hidden');
+          settingsBtn.querySelector('.icon-close').classList.add('hidden');
+        }
+      }
     };
 
     if (header) {
-       header.addEventListener('touchstart', handleTouchStart, { passive: true });
-       header.addEventListener('touchend', handleTouchEnd);
+      header.addEventListener('touchstart', handleTouchStart, { passive: true });
+      header.addEventListener('touchend', handleTouchEnd);
     }
     if (handle) {
-       handle.addEventListener('touchstart', handleTouchStart, { passive: true });
-       handle.addEventListener('touchend', handleTouchEnd);
+      handle.addEventListener('touchstart', handleTouchStart, { passive: true });
+      handle.addEventListener('touchend', handleTouchEnd);
     }
   }
 
@@ -180,7 +180,7 @@
     const select = document.getElementById('jy-overlay-select');
     if (!select) return;
     select.innerHTML = ''; // Clear default
-    
+
     let i = 1;
     let foundAny = false;
     while (true) {
@@ -188,13 +188,13 @@
       try {
         const res = await fetch(src, { method: 'HEAD' });
         if (!res.ok) break; // 404 or other error, stop probing
-        
+
         // Add to dropdown
         const opt = document.createElement('option');
         opt.value = src;
         opt.textContent = `JY-${i}`;
         select.appendChild(opt);
-        
+
         // Cache it for export
         cacheImage(src);
         foundAny = true;
@@ -203,14 +203,14 @@
         break;
       }
     }
-    
+
     if (!foundAny) {
       const opt = document.createElement('option');
       opt.textContent = 'None found';
       opt.disabled = true;
       select.appendChild(opt);
     }
-    
+
     // Auto-update overlay if it was checked before discovery completes
     const toggle = document.getElementById('jy-overlay-toggle');
     const imgOverlay = document.getElementById('jy-overlay-img');
@@ -223,7 +223,7 @@
     const toggle = document.getElementById('jy-overlay-toggle');
     const select = document.getElementById('jy-overlay-select');
     const imgOverlay = document.getElementById('jy-overlay-img');
-    
+
     if (!toggle || !select || !imgOverlay) return;
 
     toggle.addEventListener('change', (e) => {
@@ -452,9 +452,9 @@
     propertiesPanel.classList.add('hidden');
     const btnSettings = document.getElementById('btn-element-settings');
     if (btnSettings) {
-       btnSettings.classList.add('hidden');
-       btnSettings.querySelector('.icon-settings').classList.remove('hidden');
-       btnSettings.querySelector('.icon-close').classList.add('hidden');
+      btnSettings.classList.add('hidden');
+      btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+      btnSettings.querySelector('.icon-close').classList.add('hidden');
     }
   }
 
@@ -500,7 +500,7 @@
 
       el.x = Math.round(dragging.elStartX + dx);
       el.y = Math.round(dragging.elStartY + dy);
-      
+
       const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
       if (div) {
         div.style.left = el.x + 'px';
@@ -536,15 +536,15 @@
 
       // Live update properties panel if it's open
       if (selectedId === el.id && !propertiesPanel.classList.contains('hidden')) {
-         if (el.type === 'image') {
-            const baseSize = el.category === 'main' ? CANVAS_SIZE : CANVAS_SIZE * 0.4;
-            const scalePercent = Math.round((el.w / baseSize) * 100);
-            setVal('prop-scale', scalePercent);
-            setDisplay('prop-scale-val', scalePercent + '%');
-         } else {
-            setVal('prop-font-size', el.fontSize);
-            setDisplay('prop-font-size-val', el.fontSize + 'px');
-         }
+        if (el.type === 'image') {
+          const baseSize = el.category === 'main' ? CANVAS_SIZE : CANVAS_SIZE * 0.4;
+          const scalePercent = Math.round((el.w / baseSize) * 100);
+          setVal('prop-scale', scalePercent);
+          setDisplay('prop-scale-val', scalePercent + '%');
+        } else {
+          setVal('prop-font-size', el.fontSize);
+          setDisplay('prop-font-size-val', el.fontSize + 'px');
+        }
       }
     }
   }
@@ -602,11 +602,11 @@
           deleteSelected();
           e.preventDefault();
           break;
-        case 'ArrowUp':    el.y -= step; renderCanvas(); e.preventDefault(); break;
-        case 'ArrowDown':  el.y += step; renderCanvas(); e.preventDefault(); break;
-        case 'ArrowLeft':  el.x -= step; renderCanvas(); e.preventDefault(); break;
+        case 'ArrowUp': el.y -= step; renderCanvas(); e.preventDefault(); break;
+        case 'ArrowDown': el.y += step; renderCanvas(); e.preventDefault(); break;
+        case 'ArrowLeft': el.x -= step; renderCanvas(); e.preventDefault(); break;
         case 'ArrowRight': el.x += step; renderCanvas(); e.preventDefault(); break;
-        case 'Escape':     deselectAll(); e.preventDefault(); break;
+        case 'Escape': deselectAll(); e.preventDefault(); break;
       }
     });
   }
@@ -619,9 +619,9 @@
     if (selectedId === null) {
       propertiesPanel.classList.add('hidden');
       if (btnSettings) {
-         btnSettings.classList.add('hidden');
-         btnSettings.querySelector('.icon-settings').classList.remove('hidden');
-         btnSettings.querySelector('.icon-close').classList.add('hidden');
+        btnSettings.classList.add('hidden');
+        btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+        btnSettings.querySelector('.icon-close').classList.add('hidden');
       }
       return;
     }
@@ -630,15 +630,15 @@
     if (!el) {
       propertiesPanel.classList.add('hidden');
       if (btnSettings) {
-         btnSettings.classList.add('hidden');
-         btnSettings.querySelector('.icon-settings').classList.remove('hidden');
-         btnSettings.querySelector('.icon-close').classList.add('hidden');
+        btnSettings.classList.add('hidden');
+        btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+        btnSettings.querySelector('.icon-close').classList.add('hidden');
       }
       return;
     }
 
     if (btnSettings) {
-       btnSettings.classList.remove('hidden');
+      btnSettings.classList.remove('hidden');
     }
 
     if (el.type === 'image') {
@@ -696,31 +696,31 @@
     });
     document.addEventListener('mouseup', () => updateSliderFade(false));
     document.addEventListener('touchend', () => updateSliderFade(false));
-    
+
     // Toggle via close button
     document.getElementById('btn-close-panel').addEventListener('click', () => {
-       propertiesPanel.classList.add('hidden');
-       const btnSettings = document.getElementById('btn-element-settings');
-       if (btnSettings) {
-          btnSettings.querySelector('.icon-settings').classList.remove('hidden');
-          btnSettings.querySelector('.icon-close').classList.add('hidden');
-       }
+      propertiesPanel.classList.add('hidden');
+      const btnSettings = document.getElementById('btn-element-settings');
+      if (btnSettings) {
+        btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+        btnSettings.querySelector('.icon-close').classList.add('hidden');
+      }
     });
 
     // Toggle via floating settings button
     const btnSettings = document.getElementById('btn-element-settings');
     if (btnSettings) {
-       btnSettings.addEventListener('click', () => {
-          if (propertiesPanel.classList.contains('hidden')) {
-             propertiesPanel.classList.remove('hidden');
-             btnSettings.querySelector('.icon-settings').classList.add('hidden');
-             btnSettings.querySelector('.icon-close').classList.remove('hidden');
-          } else {
-             propertiesPanel.classList.add('hidden');
-             btnSettings.querySelector('.icon-settings').classList.remove('hidden');
-             btnSettings.querySelector('.icon-close').classList.add('hidden');
-          }
-       });
+      btnSettings.addEventListener('click', () => {
+        if (propertiesPanel.classList.contains('hidden')) {
+          propertiesPanel.classList.remove('hidden');
+          btnSettings.querySelector('.icon-settings').classList.add('hidden');
+          btnSettings.querySelector('.icon-close').classList.remove('hidden');
+        } else {
+          propertiesPanel.classList.add('hidden');
+          btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+          btnSettings.querySelector('.icon-close').classList.add('hidden');
+        }
+      });
     }
 
     // Image properties
