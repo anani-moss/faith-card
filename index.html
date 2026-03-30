@@ -19,18 +19,15 @@
       <h1>🕊️ FaithCard</h1>
       <div class="header-actions">
         <div class="overlay-control">
-         <label class="switch">
-          <input type="checkbox" id="jy-overlay-toggle">
-          <span class="switch-box"></span>
-          <span 
-                class="switch-label" 
-                style="font-size: 0.7rem; line-height: 1.2; display: inline-block;">
-                Toggle Overlay
-              </span>
-        </label>
+          <label class="switch">
+            <input type="checkbox" id="jy-overlay-toggle">
+            <span class="switch-box"></span>
+            <span class="switch-label" style="font-size: 0.7rem; line-height: 1.2; display: inline-block;">
+              Toggle Overlay
+            </span>
+          </label>
           <select id="jy-overlay-select" disabled autocomplete="off">
-            <option value="img/jy-overlay/JY-1.png">JY-1</option>
-            <option value="img/jy-overlay/JY-2.png">JY-2</option>
+            <option value="" disabled selected>Loading…</option>
           </select>
         </div>
         <button id="btn-clear" class="btn m3-btn-error" title="Clear Canvas">
@@ -216,7 +213,7 @@
         <p class="modal-subtitle">Enter a name for your card (optional)</p>
         <div class="modal-input-row">
           <input type="text" id="download-name-input" placeholder="e.g. john" autocomplete="off" spellcheck="false">
-          <span class="input-suffix">-card.png</span>
+          <span class="input-suffix"></span>
         </div>
         <div class="modal-actions">
           <button id="btn-modal-cancel" class="btn m3-btn-tonal">Cancel</button>

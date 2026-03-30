@@ -7,17 +7,11 @@
 (function () {
   'use strict';
 
-  // ─── Image Library ─────────────────────────────────────
+  // ─── Image Library (populated dynamically) ─────────────
   const IMAGE_LIBRARY = {
-    main: [
-      { src: 'img/main/main1.png', label: 'Faith Floral' }
-    ],
-    wish: [
-      { src: 'img/wish/wish1.png', label: 'Happy Faith' }
-    ],
-    decor: [
-      { src: 'img/decor/decor1.png', label: 'Star' }
-    ]
+    main: [],
+    wish: [],
+    decor: []
   };
 
   // ─── State ─────────────────────────────────────────────
@@ -45,8 +39,7 @@
     downloadModal = document.getElementById('download-modal');
     downloadNameInput = document.getElementById('download-name-input');
 
-    preloadAllImages();
-    populateSidebar();
+    discoverImages();
     bindTabs();
     bindHeaderButtons();
     bindPropertiesPanel();
@@ -60,13 +53,40 @@
     window.addEventListener('resize', fitCanvasToScreen);
   }
 
-  // ─── Pre-load all images & cache as blobs ───────────────
-  function preloadAllImages() {
-    for (const [category, images] of Object.entries(IMAGE_LIBRARY)) {
-      images.forEach(imgData => {
-        cacheImage(imgData.src);
-      });
-    }
+  // ─── Discover images in each category folder ───────────
+  async function discoverImages() {
+    const categories = Object.keys(IMAGE_LIBRARY);
+
+    await Promise.all(categories.map(async (category) => {
+      const grid = document.getElementById(`grid-${category}`);
+      let i = 1;
+      while (true) {
+        const src = `img/${category}/${category}${i}.png`;
+        try {
+          const res = await fetch(src, { method: 'HEAD' });
+          if (!res.ok) break;
+
+          const entry = { src, label: `${category} ${i}` };
+          IMAGE_LIBRARY[category].push(entry);
+          cacheImage(src);
+
+          // Build thumbnail in the sidebar
+          const thumb = document.createElement('div');
+          thumb.className = 'image-thumb';
+          thumb.title = entry.label;
+          thumb.innerHTML = `<img src="${src}" alt="${entry.label}" draggable="false">`;
+          thumb.addEventListener('click', (e) => {
+            e.preventDefault();
+            addImageToCanvas(src, category);
+          });
+          grid.appendChild(thumb);
+
+          i++;
+        } catch (e) {
+          break;
+        }
+      }
+    }));
   }
 
   async function discoverOverlays() {
@@ -174,24 +194,6 @@
   }
 
   // ─── Sidebar / Tabs ────────────────────────────────────
-  function populateSidebar() {
-    for (const [category, images] of Object.entries(IMAGE_LIBRARY)) {
-      const grid = document.getElementById(`grid-${category}`);
-      images.forEach(img => {
-        const thumb = document.createElement('div');
-        thumb.className = 'image-thumb';
-        thumb.title = img.label;
-        thumb.innerHTML = `<img src="${img.src}" alt="${img.label}" draggable="false">`;
-
-        // Touch + click
-        thumb.addEventListener('click', (e) => {
-          e.preventDefault();
-          addImageToCanvas(img.src, category);
-        });
-        grid.appendChild(thumb);
-      });
-    }
-  }
 
   function bindTabs() {
     const tabs = document.querySelectorAll('.tab-btn');
