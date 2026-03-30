@@ -312,6 +312,31 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+      function resetCheckboxAfterLoad() {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            const checkbox = document.getElementById('jy-overlay-toggle');
+            if (!checkbox) return;
+
+            // Uncheck
+            checkbox.checked = false;
+
+            // Force reflow (ensures state change is registered)
+            checkbox.offsetHeight;
+
+            // Recheck
+            checkbox.checked = true;
+
+            // Optional: trigger change event if listeners depend on it
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+          }, 200);
+        });
+      }
+
+      // Invoke the function
+      resetCheckboxAfterLoad();
+    </script>
 </body>
 
 </html>
