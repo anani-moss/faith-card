@@ -441,14 +441,30 @@
 
   // ─── Selection ─────────────────────────────────────────
   function selectElement(id) {
+    if (selectedId === id) return; // Prevent unnecessary class changes
     selectedId = id;
-    renderCanvas();
+    
+    // Update visual selection borders without destroying the DOM elements
+    canvasEl.querySelectorAll('.canvas-element').forEach(elDiv => {
+      if (parseInt(elDiv.dataset.id) === id) {
+        elDiv.classList.add('selected');
+      } else {
+        elDiv.classList.remove('selected');
+      }
+    });
+    
     updatePropertiesPanel();
   }
 
   function deselectAll() {
+    if (selectedId === null) return;
     selectedId = null;
-    renderCanvas();
+    
+    // Remove visual selection without destroying DOM mapping
+    canvasEl.querySelectorAll('.canvas-element').forEach(elDiv => {
+      elDiv.classList.remove('selected');
+    });
+    
     propertiesPanel.classList.add('hidden');
     const btnSettings = document.getElementById('btn-element-settings');
     if (btnSettings) {
@@ -731,21 +747,27 @@
       const baseSize = el.category === 'main' ? CANVAS_SIZE : CANVAS_SIZE * 0.4;
       el.w = Math.round(baseSize * val / 100);
       el.h = Math.round(el.w / aspect);
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) {
+        div.style.width = el.w + 'px';
+        div.style.height = el.h + 'px';
+      }
     });
 
     bindRange('prop-rotation', 'prop-rotation-val', '°', (val) => {
       const el = getSelected();
       if (!el) return;
       el.rotation = val;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.transform = `rotate(${el.rotation}deg)`;
     });
 
     bindRange('prop-opacity', 'prop-opacity-val', '%', (val) => {
       const el = getSelected();
       if (!el) return;
       el.opacity = val;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.opacity = el.opacity / 100;
     });
 
     // Text properties
@@ -753,49 +775,56 @@
       const el = getSelected();
       if (!el || el.type !== 'text') return;
       el.text = e.target.value;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.textContent = el.text;
     });
 
     bindRange('prop-font-size', 'prop-font-size-val', 'px', (val) => {
       const el = getSelected();
       if (!el || el.type !== 'text') return;
       el.fontSize = val;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.fontSize = el.fontSize + 'px';
     });
 
     document.getElementById('prop-font-family').addEventListener('change', (e) => {
       const el = getSelected();
       if (!el || el.type !== 'text') return;
       el.fontFamily = e.target.value;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
     });
 
     document.getElementById('prop-text-color').addEventListener('input', (e) => {
       const el = getSelected();
       if (!el || el.type !== 'text') return;
       el.color = e.target.value;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.color = el.color;
     });
 
     document.getElementById('prop-font-weight').addEventListener('change', (e) => {
       const el = getSelected();
       if (!el || el.type !== 'text') return;
       el.fontWeight = e.target.value;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.fontWeight = el.fontWeight;
     });
 
     bindRange('prop-text-rotation', 'prop-text-rotation-val', '°', (val) => {
       const el = getSelected();
       if (!el) return;
       el.rotation = val;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.transform = `rotate(${el.rotation}deg)`;
     });
 
     bindRange('prop-text-opacity', 'prop-text-opacity-val', '%', (val) => {
       const el = getSelected();
       if (!el) return;
       el.opacity = val;
-      renderCanvas();
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.opacity = el.opacity / 100;
     });
 
     // Layer actions
