@@ -128,7 +128,8 @@
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const target = tab.dataset.tab;
-        tabs.forEach(t => t.classList.remove('active'));
+        if (!target) return;
+        tabs.forEach(t => { if (t.dataset.tab) t.classList.remove('active'); });
         contents.forEach(c => c.classList.remove('active'));
         tab.classList.add('active');
         document.querySelector(`.tab-content[data-content="${target}"]`).classList.add('active');
@@ -469,6 +470,26 @@
   function setDisplay(id, v) { document.getElementById(id).textContent = v; }
 
   function bindPropertiesPanel() {
+    // Fading effect when using sliders
+    const propPanel = document.getElementById('properties-panel');
+    const updateSliderFade = (isSliding, e) => {
+      if (!isSliding) {
+        propPanel.classList.remove('slider-active');
+        propPanel.querySelectorAll('.is-sliding').forEach(el => el.classList.remove('is-sliding'));
+        return;
+      }
+      propPanel.classList.add('slider-active');
+      const row = e.target.closest('.prop-row, .prop-row-inline');
+      if (row) row.classList.add('is-sliding');
+    };
+
+    document.querySelectorAll('#properties-panel input[type="range"]').forEach(slider => {
+      slider.addEventListener('mousedown', (e) => updateSliderFade(true, e), { passive: true });
+      slider.addEventListener('touchstart', (e) => updateSliderFade(true, e), { passive: true });
+    });
+    document.addEventListener('mouseup', () => updateSliderFade(false));
+    document.addEventListener('touchend', () => updateSliderFade(false));
+    
     document.getElementById('btn-close-panel').addEventListener('click', deselectAll);
 
     // Image properties

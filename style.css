@@ -574,6 +574,25 @@ body {
   max-height: 80dvh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
+  transition: background-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Slider active fading (10% opacity for non-slider parts) */
+#properties-panel.slider-active {
+  background-color: rgba(29, 27, 32, 0.1); /* Surface container low at 10% opacity */
+  box-shadow: none;
+}
+#properties-panel.slider-active .panel-drag-handle,
+#properties-panel.slider-active .panel-header,
+#properties-panel.slider-active .panel-actions,
+#properties-panel.slider-active .prop-group > * {
+  opacity: 0.1;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+#properties-panel.slider-active .prop-group > .is-sliding {
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 @keyframes sheetSlideUp {
