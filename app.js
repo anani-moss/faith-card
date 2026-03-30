@@ -10,10 +10,10 @@
   // ─── Image Library ─────────────────────────────────────
   const IMAGE_LIBRARY = {
     main: [
-      { src: 'img/main/main1.png', label: 'Easter Floral' }
+      { src: 'img/main/main1.png', label: 'Faith Floral' }
     ],
     wish: [
-      { src: 'img/wish/wish1.png', label: 'Happy Easter' }
+      { src: 'img/wish/wish1.png', label: 'Happy Faith' }
     ],
     decor: [
       { src: 'img/decor/decor1.png', label: 'Star' }

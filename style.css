@@ -99,12 +99,18 @@ body {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+::-webkit-scrollbar-track:horizontal {
+  margin: 0 40vw; /* Track is strictly confined to the center 20% (1/5th) of the screen */
+}
+::-webkit-scrollbar-track:vertical {
+  margin: 40vh 0; /* Shrink vertical track by 1/5th too */
+}
 ::-webkit-scrollbar-thumb {
-  background: var(--md-sys-color-outline-variant);
+  background-color: var(--md-sys-color-primary);
   border-radius: var(--radius-full);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-primary-container);
 }
 
 /* ===== App Layout ===== */
@@ -565,6 +571,25 @@ body {
   overflow: hidden;
   position: relative;
   background: var(--md-sys-color-surface-container-low);
+}
+
+/* Scroll Hint Motion Gradient */
+#panel-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 48px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--md-sys-color-surface-container-low) 90%);
+  animation: scrollHintPulse 2s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+@keyframes scrollHintPulse {
+  0% { opacity: 0.3; transform: translateX(8px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 .tab-content {
