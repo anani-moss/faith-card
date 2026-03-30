@@ -224,6 +224,23 @@
     const select = document.getElementById('jy-overlay-select');
     const imgOverlay = document.getElementById('jy-overlay-img');
 
+    function updateSwitchLabel() {
+      const toggle = document.getElementById('jy-overlay-toggle');
+      const text = document.querySelector('.switch-text');
+
+      if (!toggle || !text) return;
+
+      text.textContent = toggle.checked ? 'ON' : 'OFF';
+    }
+
+    // Initial state
+    updateSwitchLabel();
+
+    // On change
+    document.getElementById('jy-overlay-toggle')
+      .addEventListener('change', updateSwitchLabel);
+
+
     if (!toggle || !select || !imgOverlay) return;
 
     toggle.addEventListener('change', (e) => {
@@ -861,7 +878,7 @@
     });
 
     // Layer actions
-    document.getElementById('btn-bring-front').addEventListener('click', () => {
+    document.querySelectorAll('#btn-bring-front').forEach(btn => btn.addEventListener('click', () => {
       if (!selectedId) return;
       const idx = elements.findIndex(e => e.id === selectedId);
       if (idx < elements.length - 1) {
@@ -869,9 +886,9 @@
         elements.push(el);
         renderCanvas();
       }
-    });
+    }));
 
-    document.getElementById('btn-send-back').addEventListener('click', () => {
+    document.querySelectorAll('#btn-send-back').forEach(btn => btn.addEventListener('click', () => {
       if (!selectedId) return;
       const idx = elements.findIndex(e => e.id === selectedId);
       if (idx > 0) {
@@ -879,9 +896,9 @@
         elements.unshift(el);
         renderCanvas();
       }
-    });
+    }));
 
-    document.getElementById('btn-delete-el').addEventListener('click', deleteSelected);
+    document.querySelectorAll('#btn-delete-el').forEach(btn => btn.addEventListener('click', deleteSelected));
   }
 
   function bindRange(inputId, valId, suffix, callback) {
@@ -1079,9 +1096,8 @@
   function deleteSelected() {
     if (!selectedId) return;
     elements = elements.filter(e => e.id !== selectedId);
-    selectedId = null;
+    deselectAll();
     renderCanvas();
-    propertiesPanel.classList.add('hidden');
   }
 
   // ─── Kick Off ──────────────────────────────────────────

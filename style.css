@@ -123,6 +123,33 @@ body {
   transition: background 150ms ease, box-shadow 150ms ease;
 }
 
+.switch-box {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ef4444;
+
+  display: flex;
+  align-items: center;
+  /* vertical center */
+  justify-content: center;
+  /* horizontal center */
+
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+
+  line-height: 1;
+  /* prevents vertical offset */
+}
+
+.switch-text {
+  display: block;
+  line-height: 1;
+  pointer-events: none;
+}
+
+
 /* ON state → green */
 .switch input:checked+.switch-box {
   background: #22c55e;
