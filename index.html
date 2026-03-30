@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Easter Card Composer</title>
+  <meta name="description" content="Create beautiful Easter greeting cards with drag-and-drop image composition">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header id="app-header">
+      <h1>🐣 Easter Composer</h1>
+      <div class="header-actions">
+        <button id="btn-clear" class="btn btn-icon-only m3-icon-btn" title="Clear Canvas">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="workspace">
+      <!-- Canvas Area -->
+      <section id="canvas-area">
+        <div id="canvas-wrapper">
+          <div id="canvas" style="width:1080px;height:1080px;">
+            <div id="canvas-placeholder">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>Tap images below to add</p>
+              <span class="size-badge">1080 × 1080</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Panel: Image Library (mobile-first: bottom tabs) -->
+      <aside id="bottom-panel" class="m3-nav-bar">
+        <div id="panel-tabs">
+          <button class="tab-btn active" data-tab="main">
+            <div class="tab-indicator">
+              <span class="tab-icon">🖼️</span>
+            </div>
+            <span class="tab-label">Backgrounds</span>
+          </button>
+          <button class="tab-btn" data-tab="wish">
+            <div class="tab-indicator">
+              <span class="tab-icon">✨</span>
+            </div>
+            <span class="tab-label">Wishes</span>
+          </button>
+          <button class="tab-btn" data-tab="decor">
+            <div class="tab-indicator">
+              <span class="tab-icon">⭐</span>
+            </div>
+            <span class="tab-label">Decor</span>
+          </button>
+        </div>
+        <div id="panel-content">
+          <div class="tab-content active" data-content="main" id="grid-main"></div>
+          <div class="tab-content" data-content="wish" id="grid-wish"></div>
+          <div class="tab-content" data-content="decor" id="grid-decor"></div>
+        </div>
+        </div>
+      </aside>
+
+      <!-- M3 FABs -->
+      <div class="fab-container">
+        <button id="btn-add-text" class="fab m3-fab-secondary" title="Add Text">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+        </button>
+        <button id="btn-download" class="fab m3-fab-primary" title="Download PNG">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="fab-label">Save</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- Properties Panel (bottom sheet on mobile) -->
+    <div id="properties-panel" class="hidden">
+      <div class="panel-drag-handle"></div>
+      <div class="panel-header">
+        <h4 id="panel-title">Properties</h4>
+        <button id="btn-close-panel" class="btn-close" title="Close">✕</button>
+      </div>
+      <div class="panel-body">
+        <!-- For images -->
+        <div id="props-image" class="prop-group hidden">
+          <div class="prop-row">
+            <label>Scale</label>
+            <input type="range" id="prop-scale" min="10" max="300" value="100" step="1">
+            <span id="prop-scale-val" class="prop-val">100%</span>
+          </div>
+          <div class="prop-row">
+            <label>Rotation</label>
+            <input type="range" id="prop-rotation" min="0" max="360" value="0" step="1">
+            <span id="prop-rotation-val" class="prop-val">0°</span>
+          </div>
+          <div class="prop-row">
+            <label>Opacity</label>
+            <input type="range" id="prop-opacity" min="0" max="100" value="100" step="1">
+            <span id="prop-opacity-val" class="prop-val">100%</span>
+          </div>
+        </div>
+
+        <!-- For text -->
+        <div id="props-text" class="prop-group hidden">
+          <div class="prop-row">
+            <label>Text</label>
+            <textarea id="prop-text-content" rows="2" placeholder="Enter text..."></textarea>
+          </div>
+          <div class="prop-row-inline">
+            <div class="prop-half">
+              <label>Size</label>
+              <input type="range" id="prop-font-size" min="12" max="120" value="36" step="1">
+              <span id="prop-font-size-val" class="prop-val">36px</span>
+            </div>
+            <div class="prop-half">
+              <label>Color</label>
+              <input type="color" id="prop-text-color" value="#333333">
+            </div>
+          </div>
+          <div class="prop-row-inline">
+            <div class="prop-half">
+              <label>Font</label>
+              <select id="prop-font-family">
+                <option value="Inter">Inter</option>
+                <option value="Playfair Display">Playfair</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+              </select>
+            </div>
+            <div class="prop-half">
+              <label>Weight</label>
+              <select id="prop-font-weight">
+                <option value="300">Light</option>
+                <option value="400">Regular</option>
+                <option value="500">Medium</option>
+                <option value="600" selected>Semi Bold</option>
+                <option value="700">Bold</option>
+              </select>
+            </div>
+          </div>
+          <div class="prop-row">
+            <label>Rotation</label>
+            <input type="range" id="prop-text-rotation" min="0" max="360" value="0" step="1">
+            <span id="prop-text-rotation-val" class="prop-val">0°</span>
+          </div>
+          <div class="prop-row">
+            <label>Opacity</label>
+            <input type="range" id="prop-text-opacity" min="0" max="100" value="100" step="1">
+            <span id="prop-text-opacity-val" class="prop-val">100%</span>
+          </div>
+        </div>
+
+        <div class="panel-actions">
+          <button id="btn-bring-front" class="btn m3-btn-tonal">▲ Front</button>
+          <button id="btn-send-back" class="btn m3-btn-tonal">▼ Back</button>
+          <button id="btn-delete-el" class="btn m3-btn-error">🗑 Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Modal -->
+    <div id="download-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h3>Save Your Card</h3>
+        <p class="modal-subtitle">Enter a name for your card (optional)</p>
+        <div class="modal-input-row">
+          <input type="text" id="download-name-input" placeholder="e.g. john" autocomplete="off" spellcheck="false">
+          <span class="input-suffix">-card.png</span>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-modal-cancel" class="btn m3-btn-tonal">Cancel</button>
+          <button id="btn-modal-save" class="btn m3-btn-primary" style="background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

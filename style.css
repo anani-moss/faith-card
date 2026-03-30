@@ -1,0 +1,897 @@
+/* ===== Design Tokens (Material 3 Dynamic Vivid Dark) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  /* Vivid Colors (Dark Theme Base) */
+  --md-sys-color-primary: #D0BCFF; /* Vivid Purple */
+  --md-sys-color-on-primary: #381E72;
+  --md-sys-color-primary-container: #4F378B;
+  --md-sys-color-on-primary-container: #EADDFF;
+
+  --md-sys-color-secondary: #F9A8D4; /* Vivid Pink */
+  --md-sys-color-on-secondary: #4A1934;
+  --md-sys-color-secondary-container: #682A51;
+  --md-sys-color-on-secondary-container: #FBCFE8;
+
+  --md-sys-color-tertiary: #FDE047; /* Vivid Yellow */
+  --md-sys-color-on-tertiary: #4A4100;
+  --md-sys-color-tertiary-container: #665C00;
+  --md-sys-color-on-tertiary-container: #FEF08A;
+
+  --md-sys-color-error: #FFB4AB;
+  --md-sys-color-on-error: #690005;
+  --md-sys-color-error-container: #93000A;
+  --md-sys-color-on-error-container: #FFDAD6;
+
+  /* Surfaces */
+  --md-sys-color-background: #141218;
+  --md-sys-color-on-background: #E6E1E5;
+  --md-sys-color-surface: #141218;
+  --md-sys-color-on-surface: #E6E1E5;
+  --md-sys-color-on-surface-variant: #CAC4D0;
+  
+  --md-sys-color-surface-container-lowest: #0F0D13;
+  --md-sys-color-surface-container-low: #1D1B20;
+  --md-sys-color-surface-container: #211F26;
+  --md-sys-color-surface-container-high: #2B2930;
+  --md-sys-color-surface-container-highest: #36343B;
+
+  --md-sys-color-outline: #938F99;
+  --md-sys-color-outline-variant: #49454F;
+  --md-sys-color-inverse-surface: #E6E1E5;
+  --md-sys-color-inverse-on-surface: #313033;
+  --md-sys-color-inverse-primary: #6750A4;
+
+  /* Elevations */
+  --md-sys-elevation-1: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+  --md-sys-elevation-2: 0 1px 2px 0 rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+  --md-sys-elevation-3: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15);
+  --md-sys-elevation-4: 0 2px 3px 0 rgba(0,0,0,0.3), 0 6px 10px 4px rgba(0,0,0,0.15);
+
+  /* Shapes */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Quality of life metrics */
+  /* MINIMUM touch target is 48px to account for fat fingers */
+  --min-touch-target: 48px;
+  --header-height: 64px;
+  --nav-bar-height: 80px;
+
+  /* State overlays */
+  --hover-overlay: rgba(255, 255, 255, 0.08);
+  --pressed-overlay: rgba(255, 255, 255, 0.12);
+  --focus-overlay: rgba(255, 255, 255, 0.12);
+  --transition: 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px; /* M3 base size */
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  overflow: hidden;
+  height: 100dvh;
+  width: 100vw;
+  touch-action: manipulation; /* Disable double-tap zoom for better touch response */
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+/* ===== App Layout ===== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ===== App Bar (Header) ===== */
+#app-header {
+  height: var(--header-height);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+#app-header h1 {
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  line-height: 1.2;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ===== M3 Standard Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  min-height: 40px; /* Standard button height, but will use padding for a min 48 touch target if needed */
+  padding: 0 24px;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ensure 48px touch targets for small buttons */
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  min-width: var(--min-touch-target);
+  min-height: var(--min-touch-target);
+}
+
+/* Tonal Button */
+.m3-btn-tonal {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.m3-btn-tonal:hover {
+  background: var(--md-sys-color-secondary-container);
+  box-shadow: inset 0 0 0 100px var(--hover-overlay);
+}
+.m3-btn-tonal:active {
+  box-shadow: inset 0 0 0 100px var(--pressed-overlay);
+}
+
+/* Error Button */
+.m3-btn-error {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+.m3-btn-error:hover {
+  box-shadow: inset 0 0 0 100px var(--hover-overlay);
+}
+.m3-btn-error:active {
+  box-shadow: inset 0 0 0 100px var(--pressed-overlay);
+}
+
+/* Icon Button (Top App Bar usually) */
+.m3-icon-btn {
+  width: 48px; /* Fat finger safe */
+  height: 48px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background-color var(--transition), color var(--transition);
+}
+.m3-icon-btn:hover {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+.m3-icon-btn:active {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+/* ===== FABs (Floating Action Buttons) ===== */
+.fab-container {
+  position: absolute;
+  bottom: 16px; /* distance to the nav bar / bottom */
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-end;
+  z-index: 200;
+}
+
+.fab {
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--md-sys-elevation-3);
+  transition: box-shadow var(--transition), background-color var(--transition), transform 150ms ease;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.fab::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: var(--min-touch-target);
+  min-height: var(--min-touch-target);
+}
+
+.fab:hover {
+  box-shadow: var(--md-sys-elevation-4);
+}
+.fab:active {
+  transform: scale(0.96); /* tactile feedback */
+}
+
+/* Secondary FAB (Add Text) */
+.m3-fab-secondary {
+  width: 56px;
+  height: 56px;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border-radius: var(--radius-lg); /* Slightly less round than primary often, or same */
+}
+
+/* Primary Extended FAB (Save/Download) */
+.m3-fab-primary {
+  height: 56px;
+  padding: 0 20px;
+  gap: 12px;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.fab-label {
+  font-size: 0.875rem;
+  letter-spacing: 0.1px;
+}
+
+/* ===== Main Workspace ===== */
+#workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+  position: relative;
+}
+
+/* ===== Canvas Area ===== */
+#canvas-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--md-sys-color-surface-container-lowest);
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+#canvas-wrapper {
+  position: relative;
+  transform-origin: center center;
+}
+
+#canvas {
+  background: #ffffff; /* We keep the canvas white by default for the card */
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--md-sys-elevation-2);
+  border-radius: var(--radius-md); /* Smooth corners for the canvas itself */
+  touch-action: none;
+}
+
+#canvas-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #7A757F; /* A neutral gray */
+  pointer-events: none;
+  user-select: none;
+}
+
+#canvas-placeholder p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.size-badge {
+  font-size: 0.75rem;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 4px 12px;
+  border-radius: var(--radius-xl);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Canvas Elements (Interactions) ===== */
+.canvas-element {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  outline: 3px solid transparent;
+  outline-offset: -3px;
+  transition: outline-color 150ms ease;
+  touch-action: none;
+}
+
+.canvas-element:hover {
+  outline-color: rgba(208, 188, 255, 0.5); /* Primary semi-transparent */
+}
+
+.canvas-element.selected {
+  outline-color: var(--md-sys-color-primary);
+}
+
+.canvas-element.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px dashed var(--md-sys-color-primary);
+  pointer-events: none;
+}
+
+.canvas-element img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Resize handle - Fat finger friendly */
+/* Visual handle, but actual touch area is bigger via padding/border trick if needed. We use a 32x32px handle visually but large enough to touch. */
+.resize-handle {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: var(--md-sys-color-primary-container);
+  border: 3px solid var(--md-sys-color-surface);
+  border-radius: 50%;
+  cursor: nwse-resize;
+  bottom: -16px;
+  right: -16px;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  box-shadow: var(--md-sys-elevation-2);
+  touch-action: none;
+}
+
+.resize-handle:hover, .resize-handle:active {
+  transform: scale(1.1);
+  background: var(--md-sys-color-primary);
+}
+
+.canvas-element.selected .resize-handle {
+  opacity: 1;
+}
+
+/* Text Element padding for better touch */
+.canvas-text {
+  font-size: 48px;
+  padding: 8px 12px;
+  min-width: 60px;
+  min-height: 48px;
+}
+
+/* ===== M3 Navigation Bar (Bottom Panel) ===== */
+#bottom-panel {
+  flex-shrink: 0;
+  background: var(--md-sys-color-surface-container);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+#panel-tabs {
+  display: flex;
+  height: var(--nav-bar-height);
+  padding: 0 8px;
+  justify-content: center;
+}
+
+.tab-btn {
+  flex: 1;
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: 'Roboto', sans-serif;
+  cursor: pointer;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  padding: 8px 0;
+}
+
+.tab-indicator {
+  width: 64px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px; /* Pill */
+  transition: background-color 200ms ease;
+}
+
+.tab-btn.active .tab-indicator {
+  background-color: var(--md-sys-color-secondary-container);
+}
+
+.tab-btn.active .tab-icon {
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.tab-btn.active .tab-label {
+  color: var(--md-sys-color-on-surface);
+  font-weight: 700;
+}
+
+.tab-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.tab-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.2px;
+  font-weight: 500;
+  transition: color 200ms ease, font-weight 200ms ease;
+}
+
+#panel-content {
+  height: 120px; /* Taller area for fat fingers */
+  overflow: hidden;
+  position: relative;
+  background: var(--md-sys-color-surface-container-low);
+}
+
+.tab-content {
+  position: absolute;
+  inset: 0;
+  display: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 16px;
+  gap: 16px;
+  align-items: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+/* Image Thumbnails */
+.image-thumb {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all var(--transition);
+  position: relative;
+  background: var(--md-sys-color-surface-container-highest);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.image-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-thumb:hover, .image-thumb:active {
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+/* Placed overlay indicator */
+.image-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(208, 188, 255, 0.2); /* Dim overlay on tap */
+  opacity: 0;
+  transition: opacity 150ms ease;
+  pointer-events: none;
+}
+.image-thumb:active::after {
+  opacity: 1;
+}
+
+/* ===== M3 Standard Bottom Sheet (Properties Panel) ===== */
+#properties-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--md-sys-elevation-3);
+  z-index: 300;
+  animation: sheetSlideUp 300ms cubic-bezier(0.2, 0, 0, 1);
+  max-height: 80dvh;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.panel-drag-handle {
+  width: 48px;
+  height: 6px;
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+  margin: 16px auto 0;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+}
+
+.panel-header h4 {
+  font-size: 1.125rem;
+  font-weight: 400;
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Close button - touch friendly */
+.btn-close {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  font-size: 1.25rem;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition);
+}
+.btn-close:hover {
+  background: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.panel-body {
+  padding: 8px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.prop-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.prop-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prop-row label, .prop-half label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.prop-row-inline {
+  display: flex;
+  gap: 16px;
+}
+
+.prop-half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prop-val {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Make ranges super touch-friendly */
+input[type="range"] {
+  width: 100%;
+  height: 32px; /* Large touch area */
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  margin: 0;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 12px; /* Thick track */
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--radius-full);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  cursor: pointer;
+  margin-top: -6px; /* Centered on track */
+  transition: transform 100ms ease, box-shadow 100ms ease;
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 12px rgba(208, 188, 255, 0.24); /* M3 focus ripple */
+}
+
+textarea, select, input[type="text"] {
+  background: var(--md-sys-color-surface-container-highest);
+  border: none;
+  border-bottom: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  color: var(--md-sys-color-on-surface);
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color var(--transition), background-color var(--transition);
+  width: 100%;
+  min-height: 48px; /* MIN TOUCH HEIGHT */
+}
+
+textarea:focus, select:focus, input[type="text"]:focus {
+  border-bottom-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-surface-container-high);
+}
+
+input[type="color"] {
+  height: 48px;
+  width: 100%;
+  padding: 4px;
+  cursor: pointer;
+  background: var(--md-sys-color-surface-container-highest);
+  border: none;
+  border-radius: var(--radius-md);
+}
+
+.panel-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  margin-top: 8px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  flex-wrap: wrap; /* On very thin screens */
+}
+
+.panel-actions .btn {
+  flex: 1;
+}
+
+/* ===== M3 Dialog (Basic overlay/modal) ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* Scrim */
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  padding: 24px;
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-card {
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: var(--md-sys-elevation-3);
+  animation: modalPop 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-card h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 12px;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.modal-input-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.input-suffix {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  padding-left: 8px;
+  align-self: flex-end;
+  padding-bottom: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.modal-actions .btn {
+  padding: 0 16px;
+}
+
+/* ===== Utilities ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== Desktop Layout Restructuring ===== */
+@media (min-width: 600px) {
+  #workspace {
+    flex-direction: row;
+  }
+  
+  #bottom-panel {
+    flex-direction: row;
+    height: auto;
+    width: 360px; /* Side navigation rail/drawer hybrid */
+    border-top: none;
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    order: 2; /* Move panel to right side */
+  }
+
+  /* Since bottom panel is moved right, text/save fabs should be near it or inside the canvas area bottom right */
+  .fab-container {
+    right: 380px; /* Push to the left of the side panel */
+  }
+
+  #panel-tabs {
+    flex-direction: column;
+    width: 80px; /* Navigation Rail */
+    height: auto;
+    padding: 16px 0;
+    justify-content: flex-start;
+    gap: 16px;
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .tab-indicator {
+    width: 48px;
+    height: 32px;
+  }
+
+  #panel-content {
+    flex: 1;
+    height: 100%;
+  }
+
+  .tab-content {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .image-thumb {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Right-side Properties Panel */
+  #properties-panel {
+    left: auto;
+    right: 376px; /* Appear inside canvas area, next to side panel */
+    bottom: 24px;
+    top: auto;
+    width: 340px;
+    max-height: calc(100dvh - var(--header-height) - 48px);
+    border-radius: var(--radius-xl);
+    animation: sideSlideIn 300ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  @keyframes sideSlideIn {
+    from { transform: translateX(40px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .panel-drag-handle {
+    display: none;
+  }
+}
