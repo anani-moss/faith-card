@@ -96,15 +96,15 @@
   function bindPanelGestures() {
     const expandBtn = document.getElementById("btn-expand-panel");
     const panelContent = document.getElementById("panel-content");
-    const chevron = document.getElementById("expand-chevron");
+    const downloadBtn = document.getElementById("btn-download");
 
     if (expandBtn && panelContent) {
       expandBtn.addEventListener("click", () => {
         panelContent.classList.toggle("expanded");
         if (panelContent.classList.contains("expanded")) {
-          chevron.style.transform = "translateY(-50%) rotate(0deg)";
+          if (downloadBtn) downloadBtn.classList.add("is-hidden");
         } else {
-          chevron.style.transform = "translateY(-50%) rotate(180deg)";
+          if (downloadBtn) downloadBtn.classList.remove("is-hidden");
         }
       });
     }
