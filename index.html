@@ -82,7 +82,7 @@
 
 
 
-            <button id="btn-element-settings" class="fab m3-fab-secondary hidden" title="Settings"
+            <button id="btn-element-settings" class="m3-fab-secondary hidden" title="Settings"
               style="width: 56px; height: 56px; border-radius: 50%;">
               <svg class="icon-settings" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.5">
@@ -128,7 +128,7 @@
           <div class="tab-content" data-content="text" id="grid-text">
             <div class="text-thumb" id="btn-add-text" title="Add Custom Text">
               <span class="text-thumb-icon">Aa</span>
-              <span class="text-thumb-label">Your Text Here</span>
+              <span class="text-thumb-label">Add text</span>
             </div>
           </div>
         </div>
@@ -192,6 +192,19 @@
       <div class="panel-body">
         <!-- For images -->
         <div id="props-image" class="prop-group hidden">
+
+          <div class="panel-actions">
+            <button id="btn-bring-front" class="btn m3-btn-tonal">▲ Front</button>
+            <button id="btn-send-back" class="btn m3-btn-tonal">▼ Back</button>
+            <button id="btn-delete-el" class="btn m3-btn-error">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            </button>
+          </div>
+
           <div class="prop-row">
             <label>Scale</label>
             <input type="range" id="prop-scale" min="10" max="300" value="100" step="1">
@@ -211,10 +224,18 @@
 
         <!-- For text -->
         <div id="props-text" class="prop-group hidden">
+
           <div class="prop-row">
             <label>Text</label>
             <textarea id="prop-text-content" rows="2" placeholder="Enter text..."></textarea>
           </div>
+
+          <div class="panel-actions">
+            <button id="btn-bring-front" class="btn m3-btn-tonal">▲ Front</button>
+            <button id="btn-send-back" class="btn m3-btn-tonal">▼ Back</button>
+            <button id="btn-delete-el" class="btn m3-btn-error">🗑</button>
+          </div>
+
           <div class="prop-row-inline">
             <div class="prop-half">
               <label>Size</label>
@@ -259,11 +280,7 @@
           </div>
         </div>
 
-        <div class="panel-actions">
-          <button id="btn-bring-front" class="btn m3-btn-tonal">▲ Front</button>
-          <button id="btn-send-back" class="btn m3-btn-tonal">▼ Back</button>
-          <button id="btn-delete-el" class="btn m3-btn-error">🗑 Delete</button>
-        </div>
+
       </div>
     </div>
 

@@ -365,6 +365,12 @@
     placeholder.classList.add('hidden');
   }
 
+  const textarea = document.getElementById("prop-text-content");
+
+  textarea.addEventListener("focus", function () {
+    this.select();
+  });
+
   // ─── Render Canvas ─────────────────────────────────────
   function renderCanvas() {
     canvasEl.querySelectorAll('.canvas-element').forEach(el => el.remove());
@@ -408,6 +414,13 @@
         startDrag(e.clientX, e.clientY, el.id);
       });
 
+      div.addEventListener('dblclick', (e) => {
+        if (e.target.classList.contains('resize-handle')) return;
+        e.stopPropagation();
+        selectElement(el.id);
+        openSettingsPanel();
+      });
+
       handle.addEventListener('mousedown', (e) => {
         e.stopPropagation();
         selectElement(el.id);
@@ -415,13 +428,22 @@
       });
 
       // ── Touch events ──
+      let lastTapTime = 0;
       div.addEventListener('touchstart', (e) => {
         if (e.target.classList.contains('resize-handle')) return;
         e.stopPropagation();
         const t = e.touches[0];
         selectElement(el.id);
         startDrag(t.clientX, t.clientY, el.id);
-      }, { passive: true });
+
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+        if (tapLength < 300 && tapLength > 0) {
+          openSettingsPanel();
+          e.preventDefault();
+        }
+        lastTapTime = currentTime;
+      }, { passive: false });
 
       handle.addEventListener('touchstart', (e) => {
         e.stopPropagation();
@@ -691,6 +713,17 @@
 
   function setVal(id, v) { document.getElementById(id).value = v; }
   function setDisplay(id, v) { document.getElementById(id).textContent = v; }
+
+  function openSettingsPanel() {
+    if (propertiesPanel && propertiesPanel.classList.contains('hidden')) {
+      propertiesPanel.classList.remove('hidden');
+      const btnSettings = document.getElementById('btn-element-settings');
+      if (btnSettings) {
+        btnSettings.querySelector('.icon-settings').classList.add('hidden');
+        btnSettings.querySelector('.icon-close').classList.remove('hidden');
+      }
+    }
+  }
 
   function bindPropertiesPanel() {
     // Fading effect when using sliders
