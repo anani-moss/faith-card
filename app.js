@@ -55,6 +55,17 @@
     window.addEventListener("resize", fitCanvasToScreen);
   }
 
+  // --- Confirmation before leaving ---
+  window.onbeforeunload = function (e) {
+    if (elements && elements.length > 0) {
+      e = e || window.event;
+      // For modern browsers
+      if (e) e.returnValue = "Sure?";
+      // For older browsers/some implementations
+      return "Sure?";
+    }
+  };
+
   function checkFirstLoadOverlay() {
     document.getElementById("jy-overlay-toggle").checked = true;
     const toggle = document.getElementById("jy-overlay-toggle");
