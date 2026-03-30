@@ -56,9 +56,9 @@
   }
 
   function checkFirstLoadOverlay() {
+    document.getElementById('jy-overlay-toggle').checked = true;
     const toggle = document.getElementById('jy-overlay-toggle');
     const modal = document.getElementById('overlay-prompt-modal');
-    const choice = localStorage.getItem('faithCardOverlayChoice');
 
     if (choice === 'disabled') {
       if (toggle) toggle.checked = false;
