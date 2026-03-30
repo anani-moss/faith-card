@@ -692,7 +692,7 @@ body {
 }
 
 #panel-content.expanded {
-  height: 40vh;
+  height: 55dvh;
   /* expanded height */
 }
 
