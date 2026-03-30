@@ -19,7 +19,15 @@
       <h1>🕊️ FaithCard</h1>
       <div class="header-actions">
         <div class="overlay-control">
-          <label><input type="checkbox" id="jy-overlay-toggle" autocomplete="off"> Add JY overlay</label>
+         <label class="switch">
+          <input type="checkbox" id="jy-overlay-toggle">
+          <span class="switch-box"></span>
+          <span 
+                class="switch-label" 
+                style="font-size: 0.7rem; line-height: 1.2; display: inline-block;">
+                Toggle Overlay
+              </span>
+        </label>
           <select id="jy-overlay-select" disabled autocomplete="off">
             <option value="img/jy-overlay/JY-1.png">JY-1</option>
             <option value="img/jy-overlay/JY-2.png">JY-2</option>

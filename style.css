@@ -91,6 +91,53 @@ body {
   touch-action: manipulation; /* Disable double-tap zoom for better touch response */
 }
 
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Hide native checkbox */
+.switch input {
+  display: none;
+}
+
+/* Static box */
+.switch-box {
+  width: 42px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ef4444; /* red (OFF) */
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+
+/* ON state → green */
+.switch input:checked + .switch-box {
+  background: #22c55e; /* green */
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Hover (subtle) */
+.switch:hover .switch-box {
+  filter: brightness(1.1);
+}
+
+/* Label */
+.switch-label {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+
+
+
+
+
+
 /* ===== Scrollbar ===== */
 ::-webkit-scrollbar {
   width: 6px;
