@@ -20,11 +20,6 @@
     ]
   };
 
-  const JY_OVERLAYS = [
-    { src: 'img/jy-overlay/JY-1.png', label: 'JY-1' },
-    { src: 'img/jy-overlay/JY-2.png', label: 'JY-2' }
-  ];
-
   // ─── State ─────────────────────────────────────────────
   const CANVAS_SIZE = 1080;
   let elements = [];
@@ -59,6 +54,7 @@
     bindKeyboard();
     bindModal();
     bindOverlayControl();
+    discoverOverlays();
     fitCanvasToScreen();
 
     window.addEventListener('resize', fitCanvasToScreen);
@@ -71,7 +67,49 @@
         cacheImage(imgData.src);
       });
     }
-    JY_OVERLAYS.forEach(imgData => cacheImage(imgData.src));
+  }
+
+  async function discoverOverlays() {
+    const select = document.getElementById('jy-overlay-select');
+    if (!select) return;
+    select.innerHTML = ''; // Clear default
+    
+    let i = 1;
+    let foundAny = false;
+    while (true) {
+      const src = `img/jy-overlay/JY-${i}.png`;
+      try {
+        const res = await fetch(src, { method: 'HEAD' });
+        if (!res.ok) break; // 404 or other error, stop probing
+        
+        // Add to dropdown
+        const opt = document.createElement('option');
+        opt.value = src;
+        opt.textContent = `JY-${i}`;
+        select.appendChild(opt);
+        
+        // Cache it for export
+        cacheImage(src);
+        foundAny = true;
+        i++;
+      } catch (e) {
+        break;
+      }
+    }
+    
+    if (!foundAny) {
+      const opt = document.createElement('option');
+      opt.textContent = 'None found';
+      opt.disabled = true;
+      select.appendChild(opt);
+    }
+    
+    // Auto-update overlay if it was checked before discovery completes
+    const toggle = document.getElementById('jy-overlay-toggle');
+    const imgOverlay = document.getElementById('jy-overlay-img');
+    if (toggle && toggle.checked && imgOverlay && foundAny) {
+      imgOverlay.src = select.value;
+    }
   }
 
   function bindOverlayControl() {
