@@ -618,6 +618,11 @@ body {
   overflow: hidden;
   position: relative;
   background: var(--md-sys-color-surface-container-low);
+  transition: height 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+#panel-content.expanded {
+  height: 40vh; /* expanded height */
 }
 
 /* Scroll Hint Motion Gradient */
@@ -632,6 +637,11 @@ body {
   background: linear-gradient(to right, transparent, var(--md-sys-color-surface-container-low) 90%);
   animation: scrollHintPulse 2s ease-in-out infinite alternate;
   z-index: 10;
+  transition: opacity 0.3s ease;
+}
+
+#panel-content.expanded::after {
+  opacity: 0;
 }
 
 @keyframes scrollHintPulse {
@@ -653,6 +663,16 @@ body {
 
 .tab-content.active {
   display: flex;
+}
+
+#panel-content.expanded .tab-content.active {
+  display: grid;
+  overflow-y: auto;
+  overflow-x: hidden;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  align-content: start;
+  justify-items: center;
+  align-items: start;
 }
 
 /* Image Thumbnails */
@@ -796,24 +816,30 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 
-/* Close button - touch friendly */
 .btn-close {
   background: none;
   border: none;
+  font-size: 1.25rem;
   color: var(--md-sys-color-on-surface-variant);
   cursor: pointer;
-  font-size: 1.25rem;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-full);
+  padding: 8px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color var(--transition);
 }
+
 .btn-close:hover {
-  background: var(--md-sys-color-surface-container-highest);
-  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+@media (min-width: 768px) {
+  .hidden-desktop {
+    display: none !important;
+  }
 }
 
 .panel-body {

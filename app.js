@@ -49,8 +49,95 @@
     bindOverlayControl();
     discoverOverlays();
     fitCanvasToScreen();
+    bindPanelGestures();
+    checkFirstLoadOverlay();
 
     window.addEventListener('resize', fitCanvasToScreen);
+  }
+
+  function checkFirstLoadOverlay() {
+    const toggle = document.getElementById('jy-overlay-toggle');
+    const modal = document.getElementById('overlay-prompt-modal');
+    const choice = localStorage.getItem('faithCardOverlayChoice');
+
+    if (choice === 'disabled') {
+       if (toggle) toggle.checked = false;
+    } else {
+       if (toggle) toggle.checked = true;
+       // Only show if nothing saved yet
+       if (choice === null && modal) {
+          modal.classList.remove('hidden');
+          
+          document.getElementById('btn-overlay-keep').addEventListener('click', () => {
+             if (document.getElementById('remember-overlay-choice').checked) {
+                localStorage.setItem('faithCardOverlayChoice', 'enabled');
+             }
+             modal.classList.add('hidden');
+          });
+          
+          document.getElementById('btn-overlay-disable').addEventListener('click', () => {
+             if (document.getElementById('remember-overlay-choice').checked) {
+                localStorage.setItem('faithCardOverlayChoice', 'disabled');
+             }
+             if (toggle) {
+                 toggle.checked = false;
+                 toggle.dispatchEvent(new Event('change'));
+             }
+             modal.classList.add('hidden');
+          });
+       }
+    }
+  }
+
+  function bindPanelGestures() {
+    const expandBtn = document.getElementById('btn-expand-panel');
+    const panelContent = document.getElementById('panel-content');
+    const chevron = document.getElementById('expand-chevron');
+    
+    if (expandBtn && panelContent) {
+      expandBtn.addEventListener('click', () => {
+         panelContent.classList.toggle('expanded');
+         if (panelContent.classList.contains('expanded')) {
+            chevron.style.transform = 'translateY(-50%) rotate(0deg)';
+         } else {
+            chevron.style.transform = 'translateY(-50%) rotate(180deg)';
+         }
+      });
+    }
+
+    // Swipe down to close properties panel
+    let swipeStartY = 0;
+    const propPanel = document.getElementById('properties-panel');
+    if (!propPanel) return;
+    const header = propPanel.querySelector('.panel-header');
+    const handle = propPanel.querySelector('.panel-drag-handle');
+    
+    const handleTouchStart = (e) => {
+       swipeStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchEnd = (e) => {
+       const swipeEndY = e.changedTouches[0].clientY;
+       // Swiped down sufficiently while not scrolling inner contents?
+       // To be safe, any swipe down on header/handle closes it.
+       if (swipeEndY - swipeStartY > 40) {
+          propPanel.classList.add('hidden');
+          const settingsBtn = document.getElementById('btn-element-settings');
+          if (settingsBtn) {
+             settingsBtn.querySelector('.icon-settings').classList.remove('hidden');
+             settingsBtn.querySelector('.icon-close').classList.add('hidden');
+          }
+       }
+    };
+
+    if (header) {
+       header.addEventListener('touchstart', handleTouchStart, { passive: true });
+       header.addEventListener('touchend', handleTouchEnd);
+    }
+    if (handle) {
+       handle.addEventListener('touchstart', handleTouchStart, { passive: true });
+       handle.addEventListener('touchend', handleTouchEnd);
+    }
   }
 
   // ─── Discover images in each category folder ───────────
@@ -142,11 +229,12 @@
     toggle.addEventListener('change', (e) => {
       select.disabled = !e.target.checked;
       if (e.target.checked) {
-        imgOverlay.src = select.value;
+        if (select.value) imgOverlay.src = select.value;
         imgOverlay.classList.remove('hidden');
       } else {
         imgOverlay.classList.add('hidden');
       }
+      localStorage.setItem('faithCardOverlayChoice', e.target.checked ? 'enabled' : 'disabled');
     });
 
     select.addEventListener('change', (e) => {
@@ -362,6 +450,12 @@
     selectedId = null;
     renderCanvas();
     propertiesPanel.classList.add('hidden');
+    const btnSettings = document.getElementById('btn-element-settings');
+    if (btnSettings) {
+       btnSettings.classList.add('hidden');
+       btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+       btnSettings.querySelector('.icon-close').classList.add('hidden');
+    }
   }
 
   // ─── Drag Logic (unified mouse + touch) ────────────────
@@ -406,7 +500,12 @@
 
       el.x = Math.round(dragging.elStartX + dx);
       el.y = Math.round(dragging.elStartY + dy);
-      renderCanvas();
+      
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) {
+        div.style.left = el.x + 'px';
+        div.style.top = el.y + 'px';
+      }
     }
 
     if (resizing) {
@@ -417,17 +516,36 @@
       const scale = canvasRect.width / CANVAS_SIZE;
       const dx = (clientX - resizing.startX) / scale;
 
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+
       if (el.type === 'image') {
         const aspectRatio = resizing.startW / resizing.startH;
-        const newW = Math.max(30, resizing.startW + dx);
+        let newW = Math.max(30, resizing.startW + dx);
         el.w = Math.round(newW);
-        el.h = Math.round(newW / aspectRatio);
+        el.h = Math.round(newW / Math.max(0.1, aspectRatio));
+        if (div) {
+          div.style.width = el.w + 'px';
+          div.style.height = el.h + 'px';
+        }
       } else if (el.type === 'text') {
         el.fontSize = Math.max(12, Math.min(120, Math.round(resizing.startFontSize + dx * 0.5)));
+        if (div) {
+          div.style.fontSize = el.fontSize + 'px';
+        }
       }
 
-      renderCanvas();
-      updatePropertiesPanel();
+      // Live update properties panel if it's open
+      if (selectedId === el.id && !propertiesPanel.classList.contains('hidden')) {
+         if (el.type === 'image') {
+            const baseSize = el.category === 'main' ? CANVAS_SIZE : CANVAS_SIZE * 0.4;
+            const scalePercent = Math.round((el.w / baseSize) * 100);
+            setVal('prop-scale', scalePercent);
+            setDisplay('prop-scale-val', scalePercent + '%');
+         } else {
+            setVal('prop-font-size', el.fontSize);
+            setDisplay('prop-font-size-val', el.fontSize + 'px');
+         }
+      }
     }
   }
 
@@ -495,18 +613,33 @@
 
   // ─── Properties Panel ──────────────────────────────────
   function updatePropertiesPanel() {
+    const btnSettings = document.getElementById('btn-element-settings');
+    const panelTitle = document.getElementById('panel-title');
+
     if (selectedId === null) {
       propertiesPanel.classList.add('hidden');
+      if (btnSettings) {
+         btnSettings.classList.add('hidden');
+         btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+         btnSettings.querySelector('.icon-close').classList.add('hidden');
+      }
       return;
     }
 
     const el = elements.find(e => e.id === selectedId);
     if (!el) {
       propertiesPanel.classList.add('hidden');
+      if (btnSettings) {
+         btnSettings.classList.add('hidden');
+         btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+         btnSettings.querySelector('.icon-close').classList.add('hidden');
+      }
       return;
     }
 
-    propertiesPanel.classList.remove('hidden');
+    if (btnSettings) {
+       btnSettings.classList.remove('hidden');
+    }
 
     if (el.type === 'image') {
       propsImage.classList.remove('hidden');
@@ -564,7 +697,31 @@
     document.addEventListener('mouseup', () => updateSliderFade(false));
     document.addEventListener('touchend', () => updateSliderFade(false));
     
-    document.getElementById('btn-close-panel').addEventListener('click', deselectAll);
+    // Toggle via close button
+    document.getElementById('btn-close-panel').addEventListener('click', () => {
+       propertiesPanel.classList.add('hidden');
+       const btnSettings = document.getElementById('btn-element-settings');
+       if (btnSettings) {
+          btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+          btnSettings.querySelector('.icon-close').classList.add('hidden');
+       }
+    });
+
+    // Toggle via floating settings button
+    const btnSettings = document.getElementById('btn-element-settings');
+    if (btnSettings) {
+       btnSettings.addEventListener('click', () => {
+          if (propertiesPanel.classList.contains('hidden')) {
+             propertiesPanel.classList.remove('hidden');
+             btnSettings.querySelector('.icon-settings').classList.add('hidden');
+             btnSettings.querySelector('.icon-close').classList.remove('hidden');
+          } else {
+             propertiesPanel.classList.add('hidden');
+             btnSettings.querySelector('.icon-settings').classList.remove('hidden');
+             btnSettings.querySelector('.icon-close').classList.add('hidden');
+          }
+       });
+    }
 
     // Image properties
     bindRange('prop-scale', 'prop-scale-val', '%', (val) => {

@@ -18,15 +18,15 @@
     <header id="app-header">
       <h1>🕊️ FaithCard</h1>
       <div class="header-actions">
-        <div class="overlay-control">
+        <div class="overlay-control" title="Overlay">
           <label class="switch">
-            <input type="checkbox" id="jy-overlay-toggle">
+            <input type="checkbox" id="jy-overlay-toggle" checked>
             <span class="switch-box"></span>
-            <span class="switch-label" style="font-size: 0.7rem; line-height: 1.2; display: inline-block;">
-              Toggle Overlay
+            <span class="switch-label" style="font-size: 0.7rem; line-height: 1.2; display: inline-block; cursor:pointer;" title="Toggle Overlay">
+              Overlay
             </span>
           </label>
-          <select id="jy-overlay-select" disabled autocomplete="off">
+          <select id="jy-overlay-select" autocomplete="off" style="max-width: 100px;">
             <option value="" disabled selected>Loading…</option>
           </select>
         </div>
@@ -63,9 +63,10 @@
 
       <!-- Bottom Panel: Image Library (mobile-first: bottom tabs) -->
       <aside id="bottom-panel" class="m3-nav-bar">
-        <div id="panel-tabs">
-          <button class="tab-btn active" data-tab="main">
-            <div class="tab-indicator">
+        <div id="panel-tabs" style="position: relative;">
+          <div style="display: flex; justify-content: center; flex: 1;">
+            <button class="tab-btn active" data-tab="main">
+              <div class="tab-indicator">
               <span class="tab-icon">🖼️</span>
             </div>
             <span class="tab-label">Backgrounds</span>
@@ -94,6 +95,13 @@
             </div>
             <span class="tab-label">Text</span>
           </button>
+          </div>
+          <!-- Expand/Collapse Handle -->
+          <button id="btn-expand-panel" class="m3-icon-btn hidden-desktop" title="Expand Grid" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface); cursor: pointer; z-index: 10;">
+            <svg id="expand-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s; transform: rotate(180deg);">
+               <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
         </div>
         <div id="panel-content">
           <div class="tab-content active" data-content="main" id="grid-main"></div>
@@ -110,6 +118,18 @@
 
       <!-- M3 FABs -->
       <div class="fab-container">
+        <!-- Floating Settings Button (shown when item selected) -->
+        <button id="btn-element-settings" class="fab m3-fab-secondary hidden" title="Settings" style="width: 56px; height: 56px; border-radius: 50%;">
+          <svg class="icon-settings" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.5.28 1.13.4 1.7.13h.1c1.1 0 2 .9 2 2s-.9 2-2 2h-.1c-.57.28-1.2.15-1.7-.13z"></path>
+          </svg>
+          <svg class="icon-close hidden" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <line x1="18" y1="6" x2="6" y2="18"></line>
+             <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
         <button id="btn-download" class="fab m3-fab-primary" title="Download PNG">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -226,6 +246,21 @@
             </svg>
             Save
           </button>
+        </div>
+    </div>
+
+    <!-- First Load Overlay Modal -->
+    <div id="overlay-prompt-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <h3>Use Custom Overlays?</h3>
+        <p class="modal-subtitle">A beautiful overlay is applied to your cards by default. You can disable this now or later from the header.</p>
+        <div style="margin: 16px 0; display: flex; align-items: center; gap: 8px;">
+           <input type="checkbox" id="remember-overlay-choice" style="width:18px;height:18px;accent-color:var(--md-sys-color-primary);" checked>
+           <label for="remember-overlay-choice" style="font-size: 0.9rem;">Remember my choice</label>
+        </div>
+        <div class="modal-actions">
+          <button id="btn-overlay-disable" class="btn m3-btn-tonal">Disable</button>
+          <button id="btn-overlay-keep" class="btn m3-btn-primary" style="background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);">Keep Enabled</button>
         </div>
       </div>
     </div>
