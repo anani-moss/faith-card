@@ -16,12 +16,8 @@
   <div id="app">
 
     <!-- Header -->
-    <header id="app-header" style="display: flex; align-items: center;">
-
-      <div>
-        <h1>🕊️FaithCard</h1>
-      </div>
-
+    <header id="app-header">
+      <h1>FaithCard</h1>
       <div class=" header-actions">
         <div class="overlay-control" title="Overlay">
           <label class="switch">
@@ -300,7 +296,7 @@
         <h3>Save Your Card</h3>
         <p class="modal-subtitle">Enter a name for your card (optional)</p>
         <div class="modal-input-row">
-          <input type="text" id="download-name-input" placeholder="e.g. john" autocomplete="off" spellcheck="false">
+          <input type="text" id="download-name-input" placeholder="e.g. for john" autocomplete="off" spellcheck="false">
           <span class="input-suffix"></span>
         </div>
         <div class="modal-actions">
@@ -314,26 +310,6 @@
             </svg>
             Save
           </button>
-        </div>
-      </div>
-
-      <!-- First Load Overlay Modal -->
-      <div id="overlay-prompt-modal" class="modal-overlay hidden">
-        <div class="modal-card">
-          <h3>Use Custom Overlays?</h3>
-          <p class="modal-subtitle">A beautiful overlay is applied to your cards by default. You can disable this now or
-            later from the header.</p>
-          <div style="margin: 16px 0; display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="remember-overlay-choice"
-              style="width:18px;height:18px;accent-color:var(--md-sys-color-primary);" checked>
-            <label for="remember-overlay-choice" style="font-size: 0.9rem;">Remember my choice</label>
-          </div>
-          <div class="modal-actions">
-            <button id="btn-overlay-disable" class="btn m3-btn-tonal">Disable</button>
-            <button id="btn-overlay-keep" class="btn m3-btn-primary"
-              style="background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);">Keep
-              Enabled</button>
-          </div>
         </div>
       </div>
     </div>
