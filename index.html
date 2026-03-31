@@ -324,7 +324,7 @@
         <div id="panel-content">
           <div class="tab-content active" data-content="main" id="grid-main">
             <!-- Custom Color/Gradient Backdrop Button -->
-            <div class="image-thumb" id="btn-custom-bg" title="Custom Solid or Gradient Backdrop"
+            <div class="image-thumb btn-custom-bg" id="btn-custom-bg-main" title="Custom Solid or Gradient Backdrop"
               style="background: linear-gradient(135deg, #d0bcff, #4a4458); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; flex-direction: column; gap: 4px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 style="opacity:0.9">
@@ -335,6 +335,15 @@
           </div>
 
           <div class="tab-content" data-content="temp" id="grid-temp">
+            <!-- Custom Color/Gradient Backdrop Button (Duplicated for Simple Mode) -->
+            <div class="image-thumb btn-custom-bg" id="btn-custom-bg-temp" title="Custom Solid or Gradient Backdrop"
+              style="background: linear-gradient(135deg, #d0bcff, #4a4458); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; flex-direction: column; gap: 4px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="opacity:0.9">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              <span style="font-size:0.65rem; font-weight:700; letter-spacing:0.5px; opacity:0.9;">CUSTOM</span>
+            </div>
           </div>
           <div class="tab-content" data-content="elements" id="grid-elements"></div>
           <div class="tab-content" data-content="decor" id="grid-decor"></div>
@@ -464,9 +473,9 @@
             </div>
             <div class="prop-half">
               <label>Color</label>
-              <input type="color" id="prop-text-color" value="#333333" style="display:none;">
-              <div id="text-color-picker-mount" style="margin: 8px auto;"></div>
-              <div id="text-color-presets" class="color-presets"></div>
+              <input type="color" id="prop-text-color" value="#333333" style="width: 100%; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline-variant); cursor: pointer; background: var(--md-sys-color-surface-container-high);">
+              <div id="text-color-picker-mount" class="hidden"></div>
+              <div id="text-color-presets" class="color-presets hidden"></div>
               <input type="text" id="text-color-hex" value="#333333" placeholder="#HEX"
                 style="width: 100%; text-align: center; font-family: monospace; font-size: 0.85rem; margin-top: 8px; min-height: 36px; padding: 6px 8px;">
             </div>

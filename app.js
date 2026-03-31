@@ -513,7 +513,7 @@
 
         // Clear existing items in grid but skip custom BG button and skeletons
         const elementsToRemove = Array.from(grid.children).filter(child => {
-          return child.id !== 'btn-custom-bg' && !child.classList.contains('loading-skeleton') && child.id !== 'btn-retry-fetch';
+          return !child.classList.contains('btn-custom-bg') && !child.classList.contains('loading-skeleton') && child.id !== 'btn-retry-fetch';
         });
         elementsToRemove.forEach(el => el.remove());
 
@@ -1501,6 +1501,26 @@
           `.canvas-element[data-id="${el.id}"]`,
         );
         if (div) div.style.color = el.color;
+        // Sync hex display
+        const hexInput = document.getElementById("text-color-hex");
+        if (hexInput) hexInput.value = el.color;
+      });
+
+    // Native color input for immediate feedback
+    document
+      .getElementById("prop-text-color")
+      .addEventListener("input", (e) => {
+        const el = getSelected();
+        if (!el || el.type !== "text") return;
+        el.color = e.target.value;
+        const div = document.querySelector(
+          `.canvas-element[data-id="${el.id}"]`,
+        );
+        if (div) div.style.color = el.color;
+        // Sync hex display and iro picker
+        const hexInput = document.getElementById("text-color-hex");
+        if (hexInput) hexInput.value = el.color;
+        if (textColorPicker) textColorPicker.color.hexString = el.color;
       });
 
     document
@@ -1766,13 +1786,12 @@
       }
     });
 
-    const customBgBtn = document.getElementById("btn-custom-bg");
-    if (customBgBtn) {
-      customBgBtn.addEventListener("click", () => {
+    document.querySelectorAll(".btn-custom-bg").forEach(btn => {
+      btn.addEventListener("click", () => {
         haptic("light");
         document.getElementById("bgcolor-modal").classList.remove("hidden");
       });
-    }
+    });
   }
 
   function bindBgColorModal() {
