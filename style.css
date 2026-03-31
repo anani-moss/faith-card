@@ -2152,11 +2152,6 @@ body.simple-mode .tab-btn[data-tab="decor"] {
   display: none !important;
 }
 
-/* Maintain bottom canvas tools in simple mode as requested */
-body.simple-mode #btn-expand-panel {
-  display: none !important;
-}
-
 /* Show the FAB settings btn in simple mode */
 body.simple-mode #btn-element-settings {
   display: flex !important;
