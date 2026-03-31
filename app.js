@@ -10,7 +10,7 @@
   // ─── Image Library (populated dynamically) ─────────────
   const IMAGE_LIBRARY = {
     main: [],
-    wish: [],
+    elements: [],
     decor: [],
   };
 
