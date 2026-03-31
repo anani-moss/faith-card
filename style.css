@@ -74,6 +74,8 @@
   --pressed-overlay: rgba(255, 255, 255, 0.12);
   --focus-overlay: rgba(255, 255, 255, 0.12);
   --transition: 250ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
+  --transition-spring: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ===== Reset & Base ===== */
@@ -87,8 +89,10 @@
 
 html {
   font-size: 16px;
-  /* M3 base size */
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -124,8 +128,9 @@ body {
   /* red (OFF) */
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition:
-    background 150ms ease,
-    box-shadow 150ms ease;
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .switch-box {
@@ -157,8 +162,11 @@ body {
 /* ON state → green */
 .switch input:checked+.switch-box {
   background: #22c55e;
-  /* green */
   box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.switch:active .switch-box {
+  transform: scale(0.92);
 }
 
 /* Hover (subtle) */
@@ -258,6 +266,7 @@ body {
   transition: all var(--transition);
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
 /* Ensure 48px touch targets for small buttons */
@@ -286,6 +295,7 @@ body {
 
 .m3-btn-tonal:active {
   box-shadow: inset 0 0 0 100px var(--pressed-overlay);
+  transform: scale(0.96);
 }
 
 /* Error Button */
@@ -304,7 +314,7 @@ body {
 
 .m3-btn-error:active {
   box-shadow: inset 0 0 0 100px var(--pressed-overlay);
-  transform: translateY(0);
+  transform: scale(0.96);
 }
 
 /* Icon Button (Top App Bar usually) */
@@ -359,11 +369,12 @@ body {
   transition:
     box-shadow var(--transition),
     background-color var(--transition),
-    transform 150ms ease;
+    transform var(--transition-fast);
   font-family: "Roboto", sans-serif;
   font-weight: 500;
   position: relative;
   overflow: hidden;
+  will-change: transform;
 }
 
 .fab::after {
@@ -381,8 +392,8 @@ body {
 }
 
 .fab:active {
-  transform: scale(0.96);
-  /* tactile feedback */
+  transform: scale(0.93);
+  transition-duration: 80ms;
 }
 
 /* Secondary FAB (Add Text) */
@@ -543,8 +554,9 @@ body {
   user-select: none;
   outline: 3px solid transparent;
   outline-offset: -3px;
-  transition: outline-color 150ms ease;
+  transition: outline-color var(--transition-fast);
   touch-action: none;
+  will-change: transform, left, top;
 }
 
 .canvas-element:hover {
@@ -642,6 +654,11 @@ body {
   position: relative;
   -webkit-tap-highlight-color: transparent;
   padding: 8px 0;
+  transition: transform var(--transition-fast);
+}
+
+.tab-btn:active {
+  transform: scale(0.92);
 }
 
 .tab-indicator {
@@ -764,10 +781,14 @@ body {
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all var(--transition);
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-spring),
+    box-shadow var(--transition);
   position: relative;
   background: var(--md-sys-color-surface-container-highest);
   box-shadow: var(--md-sys-elevation-1);
+  will-change: transform;
 }
 
 .image-thumb img {
@@ -777,11 +798,17 @@ body {
   display: block;
 }
 
-.image-thumb:hover,
-.image-thumb:active {
+.image-thumb:hover {
   border-color: var(--md-sys-color-primary);
   transform: translateY(-2px);
   box-shadow: var(--md-sys-elevation-2);
+}
+
+.image-thumb:active {
+  border-color: var(--md-sys-color-primary);
+  transform: scale(0.93);
+  box-shadow: var(--md-sys-elevation-1);
+  transition-duration: 80ms;
 }
 
 /* Placed overlay indicator */
@@ -809,7 +836,10 @@ body {
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all var(--transition);
+  transition:
+    border-color var(--transition-fast),
+    transform var(--transition-spring),
+    box-shadow var(--transition);
   position: relative;
   background: var(--md-sys-color-surface-container-highest);
   box-shadow: var(--md-sys-elevation-1);
@@ -819,13 +849,20 @@ body {
   justify-content: center;
   gap: 8px;
   color: var(--md-sys-color-on-surface);
+  will-change: transform;
 }
 
-.text-thumb:hover,
-.text-thumb:active {
+.text-thumb:hover {
   border-color: var(--md-sys-color-primary);
   transform: translateY(-2px);
   box-shadow: var(--md-sys-elevation-2);
+}
+
+.text-thumb:active {
+  border-color: var(--md-sys-color-primary);
+  transform: scale(0.93);
+  box-shadow: var(--md-sys-elevation-1);
+  transition-duration: 80ms;
 }
 
 .text-thumb-icon {
@@ -849,13 +886,14 @@ body {
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--md-sys-elevation-3);
   z-index: 300;
-  animation: sheetSlideUp 300ms cubic-bezier(0.2, 0, 0, 1);
+  animation: sheetSlideUp 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
   max-height: 80dvh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
   transition:
-    background-color 200ms ease,
-    box-shadow 200ms ease;
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  will-change: transform;
 }
 
 /* Slider active fading (10% opacity for non-slider parts) */
@@ -1006,17 +1044,15 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--md-sys-color-primary);
   cursor: pointer;
   margin-top: -6px;
-  /* Centered on track */
   transition:
-    transform 100ms ease,
-    box-shadow 100ms ease;
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
   box-shadow: var(--md-sys-elevation-1);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 12px rgba(208, 188, 255, 0.24);
-  /* M3 focus ripple */
+  transform: scale(1.3);
+  box-shadow: 0 0 0 14px rgba(208, 188, 255, 0.2);
 }
 
 textarea,
@@ -1309,16 +1345,17 @@ input[type="color"] {
   border-radius: 28px;
   padding: 32px 24px 24px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  animation: splashCardIn 0.5s cubic-bezier(0.2, 0, 0, 1);
+  animation: splashCardIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
   pointer-events: auto;
   z-index: 10000;
+  will-change: transform, opacity;
 }
 
 @keyframes splashCardIn {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.92);
+    transform: translateY(50px) scale(0.88);
   }
   to {
     opacity: 1;
@@ -1332,7 +1369,8 @@ input[type="color"] {
 
 .splash-slides {
   display: flex;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
 .splash-slide {
@@ -1345,13 +1383,12 @@ input[type="color"] {
 .splash-emoji {
   font-size: 3.5rem;
   margin-bottom: 12px;
-  animation: splashBounce 0.6s ease 0.3s both;
+  animation: splashBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
 }
 
 @keyframes splashBounce {
-  0% { transform: scale(0); }
-  60% { transform: scale(1.2); }
-  100% { transform: scale(1); }
+  0% { transform: scale(0) rotate(-10deg); }
+  100% { transform: scale(1) rotate(0deg); }
 }
 
 .splash-slide h2 {
@@ -1387,8 +1424,12 @@ input[type="color"] {
   height: 8px;
   border-radius: 50%;
   background: var(--md-sys-color-outline);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
+}
+
+.splash-dot:active {
+  transform: scale(0.8);
 }
 
 .splash-dot.active {
@@ -1440,4 +1481,19 @@ input[type="color"] {
   border-radius: 20px;
   font-size: 0.88rem;
   font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.splash-buttons .btn:active {
+  transform: scale(0.93);
+  transition-duration: 80ms;
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

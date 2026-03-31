@@ -14,6 +14,18 @@
     decor: [],
   };
 
+  // ─── Haptic Feedback ───────────────────────────────────
+  function haptic(intensity) {
+    // intensity: 'light' | 'medium' | 'heavy'
+    if (!navigator.vibrate) return;
+    switch (intensity) {
+      case 'light': navigator.vibrate(8); break;
+      case 'medium': navigator.vibrate(15); break;
+      case 'heavy': navigator.vibrate([10, 30, 20]); break;
+      default: navigator.vibrate(10);
+    }
+  }
+
   // ─── State ─────────────────────────────────────────────
   const CANVAS_SIZE = 1080;
   let elements = [];
@@ -96,6 +108,7 @@
       current = idx;
       console.log("Moving to slide:", current);
       slidesContainer.style.transform = `translateX(-${current * 100}%)`;
+      haptic('light');
 
       dots.forEach((d, i) => d.classList.toggle("active", i === current));
       prevBtn.disabled = current === 0;
@@ -134,6 +147,7 @@
       console.log("Closing splash");
 
       stopAutoPlay();
+      haptic('medium');
 
       if (dontShowCheckbox.checked) {
         localStorage.setItem(STORAGE_KEY, "permanent");
@@ -508,6 +522,7 @@
       tab.addEventListener("click", () => {
         const target = tab.dataset.tab;
         if (!target) return;
+        haptic('light');
         tabs.forEach((t) => {
           if (t.dataset.tab) t.classList.remove("active");
         });
@@ -584,6 +599,7 @@
     renderCanvas();
     selectElement(el.id);
     placeholder.classList.add("hidden");
+    haptic('medium');
   }
 
   const textarea = document.getElementById("prop-text-content");
@@ -691,6 +707,7 @@
   function selectElement(id) {
     if (selectedId === id) return; // Prevent unnecessary class changes
     selectedId = id;
+    haptic('light');
 
     // Update visual selection borders without destroying the DOM elements
     canvasEl.querySelectorAll(".canvas-element").forEach((elDiv) => {
@@ -726,6 +743,7 @@
   function startDrag(clientX, clientY, id) {
     const el = elements.find((e) => e.id === id);
     if (!el) return;
+    haptic('light');
 
     const canvasRect = canvasEl.getBoundingClientRect();
     const scale = canvasRect.width / CANVAS_SIZE;
@@ -1215,6 +1233,7 @@
 
     document.getElementById("btn-clear").addEventListener("click", () => {
       if (elements.length === 0) return;
+      haptic('heavy');
       if (confirm("Clear all elements from the canvas?")) {
         elements = [];
         selectedId = null;
@@ -1403,6 +1422,7 @@
 
   function deleteSelected() {
     if (!selectedId) return;
+    haptic('medium');
     elements = elements.filter((e) => e.id !== selectedId);
     deselectAll();
     renderCanvas();
