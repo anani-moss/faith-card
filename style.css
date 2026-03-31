@@ -656,7 +656,6 @@ body {
   outline-offset: -3px;
   transition: outline-color var(--transition-fast);
   touch-action: none;
-  will-change: transform, left, top;
 }
 
 .canvas-element:hover {

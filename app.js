@@ -864,7 +864,26 @@
     };
   }
 
+  let rafPending = false;
+  let rafClientX = 0;
+  let rafClientY = 0;
+
   function onPointerMove(clientX, clientY) {
+    if (!dragging && !resizing) return;
+    rafClientX = clientX;
+    rafClientY = clientY;
+
+    if (rafPending) return;
+    rafPending = true;
+
+    requestAnimationFrame(processPointerMove);
+  }
+
+  function processPointerMove() {
+    rafPending = false;
+    const clientX = rafClientX;
+    const clientY = rafClientY;
+
     if (dragging) {
       const el = elements.find((e) => e.id === dragging.id);
       if (!el) return;
@@ -933,6 +952,7 @@
   function onPointerUp() {
     dragging = null;
     resizing = null;
+    rafPending = false;
   }
 
   // ─── Canvas Events ─────────────────────────────────────
