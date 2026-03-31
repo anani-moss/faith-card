@@ -63,9 +63,9 @@
     const overlay = document.getElementById("splash-overlay");
     if (!overlay) return;
 
-    // Check if user has opted out within the last 3 hours
+    // Check if user has opted out permanently or within the last 3 hours
     const hiddenUntil = localStorage.getItem(STORAGE_KEY);
-    if (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10)) {
+    if (hiddenUntil === "permanent" || (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10))) {
       overlay.remove();
       return;
     }
@@ -129,27 +129,74 @@
       stopAutoPlay();
       if (current < totalSlides - 1) startAutoPlay();
     }
-
-    function closeSplash() {
+    // --- Splash Close Logic ---
+    function closeSplash(onComplete) {
       console.log("Closing splash");
+
       stopAutoPlay();
+
       if (dontShowCheckbox.checked) {
-        const threeHours = 3 * 60 * 60 * 1000;
-        localStorage.setItem(STORAGE_KEY, String(Date.now() + threeHours));
+        localStorage.setItem(STORAGE_KEY, "permanent");
       }
+
+      // Start closing animation
       overlay.classList.add("closing");
-      overlay.addEventListener("animationend", () => overlay.remove(), { once: true });
+
+      // Wait for animation to finish before removing
+      overlay.addEventListener("animationend", () => {
+        overlay.remove();
+
+        // Execute callback AFTER DOM is stable
+        if (typeof onComplete === "function") {
+          // Ensure browser has rendered the removal
+          requestAnimationFrame(() => {
+            onComplete();
+          });
+        }
+      }, { once: true });
     }
 
+
+    // --- Checkbox Reset Logic ---
+    function resetCheckbox() {
+      const checkbox = document.getElementById('jy-overlay-toggle');
+
+      if (!checkbox) {
+        console.warn("Checkbox not found");
+        return;
+      }
+
+      console.log("Resetting checkbox");
+
+      // Toggle sequence
+      checkbox.checked = false;
+
+      // Force reflow (ensures state change is registered)
+      checkbox.offsetHeight;
+
+      checkbox.checked = true;
+
+      // Trigger listeners
+      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+
+    // --- Next Button Logic ---
     nextBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
+
       console.log("Next clicked");
+
       resetAutoPlay();
+
       if (current < totalSlides - 1) {
         goToSlide(current + 1);
       } else {
-        closeSplash();
+        // Final slide → close splash → then reset checkbox
+        closeSplash(() => {
+          resetCheckbox();
+        });
       }
     });
 
@@ -161,18 +208,31 @@
       if (current > 0) goToSlide(current - 1);
     });
 
-    // Swipe support
-    let touchStartX = 0;
-    overlay.addEventListener("touchstart", (e) => {
+    // Swipe support (desktop + mobile)
+    let pointerStartX = 0;
+    let isPointerDown = false;
+
+    overlay.style.touchAction = "pan-y";
+
+    overlay.addEventListener("pointerdown", (e) => {
+      if (e.target.closest("button") || e.target.closest("input") || e.target.closest(".splash-dot")) return;
+      isPointerDown = true;
+      pointerStartX = e.clientX;
       resetAutoPlay();
-      touchStartX = e.touches[0].clientX;
     }, { passive: true });
-    overlay.addEventListener("touchend", (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
+
+    overlay.addEventListener("pointerup", (e) => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
+      const dx = e.clientX - pointerStartX;
       if (Math.abs(dx) > 50) {
         if (dx < 0 && current < totalSlides - 1) goToSlide(current + 1);
         else if (dx > 0 && current > 0) goToSlide(current - 1);
       }
+    });
+
+    overlay.addEventListener("pointercancel", () => {
+      isPointerDown = false;
     });
 
     // Click outside card to dismiss
@@ -195,40 +255,18 @@
   };
 
   function checkFirstLoadOverlay() {
-    document.getElementById("jy-overlay-toggle").checked = true;
     const toggle = document.getElementById("jy-overlay-toggle");
-    const modal = document.getElementById("overlay-prompt-modal");
+    if (!toggle) return;
+
+    let choice = null;
+    try {
+      choice = localStorage.getItem("faithCardOverlayChoice");
+    } catch (e) { }
 
     if (choice === "disabled") {
-      if (toggle) toggle.checked = false;
+      toggle.checked = false;
     } else {
-      if (toggle) toggle.checked = true;
-      // Only show if nothing saved yet
-      if (choice === null && modal) {
-        modal.classList.remove("hidden");
-
-        document
-          .getElementById("btn-overlay-keep")
-          .addEventListener("click", () => {
-            if (document.getElementById("remember-overlay-choice").checked) {
-              localStorage.setItem("faithCardOverlayChoice", "enabled");
-            }
-            modal.classList.add("hidden");
-          });
-
-        document
-          .getElementById("btn-overlay-disable")
-          .addEventListener("click", () => {
-            if (document.getElementById("remember-overlay-choice").checked) {
-              localStorage.setItem("faithCardOverlayChoice", "disabled");
-            }
-            if (toggle) {
-              toggle.checked = false;
-              toggle.dispatchEvent(new Event("change"));
-            }
-            modal.classList.add("hidden");
-          });
-      }
+      toggle.checked = true;
     }
   }
 
