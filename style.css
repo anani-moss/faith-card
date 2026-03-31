@@ -2323,4 +2323,61 @@ body.simple-mode .tabs-container {
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-}
+}
+
+/* ===== Text Presets Styles ===== */
+.text-presets-group {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.prop-sublabel {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 700;
+  color: var(--md-sys-color-primary);
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.text-presets-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  scrollbar-width: none; /* Hide scrollbar for clean look */
+  -ms-overflow-style: none;
+}
+
+.text-presets-row::-webkit-scrollbar {
+  display: none;
+}
+
+.text-preset-chip {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  background: var(--md-sys-color-surface-container-highest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--radius-sm);
+  color: var(--md-sys-color-on-surface);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.text-preset-chip:hover {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.text-preset-chip:active {
+  transform: scale(0.95) translateY(0);
+}
+

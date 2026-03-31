@@ -1622,6 +1622,9 @@
     document
       .querySelectorAll("#btn-delete-el")
       .forEach((btn) => btn.addEventListener("click", deleteSelected));
+
+    // Initialize text presets
+    renderTextPresets();
   }
 
   function bindRange(inputId, valId, suffix, callback) {
@@ -2336,6 +2339,101 @@
       onColorChange(color.hexString);
       hexInput.value = color.hexString.toUpperCase();
     });
+  }
+
+  // ─── Text Presets ──────────────────────────────────────
+  const TEXT_PRESETS_DATA = [
+    { name: "Elegant", text: "He is risen", fontFamily: "Dancing Script", color: "#d0bcff", fontSize: 48, fontWeight: "700" },
+    { name: "Modern", text: "He is risen", fontFamily: "Montserrat", color: "#ffffff", fontSize: 42, fontWeight: "700" },
+    { name: "Golden", text: "He is risen", fontFamily: "Cinzel", color: "#fde047", fontSize: 44, fontWeight: "700" },
+    { name: "Classic", text: "He is risen", fontFamily: "Playfair Display", color: "#f9a8d4", fontSize: 46, fontWeight: "600" },
+    { name: "Playful", text: "He is risen", fontFamily: "Caveat", color: "#44BB44", fontSize: 52, fontWeight: "700" },
+    { name: "Bold", text: "He is risen", fontFamily: "Russo One", color: "#FF8800", fontSize: 40, fontWeight: "400" },
+    { name: "Script", text: "He is risen", fontFamily: "Satisfy", color: "#eaddff", fontSize: 48, fontWeight: "400" }
+  ];
+
+  function renderTextPresets() {
+    const container = document.getElementById("text-presets-container");
+    if (!container) return;
+
+    // Pick 5 random presets as requested
+    const shuffled = [...TEXT_PRESETS_DATA].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 5);
+
+    container.innerHTML = "";
+    selected.forEach(preset => {
+      const chip = document.createElement("div");
+      chip.className = "text-preset-chip";
+      chip.textContent = preset.name;
+      chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
+      
+      chip.addEventListener("click", () => {
+        haptic("medium");
+        applyTextPreset(preset);
+      });
+      
+      container.appendChild(chip);
+    });
+  }
+
+  function applyTextPreset(preset) {
+    const el = getSelected();
+    if (!el || el.type !== "text") {
+      // If no text selected, maybe create a new one? 
+      // For now, let's just toast
+      if (!el) showToast("Select a text element first");
+      return;
+    }
+
+    // Update data
+    el.text = preset.text;
+    el.fontFamily = preset.fontFamily;
+    el.color = preset.color;
+    el.fontSize = preset.fontSize;
+    el.fontWeight = preset.fontWeight;
+
+    // Update UI inputs
+    const contentTextarea = document.getElementById("prop-text-content");
+    if (contentTextarea) contentTextarea.value = el.text;
+
+    const fontFamilySelect = document.getElementById("prop-font-family");
+    if (fontFamilySelect) fontFamilySelect.value = el.fontFamily;
+
+    const fontSizeRange = document.getElementById("prop-font-size");
+    if (fontSizeRange) {
+      fontSizeRange.value = el.fontSize;
+      const valLabel = document.getElementById("prop-font-size-val");
+      if (valLabel) valLabel.textContent = el.fontSize + "px";
+    }
+
+    const fontWeightSelect = document.getElementById("prop-font-weight");
+    if (fontWeightSelect) fontWeightSelect.value = el.fontWeight;
+
+    const colorInput = document.getElementById("prop-text-color");
+    if (colorInput) colorInput.value = el.color;
+
+    const hexInput = document.getElementById("text-color-hex");
+    if (hexInput) hexInput.value = el.color.toUpperCase();
+
+    const swatch = document.getElementById("swatch-text-color");
+    if (swatch) swatch.style.background = el.color;
+
+    // Update DOM element directly for immediate feedback
+    const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+    if (div) {
+      div.textContent = el.text;
+      div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
+      div.style.color = el.color;
+      div.style.fontSize = el.fontSize + "px";
+      div.style.fontWeight = el.fontWeight;
+    }
+
+    // Sync global picker if open
+    if (globalPicker) {
+      globalPicker.color.hexString = el.color;
+    }
+
+    showToast(`Applied ${preset.name} style`);
   }
 
   // ─── Helpers ───────────────────────────────────────────
