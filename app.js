@@ -368,11 +368,7 @@
     if (expandBtn && panelContent) {
       expandBtn.addEventListener("click", () => {
         panelContent.classList.toggle("expanded");
-        if (panelContent.classList.contains("expanded")) {
-          if (downloadBtn) downloadBtn.classList.add("is-hidden");
-        } else {
-          if (downloadBtn) downloadBtn.classList.remove("is-hidden");
-        }
+        expandBtn.classList.toggle("open");
       });
     }
 
@@ -912,7 +908,7 @@
         const threshold = 16 / dragging.scale; // Magnetic proximity auto-adjusts based on zoom
         const cx = newX + el.w / 2;
         const cy = newY + el.h / 2;
-        
+
         let snappedX = false;
         let snappedY = false;
 
@@ -935,7 +931,7 @@
         // Show/Hide DOM Guide lines with Haptics on contact
         const guideX = document.getElementById("guide-x");
         const guideY = document.getElementById("guide-y");
-        
+
         if (snappedX !== false) {
           if (guideX) {
             guideX.style.left = snappedX + "px";
@@ -1017,7 +1013,7 @@
     dragging = null;
     resizing = null;
     rafPending = false;
-    
+
     // Hide snap guides on release
     const guideX = document.getElementById("guide-x");
     const guideY = document.getElementById("guide-y");
@@ -1476,14 +1472,14 @@
 
   // ─── Toast Notifications ─────────────────────────────────
   let toastTimeout;
-  window.showToast = function(message) {
+  window.showToast = function (message) {
     const container = document.getElementById("toast-container");
     const msgEl = document.getElementById("toast-message");
-    if(!container || !msgEl) return;
-    
+    if (!container || !msgEl) return;
+
     msgEl.textContent = message;
     container.classList.remove("hidden");
-    
+
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
       container.classList.add("hidden");
@@ -1528,19 +1524,19 @@
 
   function bindBgColorModal() {
     const modal = document.getElementById("bgcolor-modal");
-    if(!modal) return;
-    
+    if (!modal) return;
+
     document.getElementById("btn-bgcolor-close").addEventListener("click", () => {
       haptic("light");
       modal.classList.add("hidden");
     });
-    
+
     // Tabs
     const tabSolid = document.getElementById("btn-tab-solid");
     const tabGrad = document.getElementById("btn-tab-gradient");
     const secSolid = document.getElementById("bgcolor-solid-section");
     const secGrad = document.getElementById("bgcolor-gradient-section");
-    
+
     function setTab(type) {
       haptic("light");
       bgConfig.type = type;
@@ -1560,7 +1556,7 @@
         secSolid.classList.add("hidden");
       }
     }
-    
+
     tabSolid.addEventListener("click", () => setTab("solid"));
     tabGrad.addEventListener("click", () => setTab("gradient"));
 
@@ -1576,7 +1572,7 @@
       bgConfig.gradColor1 = document.getElementById("bg-color-grad-1").value;
       bgConfig.gradColor2 = document.getElementById("bg-color-grad-2").value;
       bgConfig.gradAngle = parseInt(gradAngle.value, 10);
-      
+
       applyCanvasBackground();
       modal.classList.add("hidden");
       haptic("success");
@@ -1584,7 +1580,7 @@
   }
 
   function applyCanvasBackground() {
-    if(bgConfig.type === "solid") {
+    if (bgConfig.type === "solid") {
       canvasEl.style.background = bgConfig.solidColor;
     } else {
       canvasEl.style.background = `linear-gradient(${bgConfig.gradAngle}deg, ${bgConfig.gradColor1}, ${bgConfig.gradColor2})`;
@@ -1628,12 +1624,12 @@
       const angleRad = bgConfig.gradAngle * Math.PI / 180;
       // Calculate radius that bounds the square for corner-to-corner filling
       const r = Math.abs((CANVAS_SIZE / 2) * Math.sin(angleRad)) + Math.abs((CANVAS_SIZE / 2) * Math.cos(angleRad));
-      
+
       const x1 = cx - Math.sin(angleRad) * r;
       const y1 = cy + Math.cos(angleRad) * r;
       const x2 = cx + Math.sin(angleRad) * r;
       const y2 = cy - Math.cos(angleRad) * r;
-      
+
       const grad = ctx.createLinearGradient(x1, y1, x2, y2);
       grad.addColorStop(0, bgConfig.gradColor1);
       grad.addColorStop(1, bgConfig.gradColor2);
