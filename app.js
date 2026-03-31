@@ -1765,8 +1765,7 @@
       }, 1000);
     }
 
-    // Focus input after animation
-    setTimeout(() => downloadNameInput.focus(), 250);
+
   }
 
   function hideDownloadModal() {
