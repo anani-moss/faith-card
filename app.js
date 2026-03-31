@@ -819,6 +819,11 @@
       div.style.transform = `rotate(${el.rotation}deg)`;
       div.style.opacity = el.opacity / 100;
 
+      // Pointer-events isolation: only the selected element receives touch/mouse
+      if (selectedId !== null && el.id !== selectedId) {
+        div.style.pointerEvents = "none";
+      }
+
       if (el.type === "image") {
         div.style.width = el.w + "px";
         div.style.height = el.h + "px";
@@ -898,6 +903,9 @@
     if (elements.length === 0) {
       placeholder.classList.remove("hidden");
     }
+
+    // Update layers panel if open
+    renderLayersPanel();
   }
 
   // ─── Selection ─────────────────────────────────────────
@@ -906,25 +914,30 @@
     selectedId = id;
     haptic('light');
 
-    // Update visual selection borders without destroying the DOM elements
+    // Update visual selection borders + pointer-events isolation
     canvasEl.querySelectorAll(".canvas-element").forEach((elDiv) => {
-      if (parseInt(elDiv.dataset.id) === id) {
+      const elId = parseInt(elDiv.dataset.id);
+      if (elId === id) {
         elDiv.classList.add("selected");
+        elDiv.style.pointerEvents = "";
       } else {
         elDiv.classList.remove("selected");
+        elDiv.style.pointerEvents = "none";
       }
     });
 
     updatePropertiesPanel();
+    renderLayersPanel();
   }
 
   function deselectAll() {
     if (selectedId === null) return;
     selectedId = null;
 
-    // Remove visual selection without destroying DOM mapping
+    // Restore pointer-events on all elements + remove selection
     canvasEl.querySelectorAll(".canvas-element").forEach((elDiv) => {
       elDiv.classList.remove("selected");
+      elDiv.style.pointerEvents = "";
     });
 
     closeSettingsPanel();
@@ -934,10 +947,13 @@
       btnSettings.querySelector(".icon-settings").classList.remove("hidden");
       btnSettings.querySelector(".icon-close").classList.add("hidden");
     }
+    renderLayersPanel();
   }
 
   // ─── Drag Logic (unified mouse + touch) ────────────────
   function startDrag(clientX, clientY, id) {
+    // Mutex: block if already resizing
+    if (resizing) return;
     const el = elements.find((e) => e.id === id);
     if (!el) return;
     haptic('light');
@@ -956,6 +972,8 @@
   }
 
   function startResize(clientX, clientY, id) {
+    // Mutex: block if already dragging
+    if (dragging) return;
     const el = elements.find((e) => e.id === id);
     if (!el) return;
 
@@ -1274,6 +1292,7 @@
       setDisplay("prop-text-rotation-val", el.rotation + "°");
       setVal("prop-text-opacity", el.opacity);
       setDisplay("prop-text-opacity-val", el.opacity + "%");
+      syncTextColorPicker();
     }
   }
 
@@ -1464,6 +1483,9 @@
         if (div) div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
       });
 
+    // Color picker: use iro.js if available, otherwise fall back to native input
+    initColorPickers();
+
     document
       .getElementById("prop-text-color")
       .addEventListener("input", (e) => {
@@ -1530,6 +1552,15 @@
         }
       }),
     );
+
+    // Layers panel toggle
+    const layersBtn = document.getElementById("btn-toggle-layers");
+    if (layersBtn) {
+      layersBtn.addEventListener("click", () => {
+        haptic("light");
+        toggleLayersPanel();
+      });
+    }
 
     document
       .querySelectorAll("#btn-delete-el")
@@ -1925,6 +1956,243 @@
         setTimeout(() => URL.revokeObjectURL(url), 1000);
       }, "image/png");
     });
+  }
+
+  // ─── Layers Panel ──────────────────────────────────────
+  let layersPanelOpen = false;
+
+  function toggleLayersPanel() {
+    const panel = document.getElementById("layers-panel");
+    const btn = document.getElementById("btn-toggle-layers");
+    if (!panel) return;
+
+    layersPanelOpen = !layersPanelOpen;
+    if (layersPanelOpen) {
+      panel.classList.remove("hidden");
+      if (btn) {
+        btn.style.background = "var(--md-sys-color-primary-container)";
+        btn.style.color = "var(--md-sys-color-on-primary-container)";
+      }
+      renderLayersPanel();
+    } else {
+      panel.classList.add("hidden");
+      if (btn) {
+        btn.style.background = "";
+        btn.style.color = "";
+      }
+    }
+  }
+
+  function renderLayersPanel() {
+    const list = document.getElementById("layers-list");
+    if (!list || !layersPanelOpen) return;
+
+    list.innerHTML = "";
+
+    if (elements.length === 0) {
+      list.innerHTML = '<div class="layers-empty">No elements on canvas</div>';
+      return;
+    }
+
+    // Show in reverse order (top layer first)
+    const reversed = [...elements].reverse();
+    reversed.forEach((el, visualIdx) => {
+      const actualIdx = elements.length - 1 - visualIdx;
+      const row = document.createElement("div");
+      row.className = "layer-row" + (el.id === selectedId ? " layer-selected" : "");
+      row.dataset.id = el.id;
+
+      const icon = el.type === "image" ? "🖼️" : "🔤";
+      let label = "";
+      if (el.type === "text") {
+        label = el.text.length > 18 ? el.text.substring(0, 18) + "…" : el.text;
+      } else {
+        label = el.category === "main" ? "Backdrop" : `Element ${el.id}`;
+      }
+
+      row.innerHTML = `
+        <span class="layer-icon">${icon}</span>
+        <span class="layer-label">${label}</span>
+        <div class="layer-actions">
+          <button class="layer-btn layer-up" title="Move Up" ${actualIdx >= elements.length - 1 ? 'disabled' : ''}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          </button>
+          <button class="layer-btn layer-down" title="Move Down" ${actualIdx <= 0 ? 'disabled' : ''}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      `;
+
+      // Click row to select
+      row.addEventListener("click", (e) => {
+        if (e.target.closest(".layer-btn")) return;
+        selectElement(el.id);
+      });
+
+      // Move up (increase z-index = move later in array)
+      const upBtn = row.querySelector(".layer-up");
+      upBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (actualIdx < elements.length - 1) {
+          haptic("light");
+          const item = elements.splice(actualIdx, 1)[0];
+          elements.splice(actualIdx + 1, 0, item);
+          renderCanvas();
+        }
+      });
+
+      // Move down (decrease z-index = move earlier in array)
+      const downBtn = row.querySelector(".layer-down");
+      downBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (actualIdx > 0) {
+          haptic("light");
+          const item = elements.splice(actualIdx, 1)[0];
+          elements.splice(actualIdx - 1, 0, item);
+          renderCanvas();
+        }
+      });
+
+      list.appendChild(row);
+    });
+  }
+
+  // ─── Color Picker (iro.js) ─────────────────────────────
+  let textColorPicker = null;
+  let bgSolidColorPicker = null;
+  let bgGrad1ColorPicker = null;
+  let bgGrad2ColorPicker = null;
+
+  const COLOR_PRESETS = [
+    "#FFFFFF", "#000000", "#333333", "#666666",
+    "#FF4444", "#FF8800", "#FFCC00", "#44BB44",
+    "#2196F3", "#9C27B0", "#E91E63", "#00BCD4",
+    "#FFB6C1", "#DDA0DD", "#87CEFA", "#98FB98",
+    "#FFDAB9", "#F0E68C", "#D4AF37", "#C0C0C0"
+  ];
+
+  function initColorPickers() {
+    if (typeof iro === "undefined") {
+      console.warn("iro.js not loaded, using native color inputs");
+      return;
+    }
+
+    // Text color picker
+    const textPickerMount = document.getElementById("text-color-picker-mount");
+    if (textPickerMount) {
+      textColorPicker = new iro.ColorPicker(textPickerMount, {
+        width: 180,
+        color: "#333333",
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+
+      textColorPicker.on("color:change", (color) => {
+        const el = getSelected();
+        if (!el || el.type !== "text") return;
+        el.color = color.hexString;
+        document.getElementById("prop-text-color").value = color.hexString;
+        const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+        if (div) div.style.color = el.color;
+        // Update hex display
+        const hexInput = document.getElementById("text-color-hex");
+        if (hexInput) hexInput.value = color.hexString;
+      });
+
+      // Preset swatches
+      const swatchContainer = document.getElementById("text-color-presets");
+      if (swatchContainer) {
+        COLOR_PRESETS.forEach(hex => {
+          const swatch = document.createElement("button");
+          swatch.className = "color-swatch";
+          swatch.style.background = hex;
+          swatch.title = hex;
+          swatch.addEventListener("click", () => {
+            textColorPicker.color.hexString = hex;
+          });
+          swatchContainer.appendChild(swatch);
+        });
+      }
+
+      // Hex input
+      const hexInput = document.getElementById("text-color-hex");
+      if (hexInput) {
+        hexInput.addEventListener("change", () => {
+          const val = hexInput.value.trim();
+          if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+            textColorPicker.color.hexString = val;
+          }
+        });
+      }
+    }
+
+    // Background solid color picker
+    const bgSolidMount = document.getElementById("bg-solid-picker-mount");
+    if (bgSolidMount) {
+      bgSolidColorPicker = new iro.ColorPicker(bgSolidMount, {
+        width: 160,
+        color: "#ffffff",
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+      bgSolidColorPicker.on("color:change", (color) => {
+        document.getElementById("bg-color-solid-picker").value = color.hexString;
+      });
+    }
+
+    // Background gradient color pickers
+    const bgGrad1Mount = document.getElementById("bg-grad1-picker-mount");
+    if (bgGrad1Mount) {
+      bgGrad1ColorPicker = new iro.ColorPicker(bgGrad1Mount, {
+        width: 120,
+        color: "#FFB6C1",
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+      bgGrad1ColorPicker.on("color:change", (color) => {
+        document.getElementById("bg-color-grad-1").value = color.hexString;
+      });
+    }
+
+    const bgGrad2Mount = document.getElementById("bg-grad2-picker-mount");
+    if (bgGrad2Mount) {
+      bgGrad2ColorPicker = new iro.ColorPicker(bgGrad2Mount, {
+        width: 120,
+        color: "#87CEFA",
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+      bgGrad2ColorPicker.on("color:change", (color) => {
+        document.getElementById("bg-color-grad-2").value = color.hexString;
+      });
+    }
+  }
+
+  // Sync text color picker to selected element
+  function syncTextColorPicker() {
+    if (!textColorPicker) return;
+    const el = getSelected();
+    if (el && el.type === "text") {
+      textColorPicker.color.hexString = el.color;
+      const hexInput = document.getElementById("text-color-hex");
+      if (hexInput) hexInput.value = el.color;
+    }
   }
 
   // ─── Helpers ───────────────────────────────────────────
