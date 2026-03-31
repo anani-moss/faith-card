@@ -106,6 +106,51 @@ body {
   /* Disable double-tap zoom for better touch response */
 }
 
+
+.developer-credit {
+  margin: 24px 0 8px;
+  padding-top: 16px;
+  text-align: center;
+
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  font-size: 0.85rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Primary message (slightly emphasized) */
+.credit-primary {
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Secondary line (lighter, more subtle) */
+.credit-secondary {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+/* Link styling */
+.developer-credit a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.developer-credit a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+
+
 .switch {
   display: flex;
   align-items: center;
@@ -318,6 +363,7 @@ body {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -562,6 +608,7 @@ body {
     transform: scale(0.8);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -653,11 +700,11 @@ body {
 
 /* ===== Composition Grid & Snapping ===== */
 .canvas-grid-bg {
-  background-image: 
-    linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px) 
-    !important;
-  background-size: 90px 90px !important; /* 1080 / 12 = 90px cell */
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px) !important;
+  background-size: 90px 90px !important;
+  /* 1080 / 12 = 90px cell */
   background-position: center center !important;
 }
 
@@ -675,7 +722,8 @@ body {
   width: 2px;
   height: 100%;
   top: 0;
-  left: 540px; /* Modified by layout logic JS */
+  left: 540px;
+  /* Modified by layout logic JS */
   transform: translateX(-50%);
 }
 
@@ -683,14 +731,16 @@ body {
   height: 2px;
   width: 100%;
   left: 0;
-  top: 540px; /* Modified by layout logic JS */
+  top: 540px;
+  /* Modified by layout logic JS */
   transform: translateY(-50%);
 }
 
 /* ===== Toast Notification ===== */
 .toast-container {
   position: fixed;
-  bottom: calc(var(--nav-bar-height) + env(safe-area-inset-bottom, 0px) + 24px); /* Appear safely above navigation bar */
+  bottom: calc(var(--nav-bar-height) + env(safe-area-inset-bottom, 0px) + 24px);
+  /* Appear safely above navigation bar */
   left: 50%;
   transform: translate(-50%, 0);
   background: var(--md-sys-color-inverse-surface);
@@ -710,6 +760,7 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .toast-container.hidden {
   opacity: 0;
   transform: translate(-50%, 20px);
@@ -1286,11 +1337,13 @@ input[type="color"] {
   /* Scrim */
   backdrop-filter: blur(2px);
   display: flex;
-  align-items: flex-start; /* Anchors the modal top edge so layout variations grow down natively */
+  align-items: flex-start;
+  /* Anchors the modal top edge so layout variations grow down natively */
   justify-content: center;
   z-index: 500;
   padding: 24px;
-  padding-top: 20vh; /* Pushes the modal down from the header */
+  padding-top: 20vh;
+  /* Pushes the modal down from the header */
   animation: fadeIn 200ms ease;
 }
 
@@ -1517,14 +1570,16 @@ input[type="color"] {
   inset: 0;
   transition: opacity 0.5s ease;
   z-index: 9999;
-  display: none; /* Hidden by default to prevent load flash, JS will show it */
+  display: none;
+  /* Hidden by default to prevent load flash, JS will show it */
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   animation: splashFadeIn 0.6s ease;
-  pointer-events: auto; /* Required for mouse/touch on children */
+  pointer-events: auto;
+  /* Required for mouse/touch on children */
 }
 
 #splash-overlay.closing {
@@ -1533,13 +1588,23 @@ input[type="color"] {
 }
 
 @keyframes splashFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes splashFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 .splash-card {
@@ -1563,6 +1628,7 @@ input[type="color"] {
     opacity: 0;
     transform: translateY(30px) scale(0.94);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -1593,8 +1659,13 @@ input[type="color"] {
 }
 
 @keyframes splashBounce {
-  0% { transform: scale(0.5) rotate(-5deg); }
-  100% { transform: scale(1) rotate(0deg); }
+  0% {
+    transform: scale(0.5) rotate(-5deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 
 .splash-slide h2 {
@@ -1696,7 +1767,10 @@ input[type="color"] {
 
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -1708,17 +1782,22 @@ input[type="color"] {
   width: 100%;
   aspect-ratio: 1;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, 
-    var(--md-sys-color-surface-container-high) 25%, 
-    var(--md-sys-color-surface-container-highest) 50%, 
-    var(--md-sys-color-surface-container-high) 75%);
+  background: linear-gradient(90deg,
+      var(--md-sys-color-surface-container-high) 25%,
+      var(--md-sys-color-surface-container-highest) 50%,
+      var(--md-sys-color-surface-container-high) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .retry-container {
@@ -1732,6 +1811,7 @@ input[type="color"] {
   color: var(--md-sys-color-on-surface-variant);
   text-align: center;
 }
+
 .retry-container p {
   font-size: 0.875rem;
   margin-bottom: 8px;

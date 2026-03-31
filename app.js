@@ -1731,11 +1731,40 @@
     }
   }
 
+  let saveTimer = null;
   function showDownloadModal() {
     haptic("light");
     deselectAll();
     downloadNameInput.value = "";
     downloadModal.classList.remove("hidden");
+
+    // Countdown logic for the Save button
+    const saveBtn = document.getElementById("btn-modal-save");
+    const saveBtnText = document.getElementById("save-button-text");
+    if (saveBtn && saveBtnText) {
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = "0.6";
+      saveBtn.style.cursor = "not-allowed";
+
+      let secondsLeft = 5;
+      saveBtnText.textContent = `Save (${secondsLeft})`;
+
+      if (saveTimer) clearInterval(saveTimer);
+      saveTimer = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft > 0) {
+          saveBtnText.textContent = `Save (${secondsLeft})`;
+        } else {
+          clearInterval(saveTimer);
+          saveBtn.disabled = false;
+          saveBtn.style.opacity = "1";
+          saveBtn.style.cursor = "pointer";
+          saveBtnText.textContent = "Save" + "\u00A0".repeat(6);
+          haptic("light");
+        }
+      }, 1000);
+    }
+
     // Focus input after animation
     setTimeout(() => downloadNameInput.focus(), 250);
   }
@@ -1743,6 +1772,17 @@
   function hideDownloadModal() {
     haptic("light");
     downloadModal.classList.add("hidden");
+
+    // Reset save button if closed mid-timer
+    if (saveTimer) clearInterval(saveTimer);
+    const saveBtn = document.getElementById("btn-modal-save");
+    const saveBtnText = document.getElementById("save-button-text");
+    if (saveBtn && saveBtnText) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = "1";
+      saveBtn.style.cursor = "pointer";
+      saveBtnText.textContent = "Save";
+    }
   }
 
   function executeDownload() {
