@@ -41,8 +41,25 @@
   let canvasEl, placeholder, propertiesPanel, propsImage, propsText;
   let downloadModal, downloadNameInput;
 
+  // ─── CDN Configuration ──────────────────────────────────
+  const CDN_BASE = "https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@main";
+  let manifest = null; // Default to null to know if it failed
+
+  async function loadManifest() {
+    try {
+      const res = await fetch(`${CDN_BASE}/manifest.json?t=${Date.now()}`);
+      if (res.ok) {
+        manifest = await res.json();
+      } else {
+        console.warn("Could not load manifest.json from CDN, falling back to probing:", res.status);
+      }
+    } catch (e) {
+      console.error("Manifest load error:", e);
+    }
+  }
+
   // ─── Init ──────────────────────────────────────────────
-  function init() {
+  async function init() {
     canvasEl = document.getElementById("canvas");
     placeholder = document.getElementById("canvas-placeholder");
     propertiesPanel = document.getElementById("properties-panel");
@@ -50,6 +67,8 @@
     propsText = document.getElementById("props-text");
     downloadModal = document.getElementById("download-modal");
     downloadNameInput = document.getElementById("download-name-input");
+
+    await loadManifest();
 
     discoverImages();
     bindTabs();
@@ -377,62 +396,83 @@
     await Promise.all(
       categories.map(async (category) => {
         const grid = document.getElementById(`grid-${category}`);
-        let i = 1;
-        while (true) {
-          const src = `img/${category}/${category}${i}.png`;
-          try {
-            const res = await fetch(src, { method: "HEAD" });
-            if (!res.ok) break;
 
+        if (manifest && manifest[category] !== undefined) {
+          // Use manifest counts if available
+          const count = manifest[category];
+          for (let i = 1; i <= count; i++) {
+            const src = `${CDN_BASE}/img/${category}/${category}${i}.png`;
             const entry = { src, label: `${category} ${i}` };
             IMAGE_LIBRARY[category].push(entry);
             cacheImage(src);
+            buildThumb(grid, src, entry.label, category);
+          }
+        } else {
+          // Fallback: Probe using HEAD requests to CDN
+          let i = 1;
+          while (true) {
+            const src = `${CDN_BASE}/img/${category}/${category}${i}.png`;
+            try {
+              const res = await fetch(src, { method: "HEAD" });
+              if (!res.ok) break;
 
-            // Build thumbnail in the sidebar
-            const thumb = document.createElement("div");
-            thumb.className = "image-thumb";
-            thumb.title = entry.label;
-            thumb.innerHTML = `<img src="${src}" alt="${entry.label}" draggable="false">`;
-            thumb.addEventListener("click", (e) => {
-              e.preventDefault();
-              addImageToCanvas(src, category);
-            });
-            grid.appendChild(thumb);
+              const entry = { src, label: `${category} ${i}` };
+              IMAGE_LIBRARY[category].push(entry);
+              cacheImage(src);
+              buildThumb(grid, src, entry.label, category);
 
-            i++;
-          } catch (e) {
-            break;
+              i++;
+            } catch (e) {
+              break;
+            }
           }
         }
-      }),
+      })
     );
+  }
+
+  function buildThumb(grid, src, label, category) {
+    const thumb = document.createElement("div");
+    thumb.className = "image-thumb";
+    thumb.title = label;
+    thumb.innerHTML = `<img src="${src}" alt="${label}" draggable="false" loading="lazy">`;
+    thumb.addEventListener("click", (e) => {
+      e.preventDefault();
+      addImageToCanvas(src, category);
+    });
+    grid.appendChild(thumb);
   }
 
   async function discoverOverlays() {
     const select = document.getElementById("jy-overlay-select");
     if (!select) return;
-    select.innerHTML = ""; // Clear default
+    // Clear default
+    select.innerHTML = "";
 
-    let i = 1;
     let foundAny = false;
-    while (true) {
-      const src = `img/jy-overlay/JY-${i}.png`;
-      try {
-        const res = await fetch(src, { method: "HEAD" });
-        if (!res.ok) break; // 404 or other error, stop probing
 
-        // Add to dropdown
-        const opt = document.createElement("option");
-        opt.value = src;
-        opt.textContent = `JY-${i}`;
-        select.appendChild(opt);
-
-        // Cache it for export
-        cacheImage(src);
+    if (manifest && manifest["jy-overlay"] !== undefined) {
+      const count = manifest["jy-overlay"];
+      for (let i = 1; i <= count; i++) {
+        const src = `${CDN_BASE}/img/jy-overlay/JY-${i}.png`;
+        addOverlayOption(select, src, i);
         foundAny = true;
-        i++;
-      } catch (e) {
-        break;
+      }
+    } else {
+      // Fallback probing
+      let i = 1;
+      while (true) {
+        const src = `${CDN_BASE}/img/jy-overlay/JY-${i}.png`;
+        try {
+          const res = await fetch(src, { method: "HEAD" });
+          if (!res.ok) break;
+
+          addOverlayOption(select, src, i);
+          foundAny = true;
+          i++;
+        } catch (e) {
+          break;
+        }
       }
     }
 
@@ -441,14 +481,23 @@
       opt.textContent = "None found";
       opt.disabled = true;
       select.appendChild(opt);
+      return;
     }
 
     // Auto-update overlay if it was checked before discovery completes
     const toggle = document.getElementById("jy-overlay-toggle");
     const imgOverlay = document.getElementById("jy-overlay-img");
-    if (toggle && toggle.checked && imgOverlay && foundAny) {
+    if (toggle && toggle.checked && imgOverlay) {
       imgOverlay.src = select.value;
     }
+  }
+
+  function addOverlayOption(select, src, i) {
+    const opt = document.createElement("option");
+    opt.value = src;
+    opt.textContent = `JY-${i}`;
+    select.appendChild(opt);
+    cacheImage(src);
   }
 
   function bindOverlayControl() {
