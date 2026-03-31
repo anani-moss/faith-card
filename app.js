@@ -289,7 +289,7 @@
         } else {
           stopAutoPlay();
         }
-      }, 3000);
+      }, 30000);
     }
 
     function stopAutoPlay() {
