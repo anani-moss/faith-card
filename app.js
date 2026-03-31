@@ -1310,6 +1310,7 @@
 
   function openSettingsPanel() {
     if (propertiesPanel && (propertiesPanel.classList.contains("hidden") || propertiesPanel.classList.contains("closing-to-fab"))) {
+      setToggleVisibility(false);
       haptic("light");
       propertiesPanel.classList.remove("hidden");
       propertiesPanel.classList.remove("closing-to-fab");
@@ -1326,6 +1327,7 @@
 
   function closeSettingsPanel() {
     if (!propertiesPanel || propertiesPanel.classList.contains("hidden")) return;
+    setToggleVisibility(true);
 
     const btnSettings = document.getElementById("btn-element-settings");
     const panelRect = propertiesPanel.getBoundingClientRect();
@@ -1789,6 +1791,7 @@
     document.querySelectorAll(".btn-custom-bg").forEach(btn => {
       btn.addEventListener("click", () => {
         haptic("light");
+        setToggleVisibility(false);
         document.getElementById("bgcolor-modal").classList.remove("hidden");
       });
     });
@@ -1800,6 +1803,7 @@
 
     document.getElementById("btn-bgcolor-close").addEventListener("click", () => {
       haptic("light");
+      setToggleVisibility(true);
       modal.classList.add("hidden");
     });
 
@@ -1840,6 +1844,7 @@
 
     // Apply button
     document.getElementById("btn-bgcolor-apply").addEventListener("click", () => {
+      setToggleVisibility(true);
       bgConfig.solidColor = document.getElementById("bg-color-solid-picker").value;
       bgConfig.gradColor1 = document.getElementById("bg-color-grad-1").value;
       bgConfig.gradColor2 = document.getElementById("bg-color-grad-2").value;
@@ -1861,6 +1866,7 @@
 
   let saveTimer = null;
   function showDownloadModal() {
+    setToggleVisibility(false);
     haptic("light");
     deselectAll();
     downloadNameInput.value = "";
@@ -1897,6 +1903,7 @@
   }
 
   function hideDownloadModal() {
+    setToggleVisibility(true);
     haptic("light");
     downloadModal.classList.add("hidden");
 
@@ -2303,6 +2310,16 @@
     elements = elements.filter((e) => e.id !== selectedId);
     deselectAll();
     renderCanvas();
+  }
+
+  function setToggleVisibility(visible) {
+    const bar = document.getElementById("top-toggle-bar");
+    if (!bar) return;
+    if (visible) {
+      bar.classList.remove("hidden-soft");
+    } else {
+      bar.classList.add("hidden-soft");
+    }
   }
 
   // ─── Kick Off ──────────────────────────────────────────
