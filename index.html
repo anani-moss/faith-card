@@ -234,9 +234,13 @@
         <div id="panel-content">
           <div class="tab-content active" data-content="main" id="grid-main">
             <!-- Custom Color/Gradient Backdrop Button -->
-            <div class="image-thumb" id="btn-custom-bg" title="Custom Solid or Gradient Backdrop" style="background: linear-gradient(135deg, #d0bcff, #4a4458); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; flex-direction: column; gap: 4px;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.9"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-              <span style="font-size:0.65rem; font-weight:700; letter-spacing:0.5px; opacity:0.9;">COLOR</span>
+            <div class="image-thumb" id="btn-custom-bg" title="Custom Solid or Gradient Backdrop"
+              style="background: linear-gradient(135deg, #d0bcff, #4a4458); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; flex-direction: column; gap: 4px;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="opacity:0.9">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              <span style="font-size:0.65rem; font-weight:700; letter-spacing:0.5px; opacity:0.9;">CUSTOM</span>
             </div>
           </div>
           <div class="tab-content" data-content="elements" id="grid-elements"></div>
@@ -459,31 +463,47 @@
     <!-- Background Color/Gradient Modal -->
     <div id="bgcolor-modal" class="modal-overlay hidden">
       <div class="modal-card" style="position:relative;">
-        <button id="btn-bgcolor-close" class="modal-close" title="Close" aria-label="Close" style="position:absolute; top:16px; right:16px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:none; border:none; border-radius:50%; cursor:pointer; color:var(--md-sys-color-on-surface-variant);">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <button id="btn-bgcolor-close" class="modal-close" title="Close" aria-label="Close"
+          style="position:absolute; top:16px; right:16px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:none; border:none; border-radius:50%; cursor:pointer; color:var(--md-sys-color-on-surface-variant);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
         </button>
         <h3>Canvas Backdrop</h3>
         <p class="modal-subtitle">Set a solid color or vivid gradient</p>
-        
-        <div class="m3-tabs" style="display:flex; margin-bottom: 24px; background:var(--md-sys-color-surface-container-highest); border-radius:var(--radius-full); padding:4px;">
-          <button id="btn-tab-solid" style="flex:1; padding:10px; border-radius:var(--radius-full); border:none; background:var(--md-sys-color-primary); color:white; font-weight:600; font-family:inherit; cursor:pointer; transition:all 0.2s;">Solid</button>
-          <button id="btn-tab-gradient" style="flex:1; padding:10px; border-radius:var(--radius-full); border:none; background:transparent; color:var(--md-sys-color-on-surface); font-weight:600; font-family:inherit; cursor:pointer; transition:all 0.2s;">Gradient</button>
+
+        <div class="m3-tabs"
+          style="display:flex; margin-bottom: 24px; background:var(--md-sys-color-surface-container-highest); border-radius:var(--radius-full); padding:4px;">
+          <button id="btn-tab-solid"
+            style="flex:1; padding:10px; border-radius:var(--radius-full); border:none; background:var(--md-sys-color-primary); color:white; font-weight:600; font-family:inherit; cursor:pointer; transition:all 0.2s;">Solid</button>
+          <button id="btn-tab-gradient"
+            style="flex:1; padding:10px; border-radius:var(--radius-full); border:none; background:transparent; color:var(--md-sys-color-on-surface); font-weight:600; font-family:inherit; cursor:pointer; transition:all 0.2s;">Gradient</button>
         </div>
 
         <div id="bgcolor-solid-section">
-          <label style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Fill Color</label>
-          <input type="color" id="bg-color-solid-picker" value="#ffffff" style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer; transition:transform 0.2s;">
+          <label
+            style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Fill
+            Color</label>
+          <input type="color" id="bg-color-solid-picker" value="#ffffff"
+            style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer; transition:transform 0.2s;">
         </div>
 
         <div id="bgcolor-gradient-section" class="hidden">
           <div style="display:flex; gap:16px; margin-bottom:16px;">
             <div style="flex:1;">
-              <label style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Start Color</label>
-              <input type="color" id="bg-color-grad-1" value="#FFB6C1" style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
+              <label
+                style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Start
+                Color</label>
+              <input type="color" id="bg-color-grad-1" value="#FFB6C1"
+                style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
             </div>
             <div style="flex:1;">
-              <label style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">End Color</label>
-              <input type="color" id="bg-color-grad-2" value="#87CEFA" style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
+              <label
+                style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">End
+                Color</label>
+              <input type="color" id="bg-color-grad-2" value="#87CEFA"
+                style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
             </div>
           </div>
           <div class="prop-row">

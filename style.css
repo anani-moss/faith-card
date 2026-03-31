@@ -1211,10 +1211,11 @@ input[type="color"] {
   /* Scrim */
   backdrop-filter: blur(2px);
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Anchors the modal top edge so layout variations grow down natively */
   justify-content: center;
   z-index: 500;
   padding: 24px;
+  padding-top: 20vh; /* Pushes the modal down from the header */
   animation: fadeIn 200ms ease;
 }
 
