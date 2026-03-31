@@ -16,12 +16,14 @@
 
   // ─── Haptic Feedback ───────────────────────────────────
   function haptic(intensity) {
-    // intensity: 'light' | 'medium' | 'heavy'
+    // intensity: 'light' | 'medium' | 'heavy' | 'success' | 'error'
     if (!navigator.vibrate) return;
     switch (intensity) {
       case 'light': navigator.vibrate(8); break;
       case 'medium': navigator.vibrate(15); break;
       case 'heavy': navigator.vibrate([10, 30, 20]); break;
+      case 'success': navigator.vibrate([15, 30, 15]); break; // Double-tap feel
+      case 'error': navigator.vibrate([25, 30, 25, 30, 25]); break; // Sharp triple-pulse
       default: navigator.vibrate(10);
     }
   }
@@ -33,6 +35,8 @@
   let selectedId = null;
   let dragging = null;
   let resizing = null;
+  let snapEnabled = true;
+  let gridEnabled = false;
 
   // Pre-cached images as data URLs for reliable export
   const imageCache = new Map();
@@ -901,8 +905,58 @@
       const dx = (clientX - dragging.startX) / dragging.scale;
       const dy = (clientY - dragging.startY) / dragging.scale;
 
-      el.x = Math.round(dragging.elStartX + dx);
-      el.y = Math.round(dragging.elStartY + dy);
+      let newX = dragging.elStartX + dx;
+      let newY = dragging.elStartY + dy;
+
+      if (snapEnabled) {
+        const threshold = 16 / dragging.scale; // Magnetic proximity auto-adjusts based on zoom
+        const cx = newX + el.w / 2;
+        const cy = newY + el.h / 2;
+        
+        let snappedX = false;
+        let snappedY = false;
+
+        // X-axis mapping (Center, Left edge, Right edge)
+        const snapPointsX = [0, CANVAS_SIZE / 2, CANVAS_SIZE];
+        for (let p of snapPointsX) {
+          if (Math.abs(newX - p) < threshold) { newX = p; snappedX = p; break; } // Left snap
+          if (Math.abs(newX + el.w - p) < threshold) { newX = p - el.w; snappedX = p; break; } // Right snap
+          if (Math.abs(cx - p) < threshold) { newX = p - el.w / 2; snappedX = p; break; } // Center snap
+        }
+
+        // Y-axis mapping (Center, Top edge, Bottom edge)
+        const snapPointsY = [0, CANVAS_SIZE / 2, CANVAS_SIZE];
+        for (let p of snapPointsY) {
+          if (Math.abs(newY - p) < threshold) { newY = p; snappedY = p; break; } // Top snap
+          if (Math.abs(newY + el.h - p) < threshold) { newY = p - el.h; snappedY = p; break; } // Bottom snap
+          if (Math.abs(cy - p) < threshold) { newY = p - el.h / 2; snappedY = p; break; } // Center snap
+        }
+
+        // Show/Hide DOM Guide lines with Haptics on contact
+        const guideX = document.getElementById("guide-x");
+        const guideY = document.getElementById("guide-y");
+        
+        if (snappedX !== false) {
+          if (guideX) {
+            guideX.style.left = snappedX + "px";
+            if (guideX.classList.contains("hidden")) { guideX.classList.remove("hidden"); haptic("light"); }
+          }
+        } else {
+          if (guideX) guideX.classList.add("hidden");
+        }
+
+        if (snappedY !== false) {
+          if (guideY) {
+            guideY.style.top = snappedY + "px";
+            if (guideY.classList.contains("hidden")) { guideY.classList.remove("hidden"); haptic("light"); }
+          }
+        } else {
+          if (guideY) guideY.classList.add("hidden");
+        }
+      }
+
+      el.x = Math.round(newX);
+      el.y = Math.round(newY);
 
       const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
       if (div) {
@@ -963,6 +1017,12 @@
     dragging = null;
     resizing = null;
     rafPending = false;
+    
+    // Hide snap guides on release
+    const guideX = document.getElementById("guide-x");
+    const guideY = document.getElementById("guide-y");
+    if (guideX) guideX.classList.add("hidden");
+    if (guideY) guideY.classList.add("hidden");
   }
 
   // ─── Canvas Events ─────────────────────────────────────
@@ -1371,8 +1431,64 @@
 
     // Fit canvas button
     const fitBtn = document.getElementById("btn-fit-screen");
-    if (fitBtn) fitBtn.addEventListener("click", fitCanvasToScreen);
+    if (fitBtn) fitBtn.addEventListener("click", () => {
+      fitCanvasToScreen();
+      showToast("Canvas fitted to screen");
+    });
+
+    // Grid Toggle Button
+    const gridBtn = document.getElementById("btn-toggle-grid");
+    const gridOverlay = document.getElementById("grid-overlay");
+    if (gridBtn && gridOverlay) {
+      gridBtn.addEventListener("click", () => {
+        gridEnabled = !gridEnabled;
+        haptic("light");
+        if (gridEnabled) {
+          gridOverlay.classList.remove("hidden");
+          gridBtn.style.background = "var(--md-sys-color-primary-container)";
+          gridBtn.style.color = "var(--md-sys-color-on-primary-container)";
+        } else {
+          gridOverlay.classList.add("hidden");
+          gridBtn.style.background = "transparent";
+          gridBtn.style.color = "inherit";
+        }
+        showToast(gridEnabled ? "Composition Grid: ON" : "Composition Grid: OFF");
+      });
+    }
+
+    // Snap Toggle Button
+    const snapBtn = document.getElementById("btn-toggle-snap");
+    if (snapBtn) {
+      snapBtn.addEventListener("click", () => {
+        snapEnabled = !snapEnabled;
+        haptic("light");
+        if (snapEnabled) {
+          snapBtn.style.background = "var(--md-sys-color-primary-container)";
+          snapBtn.style.color = "var(--md-sys-color-on-primary-container)";
+        } else {
+          snapBtn.style.background = "transparent";
+          snapBtn.style.color = "inherit";
+        }
+        showToast(snapEnabled ? "Magnetic Snapping: ON" : "Magnetic Snapping: OFF");
+      });
+    }
   }
+
+  // ─── Toast Notifications ─────────────────────────────────
+  let toastTimeout;
+  window.showToast = function(message) {
+    const container = document.getElementById("toast-container");
+    const msgEl = document.getElementById("toast-message");
+    if(!container || !msgEl) return;
+    
+    msgEl.textContent = message;
+    container.classList.remove("hidden");
+    
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      container.classList.add("hidden");
+    }, 2000);
+  };
 
   // ─── Download Modal ────────────────────────────────────
   function bindModal() {

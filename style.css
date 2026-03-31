@@ -647,6 +647,70 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* ===== Composition Grid & Snapping ===== */
+.canvas-grid-bg {
+  background-image: 
+    linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px) 
+    !important;
+  background-size: 90px 90px !important; /* 1080 / 12 = 90px cell */
+  background-position: center center !important;
+}
+
+.snap-guide {
+  position: absolute;
+  background: var(--md-sys-color-primary);
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.8;
+  box-shadow: 0 0 4px var(--md-sys-color-primary-container);
+  will-change: opacity, transform, left, top;
+}
+
+.snap-guide-x {
+  width: 2px;
+  height: 100%;
+  top: 0;
+  left: 540px; /* Modified by layout logic JS */
+  transform: translateX(-50%);
+}
+
+.snap-guide-y {
+  height: 2px;
+  width: 100%;
+  left: 0;
+  top: 540px; /* Modified by layout logic JS */
+  transform: translateY(-50%);
+}
+
+/* ===== Toast Notification ===== */
+.toast-container {
+  position: fixed;
+  bottom: calc(var(--nav-bar-height) + 24px); /* Sit comfortably right above navbar */
+  left: 50%;
+  transform: translate(-50%, 0);
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  z-index: 1000;
+  font-size: 0.875rem;
+  font-weight: 400;
+  text-align: center;
+  box-shadow: var(--md-sys-elevation-3);
+  transition: opacity 300ms cubic-bezier(0.2, 0, 0, 1), transform 300ms cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: none;
+  min-width: max-content;
+  max-width: 90vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.toast-container.hidden {
+  opacity: 0;
+  transform: translate(-50%, 20px);
+}
+
 /* ===== Canvas Elements (Interactions) ===== */
 .canvas-element {
   position: absolute;
