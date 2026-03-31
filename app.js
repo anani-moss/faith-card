@@ -2378,30 +2378,28 @@
     });
   }
 
-  // ─── Text Presets ──────────────────────────────────────
+  // ─── Text Presets (Fixed 8 Best) ───────────────────────
   const TEXT_PRESETS_DATA = [
-    { name: "Elegant", text: "He is risen", fontFamily: "Dancing Script", color: "#d0bcff", fontSize: 48, fontWeight: "700" },
-    { name: "Modern", text: "He is risen", fontFamily: "Montserrat", color: "#ffffff", fontSize: 42, fontWeight: "700" },
-    { name: "Golden", text: "He is risen", fontFamily: "Cinzel", color: "#fde047", fontSize: 44, fontWeight: "700" },
-    { name: "Classic", text: "He is risen", fontFamily: "Playfair Display", color: "#f9a8d4", fontSize: 46, fontWeight: "600" },
-    { name: "Playful", text: "He is risen", fontFamily: "Caveat", color: "#44BB44", fontSize: 52, fontWeight: "700" },
-    { name: "Bold", text: "He is risen", fontFamily: "Russo One", color: "#FF8800", fontSize: 40, fontWeight: "400" },
-    { name: "Script", text: "He is risen", fontFamily: "Satisfy", color: "#eaddff", fontSize: 48, fontWeight: "400" }
+    { name: "Elegant", text: "He is risen", fontFamily: "Dancing Script", color: "#976affff", fontSize: 48, fontWeight: "700" },
+    { name: "<i>Italic</i>", text: "<i>He is risen</i>", fontFamily: "Playfair Display", color: "#e9222fff", fontSize: 44, fontWeight: "600" },
+    { name: "<u>Under</u>", text: "<u>He is risen</u>", fontFamily: "Montserrat", color: "#00a236ff", fontSize: 42, fontWeight: "500" },
+    { name: "Mix Style", text: "<b>He</b> <i>is</i> <u>risen</u>", fontFamily: "Cinzel", color: "#fde047", fontSize: 42, fontWeight: "700" },
+    { name: "Modern", text: "He is risen", fontFamily: "Montserrat", color: "#be03b4ff", fontSize: 42, fontWeight: "700" },
+    { name: "Classic", text: "He is risen", fontFamily: "Playfair Display", color: "#f441a3ff", fontSize: 46, fontWeight: "600" },
+    { name: "<b>Boldly</b>", text: "<b>He</b> is risen", fontFamily: "Montserrat", color: "#94ff4dff", fontSize: 44, fontWeight: "700" },
+    { name: "Scripty", text: "He is <i>risen</i>", fontFamily: "Satisfy", color: "#007d4fff", fontSize: 48, fontWeight: "400" }
   ];
 
   function renderTextPresets() {
     const container = document.getElementById("text-presets-container");
     if (!container) return;
 
-    // Pick 5 random presets as requested
-    const shuffled = [...TEXT_PRESETS_DATA].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 5);
-
+    // Fixed 8 presets instead of randomizing
     container.innerHTML = "";
-    selected.forEach(preset => {
+    TEXT_PRESETS_DATA.forEach(preset => {
       const chip = document.createElement("div");
       chip.className = "text-preset-chip";
-      chip.textContent = preset.name;
+      chip.innerHTML = preset.name;
       chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
 
       chip.addEventListener("click", () => {
