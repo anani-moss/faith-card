@@ -827,11 +827,17 @@
     haptic('medium');
   }
 
-  const textarea = document.getElementById("prop-text-content");
-
-  textarea.addEventListener("focus", function () {
-    this.select();
-  });
+  const textarea = document.getElementById("prop-text-input");
+  if (textarea) {
+    textarea.addEventListener("focus", function () {
+      // For contenteditable, we can't just call .select(), but we can select all nodes
+      const range = document.createRange();
+      range.selectNodeContents(this);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
+  }
 
   // ─── Render Canvas ─────────────────────────────────────
   function renderCanvas() {
@@ -865,7 +871,9 @@
         div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
         div.style.fontWeight = el.fontWeight;
         div.style.color = el.color;
-        div.textContent = el.text;
+        // Successive formatting with null safety
+        const safeText = el.text || "";
+        div.innerHTML = safeText.replace(/\n/g, "<br>");
       }
 
       // Resize handle
@@ -1310,7 +1318,8 @@
       propsImage.classList.add("hidden");
       document.getElementById("panel-title").textContent = "Text";
 
-      document.getElementById("prop-text-content").value = el.text;
+      const richInput = document.getElementById("prop-text-input");
+      if (richInput) richInput.innerHTML = el.text || "";
       setVal("prop-font-size", el.fontSize);
       setDisplay("prop-font-size-val", el.fontSize + "px");
       document.getElementById("prop-font-family").value = el.fontFamily;
@@ -1490,18 +1499,43 @@
       if (div) div.style.opacity = el.opacity / 100;
     });
 
-    // Text properties
-    document
-      .getElementById("prop-text-content")
-      .addEventListener("input", (e) => {
+    // Text properties (Visual Rich Input)
+    const richInput = document.getElementById("prop-text-input");
+    if (richInput) {
+      richInput.addEventListener("input", () => {
         const el = getSelected();
         if (!el || el.type !== "text") return;
-        el.text = e.target.value;
-        const div = document.querySelector(
-          `.canvas-element[data-id="${el.id}"]`,
-        );
-        if (div) div.textContent = el.text;
+        el.text = richInput.innerHTML;
+        const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+        if (div) div.innerHTML = el.text;
       });
+
+      // Special paste handler to prevent rich formatting from other sites
+      richInput.addEventListener("paste", (e) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData("text/plain");
+        document.execCommand("insertText", false, text);
+      });
+    }
+
+    // Visual Formatting Buttons (execCommand for abstracted UI)
+    const btnBold = document.getElementById("btn-format-bold");
+    const btnItalic = document.getElementById("btn-format-italic");
+    const btnUnderline = document.getElementById("btn-format-underline");
+
+    if (btnBold) btnBold.addEventListener("click", () => {
+      document.execCommand("bold", false, null);
+      haptic("light");
+    });
+    if (btnItalic) btnItalic.addEventListener("click", () => {
+      document.execCommand("italic", false, null);
+      haptic("light");
+    });
+    if (btnUnderline) btnUnderline.addEventListener("click", () => {
+      document.execCommand("underline", false, null);
+      haptic("light");
+    });
+
 
     bindRange("prop-font-size", "prop-font-size-val", "px", (val) => {
       const el = getSelected();
@@ -2144,7 +2178,10 @@
       const icon = el.type === "image" ? "🖼️" : "🔤";
       let label = "";
       if (el.type === "text") {
-        label = el.text.length > 18 ? el.text.substring(0, 18) + "…" : el.text;
+        const safeText = el.text || "";
+        // Strip HTML tags for the layer label to keep it clean
+        const plainText = safeText.replace(/<[^>]*>/g, "");
+        label = plainText.length > 18 ? plainText.substring(0, 18) + "…" : (plainText || "Text");
       } else {
         if (el.category === "main") {
           label = "Backdrop";
@@ -2393,8 +2430,8 @@
     el.fontWeight = preset.fontWeight;
 
     // Update UI inputs
-    const contentTextarea = document.getElementById("prop-text-content");
-    if (contentTextarea) contentTextarea.value = el.text;
+    const richInput = document.getElementById("prop-text-input");
+    if (richInput) richInput.innerHTML = el.text;
 
     const fontFamilySelect = document.getElementById("prop-font-family");
     if (fontFamilySelect) fontFamilySelect.value = el.fontFamily;
@@ -2421,7 +2458,7 @@
     // Update DOM element directly for immediate feedback
     const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
     if (div) {
-      div.textContent = el.text;
+      div.innerHTML = el.text;
       div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
       div.style.color = el.color;
       div.style.fontSize = el.fontSize + "px";

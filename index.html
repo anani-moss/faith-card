@@ -470,8 +470,13 @@
 
           <div class="prop-row">
             <label>Text</label>
+            <div class="text-formatting-toolbar">
+              <button id="btn-format-bold" class="btn-format" title="Bold"><b>B</b></button>
+              <button id="btn-format-italic" class="btn-format" title="Italic"><i>I</i></button>
+              <button id="btn-format-underline" class="btn-format" title="Underline"><u>U</u></button>
+            </div>
             <div class="input-with-done">
-              <textarea id="prop-text-content" rows="2" placeholder="Enter text..."></textarea>
+              <div id="prop-text-input" contenteditable="true" class="rich-text-input" placeholder="Enter text..."></div>
               <button id="btn-text-done" class="btn-done" title="Done">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <polyline points="20 6 9 17 4 12"></polyline>
