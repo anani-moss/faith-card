@@ -72,7 +72,7 @@
   }
 
   // ─── Init ──────────────────────────────────────────────
-  async function init() {
+  function init() {
     canvasEl = document.getElementById("canvas");
     placeholder = document.getElementById("canvas-placeholder");
     propertiesPanel = document.getElementById("properties-panel");
@@ -81,9 +81,7 @@
     downloadModal = document.getElementById("download-modal");
     downloadNameInput = document.getElementById("download-name-input");
 
-    await loadManifest();
-
-    discoverImages();
+    // UI Bindings (Synchronous - prevents layout bouncing/shifting)
     bindTabs();
     bindHeaderButtons();
     bindPropertiesPanel();
@@ -91,15 +89,18 @@
     bindKeyboard();
     bindModal();
     bindOverlayControl();
-    discoverOverlays();
     fitCanvasToScreen();
     bindPanelGestures();
     checkFirstLoadOverlay();
-
     window.addEventListener("resize", fitCanvasToScreen);
-
     bindHamburger();
     initSplash();
+
+    // Data Fetching (Asynchronous background task)
+    loadManifest().then(() => {
+      discoverImages();
+      discoverOverlays();
+    });
   }
 
   // ─── Hamburger Menu ────────────────────────────────────
