@@ -452,7 +452,14 @@
 
           <div class="prop-row">
             <label>Text</label>
-            <textarea id="prop-text-content" rows="2" placeholder="Enter text..."></textarea>
+            <div class="input-with-done">
+              <textarea id="prop-text-content" rows="2" placeholder="Enter text..."></textarea>
+              <button id="btn-text-done" class="btn-done" title="Done">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div class="panel-actions">
@@ -476,8 +483,10 @@
             </div>
             <div class="prop-half">
               <label>Color</label>
-              <input type="color" id="prop-text-color" value="#333333"
-                style="width: 100%; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline-variant); cursor: pointer; background: var(--md-sys-color-surface-container-high);">
+              <div class="color-swatch-wrapper">
+                <div id="swatch-text-color" class="live-swatch" style="background: #333333;"></div>
+                <input type="color" id="prop-text-color" value="#333333" class="hidden-input">
+              </div>
               <div id="text-color-picker-mount" class="hidden"></div>
               <div id="text-color-presets" class="color-presets hidden"></div>
               <input type="text" id="text-color-hex" value="#333333" placeholder="#HEX"
@@ -613,28 +622,34 @@
           <label
             style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Fill
             Color</label>
-          <input type="color" id="bg-color-solid-picker" value="#ffffff"
-            style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer; transition:transform 0.2s;">
-          <div id="bg-solid-picker-mount" style="margin: 12px auto;"></div>
+          <div class="color-swatch-wrapper">
+            <div id="swatch-bg-solid" class="live-swatch" style="background: #ffffff;"></div>
+            <input type="color" id="bg-color-solid-picker" value="#ffffff" class="hidden-input">
+          </div>
+          <div id="bg-solid-picker-mount" class="hidden"></div>
         </div>
 
         <div id="bgcolor-gradient-section" class="hidden">
           <div style="display:flex; gap:16px; margin-bottom:16px;">
             <div style="flex:1;">
-              <label
+            <label
                 style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">Start
                 Color</label>
-              <input type="color" id="bg-color-grad-1" value="#FFB6C1"
-                style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
-              <div id="bg-grad1-picker-mount" style="margin: 8px auto;"></div>
+              <div class="color-swatch-wrapper">
+                <div id="swatch-bg-grad-1" class="live-swatch" style="background: #FFB6C1;"></div>
+                <input type="color" id="bg-color-grad-1" value="#FFB6C1" class="hidden-input">
+              </div>
+              <div id="bg-grad1-picker-mount" class="hidden"></div>
             </div>
             <div style="flex:1;">
               <label
                 style="display:block; font-size:0.875rem; color:var(--md-sys-color-on-surface-variant); margin-bottom:8px; font-weight:500;">End
                 Color</label>
-              <input type="color" id="bg-color-grad-2" value="#87CEFA"
-                style="width:100%; height:48px; border:none; border-radius:var(--radius-md); padding:0; background:none; cursor:pointer;">
-              <div id="bg-grad2-picker-mount" style="margin: 8px auto;"></div>
+              <div class="color-swatch-wrapper">
+                <div id="swatch-bg-grad-2" class="live-swatch" style="background: #87CEFA;"></div>
+                <input type="color" id="bg-color-grad-2" value="#87CEFA" class="hidden-input">
+              </div>
+              <div id="bg-grad2-picker-mount" class="hidden"></div>
             </div>
           </div>
           <div class="prop-row">
@@ -646,6 +661,18 @@
 
         <div class="modal-actions" style="margin-top: 32px;">
           <button id="btn-bgcolor-apply" class="btn m3-btn-primary" style="flex:1;">Apply Background</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Color Picker Popover (iro.js) -->
+    <div id="color-popover" class="color-popover hidden">
+      <div class="popover-content">
+        <div id="popover-picker-mount"></div>
+        <div class="popover-presets" id="popover-presets"></div>
+        <div class="popover-footer">
+          <input type="text" id="popover-hex-input" class="hex-input" spellcheck="false">
+          <button id="btn-popover-close" class="btn-popover-close">Done</button>
         </div>
       </div>
     </div>

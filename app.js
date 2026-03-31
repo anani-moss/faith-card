@@ -1410,6 +1410,16 @@
     document.addEventListener("mouseup", () => updateSliderFade(false));
     document.addEventListener("touchend", () => updateSliderFade(false));
 
+    // Done button for text editing
+    const btnDone = document.getElementById("btn-text-done");
+    if (btnDone) {
+      btnDone.addEventListener("click", () => {
+        haptic("medium");
+        const textarea = document.getElementById("prop-text-content");
+        if (textarea) textarea.blur();
+      });
+    }
+
     // Toggle via close button
     document.getElementById("btn-close-panel").addEventListener("click", () => {
       haptic("light");
@@ -1503,22 +1513,19 @@
     // Color picker: use iro.js if available, otherwise fall back to native input
     initColorPickers();
 
-    document
-      .getElementById("prop-text-color")
-      .addEventListener("input", (e) => {
-        const el = getSelected();
-        if (!el || el.type !== "text") return;
-        el.color = e.target.value;
-        const div = document.querySelector(
-          `.canvas-element[data-id="${el.id}"]`,
-        );
-        if (div) div.style.color = el.color;
-        // Sync hex display
-        const hexInput = document.getElementById("text-color-hex");
-        if (hexInput) hexInput.value = el.color;
-      });
+    // Color swatches and Floating Picker
+    bindSwatch("swatch-text-color", "prop-text-color", (color) => {
+      const el = getSelected();
+      if (!el || el.type !== "text") return;
+      el.color = color;
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.color = el.color;
+      // Sync hex display
+      const hexInput = document.getElementById("text-color-hex");
+      if (hexInput) hexInput.value = el.color;
+    });
 
-    // Native color input for immediate feedback
+    // Native color input for immediate feedback (still kept as backup/sink)
     document
       .getElementById("prop-text-color")
       .addEventListener("input", (e) => {
@@ -1845,6 +1852,14 @@
     gradAngle.addEventListener("input", (e) => {
       gradAngleVal.textContent = e.target.value + "°";
     });
+
+    // Swatches for BG Color Modal
+    bindSwatch("swatch-bg-solid", "bg-color-solid-picker", (color) => {
+      // Logic handled by apply button or live?
+      // In this app, it seems most things are live or handled in the Apply button
+    });
+    bindSwatch("swatch-bg-grad-1", "bg-color-grad-1", (color) => { });
+    bindSwatch("swatch-bg-grad-2", "bg-color-grad-2", (color) => { });
 
     // Apply button
     document.getElementById("btn-bgcolor-apply").addEventListener("click", () => {
@@ -2179,11 +2194,6 @@
   }
 
   // ─── Color Picker (iro.js) ─────────────────────────────
-  let textColorPicker = null;
-  let bgSolidColorPicker = null;
-  let bgGrad1ColorPicker = null;
-  let bgGrad2ColorPicker = null;
-
   const COLOR_PRESETS = [
     "#FFFFFF", "#000000", "#333333", "#666666",
     "#FF4444", "#FF8800", "#FFCC00", "#44BB44",
@@ -2197,123 +2207,122 @@
       console.warn("iro.js not loaded, using native color inputs");
       return;
     }
-
-    // Text color picker
-    const textPickerMount = document.getElementById("text-color-picker-mount");
-    if (textPickerMount) {
-      textColorPicker = new iro.ColorPicker(textPickerMount, {
-        width: 180,
-        color: "#333333",
-        borderWidth: 2,
-        borderColor: "rgba(255,255,255,0.15)",
-        layout: [
-          { component: iro.ui.Wheel, options: { wheelLightness: false } },
-          { component: iro.ui.Slider, options: { sliderType: "value" } },
-        ]
-      });
-
-      textColorPicker.on("color:change", (color) => {
-        const el = getSelected();
-        if (!el || el.type !== "text") return;
-        el.color = color.hexString;
-        document.getElementById("prop-text-color").value = color.hexString;
-        const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
-        if (div) div.style.color = el.color;
-        // Update hex display
-        const hexInput = document.getElementById("text-color-hex");
-        if (hexInput) hexInput.value = color.hexString;
-      });
-
-      // Preset swatches
-      const swatchContainer = document.getElementById("text-color-presets");
-      if (swatchContainer) {
-        COLOR_PRESETS.forEach(hex => {
-          const swatch = document.createElement("button");
-          swatch.className = "color-swatch";
-          swatch.style.background = hex;
-          swatch.title = hex;
-          swatch.addEventListener("click", () => {
-            textColorPicker.color.hexString = hex;
-          });
-          swatchContainer.appendChild(swatch);
-        });
-      }
-
-      // Hex input
-      const hexInput = document.getElementById("text-color-hex");
-      if (hexInput) {
-        hexInput.addEventListener("change", () => {
-          const val = hexInput.value.trim();
-          if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-            textColorPicker.color.hexString = val;
-          }
-        });
-      }
-    }
-
-    // Background solid color picker
-    const bgSolidMount = document.getElementById("bg-solid-picker-mount");
-    if (bgSolidMount) {
-      bgSolidColorPicker = new iro.ColorPicker(bgSolidMount, {
-        width: 160,
-        color: "#ffffff",
-        borderWidth: 2,
-        borderColor: "rgba(255,255,255,0.15)",
-        layout: [
-          { component: iro.ui.Wheel, options: { wheelLightness: false } },
-          { component: iro.ui.Slider, options: { sliderType: "value" } },
-        ]
-      });
-      bgSolidColorPicker.on("color:change", (color) => {
-        document.getElementById("bg-color-solid-picker").value = color.hexString;
-      });
-    }
-
-    // Background gradient color pickers
-    const bgGrad1Mount = document.getElementById("bg-grad1-picker-mount");
-    if (bgGrad1Mount) {
-      bgGrad1ColorPicker = new iro.ColorPicker(bgGrad1Mount, {
-        width: 120,
-        color: "#FFB6C1",
-        borderWidth: 2,
-        borderColor: "rgba(255,255,255,0.15)",
-        layout: [
-          { component: iro.ui.Wheel, options: { wheelLightness: false } },
-          { component: iro.ui.Slider, options: { sliderType: "value" } },
-        ]
-      });
-      bgGrad1ColorPicker.on("color:change", (color) => {
-        document.getElementById("bg-color-grad-1").value = color.hexString;
-      });
-    }
-
-    const bgGrad2Mount = document.getElementById("bg-grad2-picker-mount");
-    if (bgGrad2Mount) {
-      bgGrad2ColorPicker = new iro.ColorPicker(bgGrad2Mount, {
-        width: 120,
-        color: "#87CEFA",
-        borderWidth: 2,
-        borderColor: "rgba(255,255,255,0.15)",
-        layout: [
-          { component: iro.ui.Wheel, options: { wheelLightness: false } },
-          { component: iro.ui.Slider, options: { sliderType: "value" } },
-        ]
-      });
-      bgGrad2ColorPicker.on("color:change", (color) => {
-        document.getElementById("bg-color-grad-2").value = color.hexString;
-      });
-    }
+    // We now use a global floating picker managed by openColorPopover
   }
 
   // Sync text color picker to selected element
   function syncTextColorPicker() {
-    if (!textColorPicker) return;
     const el = getSelected();
     if (el && el.type === "text") {
-      textColorPicker.color.hexString = el.color;
+      const swatch = document.getElementById("swatch-text-color");
+      if (swatch) swatch.style.background = el.color;
       const hexInput = document.getElementById("text-color-hex");
       if (hexInput) hexInput.value = el.color;
     }
+  }
+
+  // ─── Floating Color Picker Manager ─────────────────────
+  let globalPicker = null;
+
+  function bindSwatch(swatchId, triggerInputId, callback) {
+    const swatch = document.getElementById(swatchId);
+    const input = document.getElementById(triggerInputId);
+    if (!swatch || !input) return;
+
+    swatch.addEventListener("click", () => {
+      haptic("light");
+      openColorPopover(swatch, input.value, (hex) => {
+        input.value = hex;
+        swatch.style.background = hex;
+        callback(hex);
+      });
+    });
+  }
+
+  function openColorPopover(anchorEl, initialColor, onColorChange) {
+    const popover = document.getElementById("color-popover");
+    const mount = document.getElementById("popover-picker-mount");
+    const hexInput = document.getElementById("popover-hex-input");
+    const presets = document.getElementById("popover-presets");
+    const closeBtn = document.getElementById("btn-popover-close");
+
+    if (!popover || !mount) return;
+
+    // Position popover
+    popover.classList.remove("hidden");
+
+    // "Centered" as requested: Centered horizontally on screen, fixed height from bottom
+    let left = (window.innerWidth - popover.offsetWidth) / 2;
+    let bottom = 80; // Above the navigation bar
+
+    popover.style.bottom = bottom + "px";
+    popover.style.top = "auto";
+    popover.style.left = left + "px";
+    popover.style.transformOrigin = "bottom center";
+
+    // Initialize or update iro picker
+    if (!globalPicker) {
+      globalPicker = new iro.ColorPicker(mount, {
+        width: 200,
+        color: initialColor,
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        // simple iro layout
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+
+      // Build presets once
+      presets.innerHTML = "";
+      COLOR_PRESETS.forEach(hex => {
+        const pSwatch = document.createElement("div");
+        pSwatch.className = "popover-swatch";
+        pSwatch.style.background = hex;
+        pSwatch.addEventListener("click", () => {
+          haptic("light");
+          globalPicker.color.hexString = hex;
+        });
+        presets.appendChild(pSwatch);
+      });
+
+      hexInput.addEventListener("change", () => {
+        const val = hexInput.value.trim();
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+          globalPicker.color.hexString = val;
+        }
+      });
+
+      closeBtn.addEventListener("click", () => {
+        haptic("medium");
+        popover.classList.add("hidden");
+      });
+
+      // Click outside to close
+      document.addEventListener("mousedown", (e) => {
+        if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
+          popover.classList.add("hidden");
+        }
+      });
+      document.addEventListener("touchstart", (e) => {
+        if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
+          popover.classList.add("hidden");
+        }
+      }, { passive: true });
+    } else {
+      globalPicker.color.hexString = initialColor;
+    }
+
+    hexInput.value = initialColor.toUpperCase();
+
+    // Remove previous listeners using a clever trick: re-cloning or just updating a reference
+    // Actually, we can just update the 'onColorChange' logic
+    globalPicker.off("color:change"); // iro.js supports this
+    globalPicker.on("color:change", (color) => {
+      onColorChange(color.hexString);
+      hexInput.value = color.hexString.toUpperCase();
+    });
   }
 
   // ─── Helpers ───────────────────────────────────────────

@@ -2137,3 +2137,166 @@ body.simple-mode #btn-element-settings {
 body.simple-mode .tabs-container {
   gap: 0;
 }
+
+/* ===== Floating Color Picker & Swatches ===== */
+.color-swatch-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.color-swatch-wrapper:hover {
+  background: var(--md-sys-color-surface-container-highest);
+  border-color: var(--md-sys-color-primary);
+}
+
+.live-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hidden-input {
+  display: none;
+}
+
+.color-popover {
+  position: fixed;
+  z-index: 5000;
+  background: rgba(33, 31, 38, 0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  padding: 16px;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: popoverFadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: bottom center;
+}
+
+@keyframes popoverFadeIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.color-popover.hidden {
+  display: none;
+}
+
+.popover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+#popover-picker-mount {
+  margin-bottom: 8px;
+}
+
+.popover-footer {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hex-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  color: white;
+  padding: 8px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.btn-popover-close {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* ===== Done Button for Inputs ===== */
+.input-with-done {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.input-with-done textarea {
+  flex: 1;
+}
+
+.btn-done {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  background: #22c55e; /* Green Success */
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.btn-done:active {
+  transform: scale(0.9);
+  background: #16a34a;
+}
+
+.btn-done svg {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 0;
+}
+
+/* ===== iro.js specific UI tweaks ===== */
+.IroColorPicker {
+  margin: 0 auto !important;
+}
+
+.IroSlider {
+  margin-top: 12px !important;
+}
+
+.popover-presets {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.popover-swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
