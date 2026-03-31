@@ -735,6 +735,7 @@
 
     renderCanvas();
     selectElement(el.id);
+    openSettingsPanel();
     placeholder.classList.add("hidden");
   }
 
@@ -758,6 +759,7 @@
     elements.push(el);
     renderCanvas();
     selectElement(el.id);
+    openSettingsPanel();
     placeholder.classList.add("hidden");
     haptic('medium');
   }
@@ -890,7 +892,7 @@
       elDiv.classList.remove("selected");
     });
 
-    propertiesPanel.classList.add("hidden");
+    closeSettingsPanel();
     const btnSettings = document.getElementById("btn-element-settings");
     if (btnSettings) {
       btnSettings.classList.add("hidden");
@@ -1184,7 +1186,7 @@
     const panelTitle = document.getElementById("panel-title");
 
     if (selectedId === null) {
-      propertiesPanel.classList.add("hidden");
+      closeSettingsPanel();
       if (btnSettings) {
         btnSettings.classList.add("hidden");
         btnSettings.querySelector(".icon-settings").classList.remove("hidden");
@@ -1195,7 +1197,7 @@
 
     const el = elements.find((e) => e.id === selectedId);
     if (!el) {
-      propertiesPanel.classList.add("hidden");
+      closeSettingsPanel();
       if (btnSettings) {
         btnSettings.classList.add("hidden");
         btnSettings.querySelector(".icon-settings").classList.remove("hidden");
@@ -1247,15 +1249,33 @@
     document.getElementById(id).textContent = v;
   }
 
+  let isCloseSettingsBound = false;
+
   function openSettingsPanel() {
-    if (propertiesPanel && propertiesPanel.classList.contains("hidden")) {
+    if (propertiesPanel && (propertiesPanel.classList.contains("hidden") || propertiesPanel.classList.contains("closing-to-fab"))) {
       haptic("light");
       propertiesPanel.classList.remove("hidden");
+      propertiesPanel.classList.remove("closing-to-fab");
       const btnSettings = document.getElementById("btn-element-settings");
       if (btnSettings) {
         btnSettings.querySelector(".icon-settings").classList.add("hidden");
         btnSettings.querySelector(".icon-close").classList.remove("hidden");
       }
+    }
+  }
+
+  function closeSettingsPanel() {
+    if (!propertiesPanel || (propertiesPanel.classList.contains("hidden") && !propertiesPanel.classList.contains("closing-to-fab"))) return;
+    
+    propertiesPanel.classList.add("closing-to-fab");
+    if (!isCloseSettingsBound) {
+      propertiesPanel.addEventListener("animationend", (e) => {
+        if (e.animationName === "foldToFab") {
+          propertiesPanel.classList.remove("closing-to-fab");
+          propertiesPanel.classList.add("hidden");
+        }
+      });
+      isCloseSettingsBound = true;
     }
   }
 
@@ -1293,7 +1313,7 @@
     // Toggle via close button
     document.getElementById("btn-close-panel").addEventListener("click", () => {
       haptic("light");
-      propertiesPanel.classList.add("hidden");
+      closeSettingsPanel();
       const btnSettings = document.getElementById("btn-element-settings");
       if (btnSettings) {
         btnSettings.querySelector(".icon-settings").classList.remove("hidden");
@@ -1306,15 +1326,11 @@
     if (btnSettings) {
       btnSettings.addEventListener("click", () => {
         haptic("light");
-        if (propertiesPanel.classList.contains("hidden")) {
-          propertiesPanel.classList.remove("hidden");
-          btnSettings.querySelector(".icon-settings").classList.add("hidden");
-          btnSettings.querySelector(".icon-close").classList.remove("hidden");
+        if (propertiesPanel.classList.contains("hidden") || propertiesPanel.classList.contains("closing-to-fab")) {
+          openSettingsPanel();
         } else {
-          propertiesPanel.classList.add("hidden");
-          btnSettings
-            .querySelector(".icon-settings")
-            .classList.remove("hidden");
+          closeSettingsPanel();
+          btnSettings.querySelector(".icon-settings").classList.remove("hidden");
           btnSettings.querySelector(".icon-close").classList.add("hidden");
         }
       });
