@@ -12,6 +12,7 @@
   // ─── Image Library (populated dynamically) ─────────────
   const IMAGE_LIBRARY = {
     main: [],
+    temp: [],
     elements: [],
     decor: [],
   };
@@ -72,7 +73,7 @@
   let resizing = null;
   let snapEnabled = true;
   let gridEnabled = false;
-  let simpleMode = false;
+  let simpleMode = true;
 
   // Pre-cached images as data URLs for reliable export
   const imageCache = new Map();
@@ -520,7 +521,8 @@
           // Use manifest counts if available
           const count = manifest[category];
           for (let i = 1; i <= count; i++) {
-            const src = `${CDN_BASE}/img/${category}/${category}${i}.png`;
+            const fileName = (category === 'temp') ? `template${i}.png` : `${category}${i}.png`;
+            const src = `${CDN_BASE}/img/${category}/${fileName}`;
             const entry = { src, label: `${category} ${i}` };
             IMAGE_LIBRARY[category].push(entry);
             buildThumb(grid, src, entry.label, category);
@@ -529,7 +531,8 @@
           // Fallback: Probe using HEAD requests to CDN
           let i = 1;
           while (true) {
-            const src = `${CDN_BASE}/img/${category}/${category}${i}.png`;
+            const fileName = (category === 'temp') ? `template${i}.png` : `${category}${i}.png`;
+            const src = `${CDN_BASE}/img/${category}/${fileName}`;
             try {
               const res = await fetch(src, { method: "HEAD" });
               if (!res.ok) break;
@@ -743,7 +746,7 @@
     let naturalH = cached ? cached.height : (thumbH || 500);
 
     let w, h;
-    if (category === "main") {
+    if (category === "main" || category === "temp") {
       w = CANVAS_SIZE;
       h = CANVAS_SIZE;
     } else {
@@ -757,8 +760,8 @@
       id: nextId++,
       type: "image",
       src: src,
-      x: category === "main" ? 0 : Math.round((CANVAS_SIZE - w) / 2),
-      y: category === "main" ? 0 : Math.round((CANVAS_SIZE - h) / 2),
+      x: (category === "main" || category === "temp") ? 0 : Math.round((CANVAS_SIZE - w) / 2),
+      y: (category === "main" || category === "temp") ? 0 : Math.round((CANVAS_SIZE - h) / 2),
       w: w,
       h: h,
       rotation: 0,
@@ -1665,7 +1668,9 @@
 
     // Load persisted mode
     const savedMode = localStorage.getItem("faithcard_mode");
-    if (savedMode === "simple") {
+    if (savedMode === "pro") {
+      simpleMode = false;
+    } else if (savedMode === "simple") {
       simpleMode = true;
     }
 
@@ -1699,12 +1704,9 @@
       btnSimple.classList.add("active");
       btnPro.classList.remove("active");
 
-      // Force backdrop tab if on a hidden tab
-      const activeTabBtn = document.querySelector(".tab-btn.active");
-      if (activeTabBtn && (activeTabBtn.dataset.tab === "elements" || activeTabBtn.dataset.tab === "decor" || activeTabBtn.dataset.tab === "text")) {
-        const backdropTab = document.querySelector('.tab-btn[data-tab="main"]');
-        if (backdropTab) backdropTab.click();
-      }
+      // Force templates tab in simple mode
+      const backdropTab = document.querySelector('.tab-btn[data-tab="temp"]');
+      if (backdropTab) backdropTab.click();
 
       // Close panels that might clutter
       if (typeof layersPanelOpen !== "undefined" && layersPanelOpen) {
@@ -1714,6 +1716,10 @@
       document.body.classList.remove("simple-mode");
       btnSimple.classList.remove("active");
       btnPro.classList.add("active");
+
+      // Return to backdrops when switching to Pro
+      const backdropTab = document.querySelector('.tab-btn[data-tab="main"]');
+      if (backdropTab) backdropTab.click();
     }
   }
 

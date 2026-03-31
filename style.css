@@ -2039,20 +2039,22 @@ input[type="color"] {
 /* ===== Simple Mode Styles ===== */
 .mode-toggle-container {
   position: absolute;
-  top: 16px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 150;
+  z-index: 1001; /* Above overlay image which is 1000 */
   pointer-events: auto;
 }
 
 .mode-toggle {
   display: flex;
-  background: var(--md-sys-color-surface-container-high);
+  background: rgba(43, 41, 48, 0.6); /* Glass effect */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border-radius: var(--radius-full);
   padding: 4px;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  box-shadow: var(--md-sys-elevation-2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .mode-btn {
@@ -2085,25 +2087,31 @@ body.simple-mode .simple-mode-only {
   display: flex !important;
 }
 
-/* Hide non-simple-mode tabs */
-body.simple-mode .tab-btn[data-tab="elements"],
-body.simple-mode .tab-btn[data-tab="decor"],
-body.simple-mode .tab-btn[data-tab="text"] {
+/* Hide Templates tab in Pro mode */
+#tab-temp {
   display: none !important;
 }
 
-/* Hide advanced bottom canvas tools */
-body.simple-mode #btn-toggle-grid,
-body.simple-mode #btn-toggle-snap,
-body.simple-mode #btn-toggle-layers,
-body.simple-mode #btn-fit-screen,
+/* Show Templates tab ONLY in simple mode */
+body.simple-mode #tab-temp {
+  display: flex !important;
+}
+
+/* Hide non-simple-mode tabs */
+body.simple-mode .tab-btn[data-tab="main"],
+body.simple-mode .tab-btn[data-tab="elements"],
+body.simple-mode .tab-btn[data-tab="decor"] {
+  display: none !important;
+}
+
+/* Maintain bottom canvas tools in simple mode as requested */
 body.simple-mode #btn-expand-panel {
   display: none !important;
 }
 
-/* Hide the FAB settings btn in simple mode */
+/* Show the FAB settings btn in simple mode */
 body.simple-mode #btn-element-settings {
-  display: none !important;
+  display: flex !important;
 }
 
 /* Adjust tabs container padding when some are hidden */
