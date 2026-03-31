@@ -30,8 +30,10 @@
   }
 
   document.getElementById("btn-download").addEventListener("click", () => {
-    incrementSaveCount(); // fire-and-forget
-    getSaveCount();
+    incrementSaveCount();
+    setTimeout(() => {
+      getSaveCount();
+    }, 3000);
   });
 
   async function getSaveCount() {
