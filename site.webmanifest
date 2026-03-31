@@ -1,0 +1,17 @@
+{
+  "name": "FaithCard",
+  "short_name": "FaithCard",
+  "description": "An initiative as part of the JY Tech Mission, it is a platform to create personalized wishing cards for social media.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#141218",
+  "theme_color": "#141218",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
