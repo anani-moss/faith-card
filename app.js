@@ -41,6 +41,15 @@
   let canvasEl, placeholder, propertiesPanel, propsImage, propsText;
   let downloadModal, downloadNameInput;
 
+  // ─── Background Configuration ────────────────────────────
+  let bgConfig = {
+    type: "solid", // "solid" | "gradient"
+    solidColor: "#ffffff",
+    gradColor1: "#FFB6C1",
+    gradColor2: "#87CEFA",
+    gradAngle: 135
+  };
+
   // ─── CDN Configuration ──────────────────────────────────
   let CDN_BASE = "https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@main";
   let manifest = null; // Default to null to know if it failed
@@ -88,6 +97,7 @@
     bindCanvasEvents();
     bindKeyboard();
     bindModal();
+    bindBgColorModal();
     bindOverlayControl();
     fitCanvasToScreen();
     bindPanelGestures();
@@ -1390,6 +1400,79 @@
         hideDownloadModal();
       }
     });
+
+    const customBgBtn = document.getElementById("btn-custom-bg");
+    if (customBgBtn) {
+      customBgBtn.addEventListener("click", () => {
+        haptic("light");
+        document.getElementById("bgcolor-modal").classList.remove("hidden");
+      });
+    }
+  }
+
+  function bindBgColorModal() {
+    const modal = document.getElementById("bgcolor-modal");
+    if(!modal) return;
+    
+    document.getElementById("btn-bgcolor-close").addEventListener("click", () => {
+      haptic("light");
+      modal.classList.add("hidden");
+    });
+    
+    // Tabs
+    const tabSolid = document.getElementById("btn-tab-solid");
+    const tabGrad = document.getElementById("btn-tab-gradient");
+    const secSolid = document.getElementById("bgcolor-solid-section");
+    const secGrad = document.getElementById("bgcolor-gradient-section");
+    
+    function setTab(type) {
+      haptic("light");
+      bgConfig.type = type;
+      if (type === "solid") {
+        tabSolid.style.background = "var(--md-sys-color-primary)";
+        tabSolid.style.color = "white";
+        tabGrad.style.background = "transparent";
+        tabGrad.style.color = "var(--md-sys-color-on-surface)";
+        secSolid.classList.remove("hidden");
+        secGrad.classList.add("hidden");
+      } else {
+        tabGrad.style.background = "var(--md-sys-color-primary)";
+        tabGrad.style.color = "white";
+        tabSolid.style.background = "transparent";
+        tabSolid.style.color = "var(--md-sys-color-on-surface)";
+        secGrad.classList.remove("hidden");
+        secSolid.classList.add("hidden");
+      }
+    }
+    
+    tabSolid.addEventListener("click", () => setTab("solid"));
+    tabGrad.addEventListener("click", () => setTab("gradient"));
+
+    const gradAngle = document.getElementById("bg-color-grad-angle");
+    const gradAngleVal = document.getElementById("bg-color-grad-angle-val");
+    gradAngle.addEventListener("input", (e) => {
+      gradAngleVal.textContent = e.target.value + "°";
+    });
+
+    // Apply button
+    document.getElementById("btn-bgcolor-apply").addEventListener("click", () => {
+      bgConfig.solidColor = document.getElementById("bg-color-solid-picker").value;
+      bgConfig.gradColor1 = document.getElementById("bg-color-grad-1").value;
+      bgConfig.gradColor2 = document.getElementById("bg-color-grad-2").value;
+      bgConfig.gradAngle = parseInt(gradAngle.value, 10);
+      
+      applyCanvasBackground();
+      modal.classList.add("hidden");
+      haptic("success");
+    });
+  }
+
+  function applyCanvasBackground() {
+    if(bgConfig.type === "solid") {
+      canvasEl.style.background = bgConfig.solidColor;
+    } else {
+      canvasEl.style.background = `linear-gradient(${bgConfig.gradAngle}deg, ${bgConfig.gradColor1}, ${bgConfig.gradColor2})`;
+    }
   }
 
   function showDownloadModal() {
@@ -1418,9 +1501,29 @@
     offscreen.height = CANVAS_SIZE;
     const ctx = offscreen.getContext("2d");
 
-    // White background
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    // Apply Solid or Gradient Background natively to HTML5 canvas engine
+    if (bgConfig.type === "solid") {
+      ctx.fillStyle = bgConfig.solidColor;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    } else {
+      // Correctly map CSS linear-gradient angle to HTML5 Cartesian coordinates within a square
+      const cx = CANVAS_SIZE / 2;
+      const cy = CANVAS_SIZE / 2;
+      const angleRad = bgConfig.gradAngle * Math.PI / 180;
+      // Calculate radius that bounds the square for corner-to-corner filling
+      const r = Math.abs((CANVAS_SIZE / 2) * Math.sin(angleRad)) + Math.abs((CANVAS_SIZE / 2) * Math.cos(angleRad));
+      
+      const x1 = cx - Math.sin(angleRad) * r;
+      const y1 = cy + Math.cos(angleRad) * r;
+      const x2 = cx + Math.sin(angleRad) * r;
+      const y2 = cy - Math.cos(angleRad) * r;
+      
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+      grad.addColorStop(0, bgConfig.gradColor1);
+      grad.addColorStop(1, bgConfig.gradColor2);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
 
     // Load all image elements using cached blob URLs
     const loadPromises = elements.map((el) => {
