@@ -104,29 +104,41 @@
 
     <!-- Header -->
     <header id="app-header">
-      <h1>FaithCard</h1>
-      <div class=" header-actions">
+      <h1>🕊️ FaithCard</h1>
+
+      <!-- Hamburger toggle (mobile only) -->
+      <button id="btn-hamburger" class="hamburger-btn" title="Menu" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <!-- Actions (dropdown on mobile, inline on desktop) -->
+      <div class="header-actions" id="header-actions">
         <div class="overlay-control" title="Overlay">
           <label class="switch">
             <input type="checkbox" id="jy-overlay-toggle" checked>
             <span class="switch-box"><span class="switch-text">ON</span></span>
           </label>
+          <span style="display:inline-block; white-space:nowrap; transform: scale(0.9); transform-origin:left;">
+            JY Frame
+          </span>
           <select id="jy-overlay-select" autocomplete="off" style="max-width: 100px;">
             <option value="" disabled selected>Loading…</option>
           </select>
         </div>
-
-
-        <button id="btn-clear" class="btn m3-btn-error" title="Clear Canvas" style="width: 30%;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18" />
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-          </svg>
-        </button>
-
-        <button id="btn-help" class="btn m3-btn-tonal" title="How to use"
-          style="min-width: 40px; padding: 0 12px;">?</button>
+        <div class="header-actions-row">
+          <button id="btn-help" class="btn m3-btn-tonal" title="How to use">?</button>
+          <button id="btn-clear" class="btn m3-btn-error" title="Clear Canvas">
+            <span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
     </header>
 

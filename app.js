@@ -66,7 +66,41 @@
 
     window.addEventListener("resize", fitCanvasToScreen);
 
+    bindHamburger();
     initSplash();
+  }
+
+  // ─── Hamburger Menu ────────────────────────────────────
+  function bindHamburger() {
+    const btn = document.getElementById("btn-hamburger");
+    const menu = document.getElementById("header-actions");
+    if (!btn || !menu) return;
+
+    btn.addEventListener("click", () => {
+      haptic('light');
+      const isOpen = menu.classList.toggle("open");
+      btn.classList.toggle("open", isOpen);
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!menu.classList.contains("open")) return;
+      if (!e.target.closest("#app-header")) {
+        menu.classList.remove("open");
+        btn.classList.remove("open");
+      }
+    });
+
+    // Close menu after any button inside is clicked
+    menu.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        // Small delay so the action fires first
+        setTimeout(() => {
+          menu.classList.remove("open");
+          btn.classList.remove("open");
+        }, 150);
+      });
+    });
   }
 
   // ─── Splash Tutorial ────────────────────────────────────

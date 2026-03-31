@@ -232,6 +232,7 @@ body {
   flex-shrink: 0;
   z-index: 100;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
 }
 
 #app-header h1 {
@@ -241,10 +242,98 @@ body {
   line-height: 1.2;
 }
 
+/* ===== Hamburger Button (mobile only) ===== */
+.hamburger-btn {
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 10px;
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger-btn:active {
+  background-color: var(--md-sys-color-surface-container-highest);
+}
+
+.hamburger-line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--md-sys-color-on-surface);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+/* Animated X when open */
+.hamburger-btn.open .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-btn.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger-btn.open .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ===== Header Actions (Mobile: dropdown) ===== */
 .header-actions {
+  display: none;
+  position: absolute;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  background: var(--md-sys-color-surface-container);
+  padding: 16px;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 99;
+  transform-origin: top center;
+  animation: menuSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.header-actions.open {
+  display: flex;
+}
+
+@keyframes menuSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-actions-row {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.header-actions-row .btn {
+  flex: 1;
+}
+
+.header-actions-row #btn-help {
+  min-width: 44px;
+  padding: 0 14px;
+  flex: 0;
 }
 
 /* ===== M3 Standard Buttons ===== */
@@ -1197,6 +1286,30 @@ input[type="color"] {
 @media (min-width: 600px) {
   .hidden-desktop {
     display: none !important;
+  }
+
+  /* Header: inline actions on desktop, no hamburger */
+  .hamburger-btn {
+    display: none !important;
+  }
+
+  .header-actions {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    background: none;
+    padding: 0;
+    box-shadow: none;
+    gap: 8px;
+    animation: none;
+  }
+
+  .header-actions-row {
+    gap: 8px;
+  }
+
+  .header-actions-row .btn {
+    flex: 0;
   }
 
   #workspace {
