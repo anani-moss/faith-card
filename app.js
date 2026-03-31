@@ -1688,14 +1688,8 @@
 
     if (!btnSimple || !btnPro) return;
 
-    // Load persisted mode
-    const savedMode = localStorage.getItem("faithcard_mode");
-    if (savedMode === "pro") {
-      simpleMode = false;
-    } else if (savedMode === "simple") {
-      simpleMode = true;
-    }
-
+    // Start as Simple by default on every load
+    simpleMode = true;
     applyMode();
 
     btnSimple.addEventListener("click", () => {
