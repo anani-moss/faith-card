@@ -42,12 +42,25 @@
   let downloadModal, downloadNameInput;
 
   // ─── CDN Configuration ──────────────────────────────────
-  const CDN_BASE = "https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@main";
+  let CDN_BASE = "https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@main";
   let manifest = null; // Default to null to know if it failed
 
   async function loadManifest() {
     try {
-      const res = await fetch(`${CDN_BASE}/manifest.json?t=${Date.now()}`);
+      // 1. Fetch latest commit SHA to form an immutable jsDelivr URL.
+      // This instantly bypasses jsDelivr's 12-hour cache limit for new updates,
+      // while preserving permanent CDN edge caching for the specific commit.
+      const commitRes = await fetch("https://api.github.com/repos/thenewlegend/faithcard-cdn/commits/main");
+      if (commitRes.ok) {
+        const commitData = await commitRes.json();
+        const sha = commitData.sha;
+        CDN_BASE = `https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@${sha}`;
+      } else {
+        console.warn("GitHub API limit reached or repo not found. Falling back to @main cache.");
+      }
+
+      // 2. Load the manifest.json using the fresh URL
+      const res = await fetch(`${CDN_BASE}/manifest.json`);
       if (res.ok) {
         manifest = await res.json();
       } else {
