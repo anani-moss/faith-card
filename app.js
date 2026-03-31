@@ -53,6 +53,134 @@
     checkFirstLoadOverlay();
 
     window.addEventListener("resize", fitCanvasToScreen);
+
+    initSplash();
+  }
+
+  // ─── Splash Tutorial ────────────────────────────────────
+  function initSplash() {
+    const STORAGE_KEY = "faithcard_splash_hidden_until";
+    const overlay = document.getElementById("splash-overlay");
+    if (!overlay) return;
+
+    // Check if user has opted out within the last 3 hours
+    const hiddenUntil = localStorage.getItem(STORAGE_KEY);
+    if (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10)) {
+      overlay.remove();
+      return;
+    }
+
+    const slidesContainer = document.getElementById("splash-slides");
+    const slides = slidesContainer.querySelectorAll(".splash-slide");
+    const dotsContainer = document.getElementById("splash-dots");
+    const prevBtn = document.getElementById("splash-prev");
+    const nextBtn = document.getElementById("splash-next");
+    const dontShowCheckbox = document.getElementById("splash-dont-show");
+    const totalSlides = slides.length;
+    let current = 0;
+    let autoPlayInterval = null;
+
+    // Build dots
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement("span");
+      dot.className = "splash-dot" + (i === 0 ? " active" : "");
+      dot.addEventListener("click", () => {
+        resetAutoPlay();
+        goToSlide(i);
+      });
+      dotsContainer.appendChild(dot);
+    }
+    const dots = dotsContainer.querySelectorAll(".splash-dot");
+
+    function goToSlide(idx) {
+      current = idx;
+      console.log("Moving to slide:", current);
+      slidesContainer.style.transform = `translateX(-${current * 100}%)`;
+
+      dots.forEach((d, i) => d.classList.toggle("active", i === current));
+      prevBtn.disabled = current === 0;
+
+      if (current === totalSlides - 1) {
+        nextBtn.textContent = "Get Started";
+      } else {
+        nextBtn.textContent = "Next";
+      }
+    }
+
+    function startAutoPlay() {
+      stopAutoPlay();
+      autoPlayInterval = setInterval(() => {
+        if (current < totalSlides - 1) {
+          goToSlide(current + 1);
+        } else {
+          stopAutoPlay();
+        }
+      }, 3000);
+    }
+
+    function stopAutoPlay() {
+      if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+      }
+    }
+
+    function resetAutoPlay() {
+      stopAutoPlay();
+      if (current < totalSlides - 1) startAutoPlay();
+    }
+
+    function closeSplash() {
+      console.log("Closing splash");
+      stopAutoPlay();
+      if (dontShowCheckbox.checked) {
+        const threeHours = 3 * 60 * 60 * 1000;
+        localStorage.setItem(STORAGE_KEY, String(Date.now() + threeHours));
+      }
+      overlay.classList.add("closing");
+      overlay.addEventListener("animationend", () => overlay.remove(), { once: true });
+    }
+
+    nextBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("Next clicked");
+      resetAutoPlay();
+      if (current < totalSlides - 1) {
+        goToSlide(current + 1);
+      } else {
+        closeSplash();
+      }
+    });
+
+    prevBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("Prev clicked");
+      resetAutoPlay();
+      if (current > 0) goToSlide(current - 1);
+    });
+
+    // Swipe support
+    let touchStartX = 0;
+    overlay.addEventListener("touchstart", (e) => {
+      resetAutoPlay();
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    overlay.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 50) {
+        if (dx < 0 && current < totalSlides - 1) goToSlide(current + 1);
+        else if (dx > 0 && current > 0) goToSlide(current - 1);
+      }
+    });
+
+    // Click outside card to dismiss
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeSplash();
+    });
+
+    startAutoPlay();
   }
 
   // --- Confirmation before leaving ---

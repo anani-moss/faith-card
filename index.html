@@ -15,6 +15,93 @@
 <body>
   <div id="app">
 
+    <!-- Splash Tutorial Overlay -->
+    <div id="splash-overlay">
+      <div class="splash-card">
+        <div class="splash-slides-wrapper">
+          <div class="splash-slides" id="splash-slides">
+
+            <!-- Slide 1: Welcome -->
+            <div class="splash-slide">
+              <div class="splash-emoji">✝️</div>
+              <h2>Welcome to FaithCard</h2>
+              <p>Create stunning faith-based greeting cards in seconds. Drag, drop, customize, and share your designs
+                with
+                the world.</p>
+            </div>
+
+            <!-- Slide 2: Backgrounds & Images -->
+            <div class="splash-slide">
+              <div class="splash-emoji">🖼️</div>
+              <h2>Choose Backgrounds</h2>
+              <p>Tap the <strong>Backgrounds</strong> tab at the bottom to pick a base image. Tap
+                <strong>Wishes</strong>
+                or <strong>Decor</strong> tabs to layer more elements on top.
+              </p>
+            </div>
+
+            <!-- Slide 3: Move & Resize -->
+            <div class="splash-slide">
+              <div class="splash-emoji">👆</div>
+              <h2>Move & Resize</h2>
+              <p><strong>Drag</strong> any element to reposition it. Use the <strong>corner handle</strong> (⤡) to
+                resize
+                images and text by dragging outward or inward.</p>
+            </div>
+
+            <!-- Slide 4: Text -->
+            <div class="splash-slide">
+              <div class="splash-emoji">🔤</div>
+              <h2>Add Custom Text</h2>
+              <p>Go to the <strong>Text</strong> tab and tap <strong>"Add text"</strong>. Choose from 20+ fonts —
+                elegant
+                serifs, handwritten scripts, and funky display fonts!</p>
+            </div>
+
+            <!-- Slide 5: Properties Panel -->
+            <div class="splash-slide">
+              <div class="splash-emoji">⚙️</div>
+              <h2>Edit Properties</h2>
+              <p><strong>Double-tap</strong> any element to open its settings panel. Adjust scale, rotation, opacity,
+                font, color, weight, and layer order.</p>
+            </div>
+
+            <!-- Slide 6: Overlays -->
+            <div class="splash-slide">
+              <div class="splash-emoji">🎨</div>
+              <h2>Overlays</h2>
+              <p>Use the <strong>toggle switch</strong> in the header to enable or disable overlays. Pick different
+                overlay designs from the dropdown to frame your card beautifully.</p>
+            </div>
+
+            <!-- Slide 7: Save & Export -->
+            <div class="splash-slide">
+              <div class="splash-emoji">💾</div>
+              <h2>Save Your Card</h2>
+              <p>Tap the <strong>Save</strong> button to export a high-quality <strong>1080×1080 PNG</strong>. Name your
+                file and it's ready to share!</p>
+            </div> <!-- End Slide 7 -->
+          </div> <!-- End splash-slides -->
+        </div> <!-- End splash-slides-wrapper -->
+
+        <!-- Dot indicators -->
+        <div class="splash-dots" id="splash-dots"></div>
+
+        <!-- Actions -->
+        <div class="splash-actions">
+          <label class="splash-checkbox-label">
+            <input type="checkbox" id="splash-dont-show">
+            <span>Don't show again</span>
+          </label>
+          <div class="splash-buttons">
+            <button class="btn m3-btn-tonal" id="splash-prev" disabled>Back</button>
+            <button class="btn m3-btn-primary" id="splash-next"
+              style="background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header id="app-header">
       <h1>FaithCard</h1>
@@ -349,6 +436,9 @@
     <script src="app.js"></script>
     <script>
       function resetCheckboxAfterLoad() {
+
+        document.addEventListener("DOMContentLoaded", init);
+
         window.addEventListener('load', () => {
           setTimeout(() => {
             const checkbox = document.getElementById('jy-overlay-toggle');
@@ -371,6 +461,7 @@
 
       // Invoke the function
       resetCheckboxAfterLoad();
+
     </script>
 </body>
 

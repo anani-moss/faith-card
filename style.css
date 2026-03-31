@@ -1271,3 +1271,173 @@ input[type="color"] {
   transform: translateY(20px) scale(0.9);
   pointer-events: none;
 }
+
+/* ===== Splash Tutorial Overlay ===== */
+#splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: splashFadeIn 0.4s ease;
+  pointer-events: auto; /* Required for mouse/touch on children */
+}
+
+#splash-overlay.closing {
+  animation: splashFadeOut 0.35s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes splashFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes splashFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.splash-card {
+  width: 90vw;
+  max-width: 420px;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: 28px;
+  padding: 32px 24px 24px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  animation: splashCardIn 0.5s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  pointer-events: auto;
+  z-index: 10000;
+}
+
+@keyframes splashCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.splash-slides-wrapper {
+  overflow: hidden;
+}
+
+.splash-slides {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.splash-slide {
+  min-width: 100%;
+  text-align: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.splash-emoji {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  animation: splashBounce 0.6s ease 0.3s both;
+}
+
+@keyframes splashBounce {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.splash-slide h2 {
+  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  margin: 0 0 10px;
+}
+
+.splash-slide p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0;
+}
+
+.splash-slide p strong {
+  color: var(--md-sys-color-primary);
+}
+
+/* Dot indicators */
+.splash-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0 18px;
+}
+
+.splash-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--md-sys-color-outline);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.splash-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: var(--md-sys-color-primary);
+}
+
+/* Actions */
+.splash-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.splash-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.82rem;
+  color: var(--md-sys-color-on-surface-variant);
+  user-select: none;
+}
+
+.splash-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--md-sys-color-primary);
+  cursor: pointer;
+}
+
+.splash-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  position: relative;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.splash-buttons .btn {
+  pointer-events: auto;
+  cursor: pointer;
+  min-width: 80px;
+  padding: 0 20px;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
