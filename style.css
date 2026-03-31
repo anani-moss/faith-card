@@ -686,7 +686,7 @@ body {
 /* ===== Toast Notification ===== */
 .toast-container {
   position: fixed;
-  bottom: calc(var(--nav-bar-height) + 24px); /* Sit comfortably right above navbar */
+  bottom: calc(var(--nav-bar-height) + env(safe-area-inset-bottom, 0px) + 24px); /* Appear safely above navigation bar */
   left: 50%;
   transform: translate(-50%, 0);
   background: var(--md-sys-color-inverse-surface);
