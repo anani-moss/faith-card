@@ -1687,3 +1687,37 @@ input[type="color"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===== Skeletons & States ===== */
+.skeleton-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, 
+    var(--md-sys-color-surface-container-high) 25%, 
+    var(--md-sys-color-surface-container-highest) 50%, 
+    var(--md-sys-color-surface-container-high) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.retry-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  grid-column: 1 / -1;
+  padding: 32px 16px;
+  color: var(--md-sys-color-on-surface-variant);
+  text-align: center;
+}
+.retry-container p {
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}

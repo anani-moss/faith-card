@@ -111,10 +111,58 @@
     initSplash();
 
     // Data Fetching (Asynchronous background task)
-    loadManifest().then(() => {
-      discoverImages();
-      discoverOverlays();
+    loadData();
+  }
+
+  async function loadData() {
+    showSkeletons();
+    await loadManifest();
+    await Promise.all([discoverImages(), discoverOverlays()]);
+    removeSkeletons();
+    checkEmptyState();
+  }
+
+  function showSkeletons() {
+    Object.keys(IMAGE_LIBRARY).forEach(category => {
+      const grid = document.getElementById(`grid-${category}`);
+      if (!grid) return;
+      // Add 6 skeleton loaders per category
+      for (let i = 0; i < 6; i++) {
+        const skel = document.createElement("div");
+        skel.className = "skeleton-thumb loading-skeleton";
+        grid.appendChild(skel);
+      }
     });
+  }
+
+  function removeSkeletons() {
+    document.querySelectorAll(".loading-skeleton").forEach(el => el.remove());
+  }
+
+  function checkEmptyState() {
+    const hasAnyImages = Object.values(IMAGE_LIBRARY).some(arr => arr.length > 0);
+    if (!hasAnyImages) {
+      // Show retry button
+      const gridMain = document.getElementById("grid-main");
+      if (gridMain && !document.getElementById("btn-retry-fetch")) {
+        const retryContainer = document.createElement("div");
+        retryContainer.className = "retry-container";
+        retryContainer.innerHTML = `
+          <p>Failed to load image library.</p>
+          <button id="btn-retry-fetch" class="btn m3-btn-tonal">
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-12.28l5.57 5.57"/>
+             </svg>
+             Retry
+          </button>
+        `;
+        retryContainer.querySelector("button").addEventListener("click", () => {
+          retryContainer.remove();
+          loadData();
+        });
+        gridMain.appendChild(retryContainer);
+      }
+    }
   }
 
   // ─── Hamburger Menu ────────────────────────────────────
@@ -421,7 +469,15 @@
 
     await Promise.all(
       categories.map(async (category) => {
+        // Clear previous state array
+        IMAGE_LIBRARY[category] = [];
         const grid = document.getElementById(`grid-${category}`);
+
+        // Clear existing items in grid but skip custom BG button and skeletons
+        const elementsToRemove = Array.from(grid.children).filter(child => {
+            return child.id !== 'btn-custom-bg' && !child.classList.contains('loading-skeleton') && child.id !== 'btn-retry-fetch';
+        });
+        elementsToRemove.forEach(el => el.remove());
 
         if (manifest && manifest[category] !== undefined) {
           // Use manifest counts if available
