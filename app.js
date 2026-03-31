@@ -766,11 +766,7 @@
       naturalH: naturalH,
     };
 
-    if (category === "main") {
-      elements.unshift(el);
-    } else {
-      elements.push(el);
-    }
+    elements.push(el);
 
     renderCanvas();
     selectElement(el.id);
