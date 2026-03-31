@@ -1249,13 +1249,14 @@
     document.getElementById(id).textContent = v;
   }
 
-  let isCloseSettingsBound = false;
-
   function openSettingsPanel() {
     if (propertiesPanel && (propertiesPanel.classList.contains("hidden") || propertiesPanel.classList.contains("closing-to-fab"))) {
       haptic("light");
       propertiesPanel.classList.remove("hidden");
       propertiesPanel.classList.remove("closing-to-fab");
+      propertiesPanel.style.transform = "";
+      propertiesPanel.style.opacity = "";
+      propertiesPanel.style.borderRadius = "";
       const btnSettings = document.getElementById("btn-element-settings");
       if (btnSettings) {
         btnSettings.querySelector(".icon-settings").classList.add("hidden");
@@ -1265,18 +1266,46 @@
   }
 
   function closeSettingsPanel() {
-    if (!propertiesPanel || (propertiesPanel.classList.contains("hidden") && !propertiesPanel.classList.contains("closing-to-fab"))) return;
-    
-    propertiesPanel.classList.add("closing-to-fab");
-    if (!isCloseSettingsBound) {
-      propertiesPanel.addEventListener("animationend", (e) => {
-        if (e.animationName === "foldToFab") {
-          propertiesPanel.classList.remove("closing-to-fab");
-          propertiesPanel.classList.add("hidden");
-        }
-      });
-      isCloseSettingsBound = true;
+    if (!propertiesPanel || propertiesPanel.classList.contains("hidden")) return;
+
+    const btnSettings = document.getElementById("btn-element-settings");
+    const panelRect = propertiesPanel.getBoundingClientRect();
+
+    // Default target: bottom-right of viewport (fallback if button is hidden/gone)
+    let targetX = window.innerWidth - 40;
+    let targetY = window.innerHeight - 40;
+
+    if (btnSettings && !btnSettings.classList.contains("hidden")) {
+      const btnRect = btnSettings.getBoundingClientRect();
+      targetX = btnRect.left + btnRect.width / 2;
+      targetY = btnRect.top + btnRect.height / 2;
     }
+
+    // Calculate how far the panel center needs to translate
+    const panelCenterX = panelRect.left + panelRect.width / 2;
+    const panelCenterY = panelRect.top + panelRect.height / 2;
+    const dx = targetX - panelCenterX;
+    const dy = targetY - panelCenterY;
+
+    propertiesPanel.style.pointerEvents = "none";
+
+    const anim = propertiesPanel.animate([
+      { transform: "scale(1) translate(0, 0)", opacity: 1, borderRadius: "28px 28px 0 0" },
+      { transform: `scale(0.05) translate(${dx}px, ${dy}px)`, opacity: 0, borderRadius: "999px" }
+    ], {
+      duration: 400,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      fill: "forwards"
+    });
+
+    anim.onfinish = () => {
+      propertiesPanel.classList.add("hidden");
+      propertiesPanel.style.pointerEvents = "";
+      propertiesPanel.style.transform = "";
+      propertiesPanel.style.opacity = "";
+      propertiesPanel.style.borderRadius = "";
+      anim.cancel();
+    };
   }
 
   function bindPropertiesPanel() {
