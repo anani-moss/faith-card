@@ -521,7 +521,6 @@
             const src = `${CDN_BASE}/img/${category}/${category}${i}.png`;
             const entry = { src, label: `${category} ${i}` };
             IMAGE_LIBRARY[category].push(entry);
-            cacheImage(src);
             buildThumb(grid, src, entry.label, category);
           }
         } else {
@@ -535,7 +534,6 @@
 
               const entry = { src, label: `${category} ${i}` };
               IMAGE_LIBRARY[category].push(entry);
-              cacheImage(src);
               buildThumb(grid, src, entry.label, category);
 
               i++;
@@ -555,7 +553,10 @@
     thumb.innerHTML = `<img src="${src}" alt="${label}" draggable="false" loading="lazy">`;
     thumb.addEventListener("click", (e) => {
       e.preventDefault();
-      addImageToCanvas(src, category);
+      const img = thumb.querySelector("img");
+      const nw = img && img.naturalWidth > 0 ? img.naturalWidth : 0;
+      const nh = img && img.naturalHeight > 0 ? img.naturalHeight : 0;
+      addImageToCanvas(src, category, nw, nh);
     });
     grid.appendChild(thumb);
   }
@@ -731,10 +732,13 @@
   }
 
   // ─── Add Image to Canvas ──────────────────────────────
-  function addImageToCanvas(src, category) {
+  function addImageToCanvas(src, category, thumbW, thumbH) {
+    // Lazy-cache: only fetch blob when the user actually uses an image
+    cacheImage(src);
+
     const cached = imageCache.get(src);
-    let naturalW = cached ? cached.width : 500;
-    let naturalH = cached ? cached.height : 500;
+    let naturalW = cached ? cached.width : (thumbW || 500);
+    let naturalH = cached ? cached.height : (thumbH || 500);
 
     let w, h;
     if (category === "main") {
