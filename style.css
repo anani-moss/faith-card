@@ -73,9 +73,9 @@
   --hover-overlay: rgba(255, 255, 255, 0.08);
   --pressed-overlay: rgba(255, 255, 255, 0.12);
   --focus-overlay: rgba(255, 255, 255, 0.12);
-  --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: 220ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-spring: 500ms cubic-bezier(0.22, 1.0, 0.36, 1);
+  --transition: 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-fast: 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-spring: 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* ===== Reset & Base ===== */
@@ -223,7 +223,9 @@ body {
 /* ===== App Bar (Header) ===== */
 #app-header {
   height: var(--header-height);
-  background: var(--md-sys-color-surface);
+  background: rgba(20, 18, 24, 0.80);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: var(--md-sys-color-on-surface);
   display: flex;
   align-items: center;
@@ -295,7 +297,9 @@ body {
   top: var(--header-height);
   left: 0;
   right: 0;
-  background: var(--md-sys-color-surface-container);
+  background: rgba(33, 31, 38, 0.90);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   padding: 16px;
   flex-direction: column;
   gap: 12px;
@@ -788,7 +792,9 @@ body {
 /* ===== M3 Navigation Bar (Bottom Panel) ===== */
 #bottom-panel {
   flex-shrink: 0;
-  background: var(--md-sys-color-surface-container);
+  background: rgba(33, 31, 38, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom);
@@ -1043,7 +1049,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--md-sys-color-surface-container-low);
+  background: rgba(29, 27, 32, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--md-sys-elevation-3);
   z-index: 300;
@@ -1060,6 +1068,8 @@ body {
 /* Slider active fading (10% opacity for non-slider parts) */
 #properties-panel.slider-active {
   background-color: rgba(29, 27, 32, 0.1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   /* Surface container low at 10% opacity */
   box-shadow: none;
 }
@@ -1294,7 +1304,9 @@ input[type="color"] {
 }
 
 .modal-card {
-  background: var(--md-sys-color-surface-container-highest);
+  background: rgba(54, 52, 59, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: var(--radius-xl);
   padding: 24px;
   width: 100%;
@@ -1532,7 +1544,9 @@ input[type="color"] {
 .splash-card {
   width: 90vw;
   max-width: 420px;
-  background: var(--md-sys-color-surface-container-high);
+  background: rgba(43, 41, 48, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: 28px;
   padding: 32px 24px 24px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
@@ -1720,4 +1734,33 @@ input[type="color"] {
 .retry-container p {
   font-size: 0.875rem;
   margin-bottom: 8px;
+}
+
+/* ===== 48px Consistent Touch Targets ===== */
+.btn-close,
+.modal-close,
+.hamburger-btn,
+.switch,
+#btn-element-settings,
+#btn-expand-panel,
+.tab-btn {
+  position: relative;
+}
+
+.btn-close::after,
+.modal-close::after,
+.hamburger-btn::after,
+.switch::after,
+#btn-element-settings::after,
+#btn-expand-panel::after,
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: var(--min-touch-target);
+  min-height: var(--min-touch-target);
+  width: 100%;
+  height: 100%;
 }

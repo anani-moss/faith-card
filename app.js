@@ -1249,6 +1249,7 @@
 
   function openSettingsPanel() {
     if (propertiesPanel && propertiesPanel.classList.contains("hidden")) {
+      haptic("light");
       propertiesPanel.classList.remove("hidden");
       const btnSettings = document.getElementById("btn-element-settings");
       if (btnSettings) {
@@ -1291,6 +1292,7 @@
 
     // Toggle via close button
     document.getElementById("btn-close-panel").addEventListener("click", () => {
+      haptic("light");
       propertiesPanel.classList.add("hidden");
       const btnSettings = document.getElementById("btn-element-settings");
       if (btnSettings) {
@@ -1303,6 +1305,7 @@
     const btnSettings = document.getElementById("btn-element-settings");
     if (btnSettings) {
       btnSettings.addEventListener("click", () => {
+        haptic("light");
         if (propertiesPanel.classList.contains("hidden")) {
           propertiesPanel.classList.remove("hidden");
           btnSettings.querySelector(".icon-settings").classList.add("hidden");
@@ -1425,6 +1428,7 @@
     document.querySelectorAll("#btn-bring-front").forEach((btn) =>
       btn.addEventListener("click", () => {
         if (!selectedId) return;
+        haptic("light");
         const idx = elements.findIndex((e) => e.id === selectedId);
         if (idx < elements.length - 1) {
           const el = elements.splice(idx, 1)[0];
@@ -1437,6 +1441,7 @@
     document.querySelectorAll("#btn-send-back").forEach((btn) =>
       btn.addEventListener("click", () => {
         if (!selectedId) return;
+        haptic("light");
         const idx = elements.findIndex((e) => e.id === selectedId);
         if (idx > 0) {
           const el = elements.splice(idx, 1)[0];
@@ -1486,6 +1491,7 @@
     // Fit canvas button
     const fitBtn = document.getElementById("btn-fit-screen");
     if (fitBtn) fitBtn.addEventListener("click", () => {
+      haptic("light");
       fitCanvasToScreen();
       showToast("Canvas fitted to screen");
     });
@@ -1646,6 +1652,7 @@
   }
 
   function showDownloadModal() {
+    haptic("light");
     deselectAll();
     downloadNameInput.value = "";
     downloadModal.classList.remove("hidden");
@@ -1654,6 +1661,7 @@
   }
 
   function hideDownloadModal() {
+    haptic("light");
     downloadModal.classList.add("hidden");
   }
 
