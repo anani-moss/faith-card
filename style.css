@@ -1428,7 +1428,7 @@ input[type="color"] {
   inset: 0;
   transition: opacity 0.5s ease;
   z-index: 9999;
-  display: flex;
+  display: none; /* Hidden by default to prevent load flash, JS will show it */
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.75);
