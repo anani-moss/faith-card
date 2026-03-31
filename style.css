@@ -1610,12 +1610,15 @@ input[type="color"] {
 .splash-card {
   width: 90vw;
   max-width: 420px;
+  max-height: 85vh; /* Standard dynamic height */
   background: rgba(43, 41, 48, 0.85);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: 28px;
   padding: 32px 24px 24px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
   animation: splashCardIn 0.7s cubic-bezier(0.22, 1.0, 0.36, 1);
   position: relative;
   pointer-events: auto;
@@ -1650,6 +1653,28 @@ input[type="color"] {
   text-align: center;
   padding: 0 8px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.splash-scroll-area {
+  max-height: 50vh; /* Specific scroll height */
+  overflow-y: auto;
+  padding: 0 12px 10px 0;
+  margin: 0 -4px 0 0;
+  text-align: justify;
+  hyphens: auto;
+  touch-action: pan-y; /* Prioritize vertical scrolling */
+  overscroll-behavior-y: contain; /* Prevent parent scrolling */
+}
+
+/* Custom scrollbar for the splash area */
+.splash-scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+.splash-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 10px;
 }
 
 .splash-emoji {
@@ -1679,9 +1704,13 @@ input[type="color"] {
 .splash-slide p {
   font-family: 'Roboto', sans-serif;
   font-size: 0.9rem;
-  line-height: 1.55;
+  line-height: 1.7; /* Increased for readability */
   color: var(--md-sys-color-on-surface-variant);
-  margin: 0;
+  margin: 0 0 16px; /* Paragraph spacing */
+}
+
+.splash-slide p:last-child {
+  margin-bottom: 0;
 }
 
 .splash-slide p strong {

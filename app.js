@@ -302,7 +302,7 @@
         } else {
           stopAutoPlay();
         }
-      }, 30000);
+      }, 60000);
     }
 
     function stopAutoPlay() {
@@ -386,7 +386,7 @@
     overlay.style.touchAction = "pan-y";
 
     overlay.addEventListener("pointerdown", (e) => {
-      if (e.target.closest("button") || e.target.closest("input") || e.target.closest(".splash-dot")) return;
+      if (e.target.closest("button") || e.target.closest("input") || e.target.closest(".splash-dot") || e.target.closest(".splash-scroll-area")) return;
       isPointerDown = true;
       pointerStartX = e.clientX;
       resetAutoPlay();
