@@ -1731,7 +1731,7 @@
       localStorage.setItem("faithcard_mode", "simple");
       haptic("medium");
       applyMode();
-      showToast("Simple Mode Activated");
+      showToast("Simple Mode");
     });
 
     btnPro.addEventListener("click", () => {
@@ -1740,7 +1740,7 @@
       localStorage.setItem("faithcard_mode", "pro");
       haptic("medium");
       applyMode();
-      showToast("Pro Mode Activated");
+      showToast("Pro Mode");
     });
   }
 
@@ -2366,12 +2366,12 @@
       chip.className = "text-preset-chip";
       chip.textContent = preset.name;
       chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
-      
+
       chip.addEventListener("click", () => {
         haptic("medium");
         applyTextPreset(preset);
       });
-      
+
       container.appendChild(chip);
     });
   }
