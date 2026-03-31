@@ -4,6 +4,8 @@
  * Fixed image export: pre-caches images as data URLs.
  */
 
+
+
 (function () {
   "use strict";
 
@@ -13,6 +15,37 @@
     elements: [],
     decor: [],
   };
+
+  const supabase = window.supabase.createClient(
+    "https://sdaerjimvxudykyatvgc.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkYWVyamltdnh1ZHlreWF0dmdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzE5OTEsImV4cCI6MjA5MDQwNzk5MX0.O3nfO7Q3OaBbuv5NOAD1n-o9-d_taW56AzWBvhQSCow"
+  );
+
+  async function incrementSaveCount() {
+    const { error } = await supabase.rpc('increment_saves');
+
+    if (error) {
+      console.error("Failed to increment save count:", error);
+    }
+  }
+
+  document.getElementById("btn-download").addEventListener("click", () => {
+    incrementSaveCount(); // fire-and-forget
+    getSaveCount();
+  });
+
+  async function getSaveCount() {
+    const { data, error } = await supabase
+      .from('global_stats')
+      .select('saves')
+      .eq('id', 1)
+      .single();
+
+    if (!error) {
+      console.log("Total saves:", data.saves);
+    }
+  }
+
 
   // ─── Haptic Feedback ───────────────────────────────────
   function haptic(intensity) {
@@ -475,7 +508,7 @@
 
         // Clear existing items in grid but skip custom BG button and skeletons
         const elementsToRemove = Array.from(grid.children).filter(child => {
-            return child.id !== 'btn-custom-bg' && !child.classList.contains('loading-skeleton') && child.id !== 'btn-retry-fetch';
+          return child.id !== 'btn-custom-bg' && !child.classList.contains('loading-skeleton') && child.id !== 'btn-retry-fetch';
         });
         elementsToRemove.forEach(el => el.remove());
 
