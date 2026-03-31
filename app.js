@@ -75,13 +75,6 @@
     const overlay = document.getElementById("splash-overlay");
     if (!overlay) return;
 
-    // Check if user has opted out permanently or within the last 3 hours
-    const hiddenUntil = localStorage.getItem(STORAGE_KEY);
-    if (hiddenUntil === "permanent" || (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10))) {
-      overlay.remove();
-      return;
-    }
-
     const slidesContainer = document.getElementById("splash-slides");
     const slides = slidesContainer.querySelectorAll(".splash-slide");
     const dotsContainer = document.getElementById("splash-dots");
@@ -91,26 +84,30 @@
     const totalSlides = slides.length;
     let current = 0;
     let autoPlayInterval = null;
+    let dotsBuilt = false;
+    let dots;
 
-    // Build dots
-    for (let i = 0; i < totalSlides; i++) {
-      const dot = document.createElement("span");
-      dot.className = "splash-dot" + (i === 0 ? " active" : "");
-      dot.addEventListener("click", () => {
-        resetAutoPlay();
-        goToSlide(i);
-      });
-      dotsContainer.appendChild(dot);
+    function buildDots() {
+      if (dotsBuilt) return;
+      dotsBuilt = true;
+      for (let i = 0; i < totalSlides; i++) {
+        const dot = document.createElement("span");
+        dot.className = "splash-dot" + (i === 0 ? " active" : "");
+        dot.addEventListener("click", () => {
+          resetAutoPlay();
+          goToSlide(i);
+        });
+        dotsContainer.appendChild(dot);
+      }
+      dots = dotsContainer.querySelectorAll(".splash-dot");
     }
-    const dots = dotsContainer.querySelectorAll(".splash-dot");
 
     function goToSlide(idx) {
       current = idx;
-      console.log("Moving to slide:", current);
       slidesContainer.style.transform = `translateX(-${current * 100}%)`;
       haptic('light');
 
-      dots.forEach((d, i) => d.classList.toggle("active", i === current));
+      if (dots) dots.forEach((d, i) => d.classList.toggle("active", i === current));
       prevBtn.disabled = current === 0;
 
       if (current === totalSlides - 1) {
@@ -142,82 +139,66 @@
       stopAutoPlay();
       if (current < totalSlides - 1) startAutoPlay();
     }
-    // --- Splash Close Logic ---
-    function closeSplash(onComplete) {
-      console.log("Closing splash");
 
+    function showSplash() {
+      buildDots();
+      dontShowCheckbox.checked = false;
+      goToSlide(0);
+      overlay.classList.remove("closing");
+      overlay.style.display = "flex";
+      // Re-trigger entrance animation
+      overlay.style.animation = "none";
+      overlay.offsetHeight; // reflow
+      overlay.style.animation = "";
+      startAutoPlay();
+    }
+
+    function closeSplash(onComplete) {
       stopAutoPlay();
       haptic('medium');
 
       if (dontShowCheckbox.checked) {
-        localStorage.setItem(STORAGE_KEY, "permanent");
+        const threeHours = 3 * 60 * 60 * 1000;
+        localStorage.setItem(STORAGE_KEY, String(Date.now() + threeHours));
       }
 
-      // Start closing animation
       overlay.classList.add("closing");
-
-      // Wait for animation to finish before removing
       overlay.addEventListener("animationend", () => {
-        overlay.remove();
+        overlay.style.display = "none";
+        overlay.classList.remove("closing");
 
-        // Execute callback AFTER DOM is stable
         if (typeof onComplete === "function") {
-          // Ensure browser has rendered the removal
-          requestAnimationFrame(() => {
-            onComplete();
-          });
+          requestAnimationFrame(() => onComplete());
         }
       }, { once: true });
     }
 
-
     // --- Checkbox Reset Logic ---
     function resetCheckbox() {
       const checkbox = document.getElementById('jy-overlay-toggle');
-
-      if (!checkbox) {
-        console.warn("Checkbox not found");
-        return;
-      }
-
-      console.log("Resetting checkbox");
-
-      // Toggle sequence
+      if (!checkbox) return;
       checkbox.checked = false;
-
-      // Force reflow (ensures state change is registered)
       checkbox.offsetHeight;
-
       checkbox.checked = true;
-
-      // Trigger listeners
       checkbox.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-
-    // --- Next Button Logic ---
+    // --- Next Button ---
     nextBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-
-      console.log("Next clicked");
-
       resetAutoPlay();
 
       if (current < totalSlides - 1) {
         goToSlide(current + 1);
       } else {
-        // Final slide → close splash → then reset checkbox
-        closeSplash(() => {
-          resetCheckbox();
-        });
+        closeSplash(() => resetCheckbox());
       }
     });
 
     prevBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      console.log("Prev clicked");
       resetAutoPlay();
       if (current > 0) goToSlide(current - 1);
     });
@@ -225,7 +206,6 @@
     // Swipe support (desktop + mobile)
     let pointerStartX = 0;
     let isPointerDown = false;
-
     overlay.style.touchAction = "pan-y";
 
     overlay.addEventListener("pointerdown", (e) => {
@@ -254,7 +234,22 @@
       if (e.target === overlay) closeSplash();
     });
 
-    startAutoPlay();
+    // --- Help button to re-show ---
+    const helpBtn = document.getElementById("btn-help");
+    if (helpBtn) {
+      helpBtn.addEventListener("click", () => {
+        haptic('light');
+        showSplash();
+      });
+    }
+
+    // --- Initial show/hide ---
+    const hiddenUntil = localStorage.getItem(STORAGE_KEY);
+    if (hiddenUntil && Date.now() < parseInt(hiddenUntil, 10)) {
+      overlay.style.display = "none";
+    } else {
+      showSplash();
+    }
   }
 
   // --- Confirmation before leaving ---
