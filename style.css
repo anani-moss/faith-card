@@ -1312,6 +1312,10 @@ input[type="color"] {
     flex: 0;
   }
 
+  #btn-expand-panel {
+    display: none !important;
+  }
+
   #workspace {
     flex-direction: row;
   }
