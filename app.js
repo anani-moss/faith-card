@@ -367,8 +367,10 @@
 
     if (expandBtn && panelContent) {
       expandBtn.addEventListener("click", () => {
-        panelContent.classList.toggle("expanded");
-        expandBtn.classList.toggle("open");
+        const isExpanded = panelContent.classList.toggle("expanded");
+
+        // Bind button state to panel state
+        expandBtn.classList.toggle("open", isExpanded);
       });
     }
 
