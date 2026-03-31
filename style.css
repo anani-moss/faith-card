@@ -2035,3 +2035,78 @@ input[type="color"] {
   width: 100%;
   height: 100%;
 }
+
+/* ===== Simple Mode Styles ===== */
+.mode-toggle-container {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 150;
+  pointer-events: auto;
+}
+
+.mode-toggle {
+  display: flex;
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.mode-btn.active {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.simple-mode-only {
+  display: none !important;
+}
+
+body.simple-mode .simple-mode-only {
+  display: flex !important;
+}
+
+/* Hide non-simple-mode tabs */
+body.simple-mode .tab-btn[data-tab="elements"],
+body.simple-mode .tab-btn[data-tab="decor"],
+body.simple-mode .tab-btn[data-tab="text"] {
+  display: none !important;
+}
+
+/* Hide advanced bottom canvas tools */
+body.simple-mode #btn-toggle-grid,
+body.simple-mode #btn-toggle-snap,
+body.simple-mode #btn-toggle-layers,
+body.simple-mode #btn-fit-screen,
+body.simple-mode #btn-expand-panel {
+  display: none !important;
+}
+
+/* Hide the FAB settings btn in simple mode */
+body.simple-mode #btn-element-settings {
+  display: none !important;
+}
+
+/* Adjust tabs container padding when some are hidden */
+body.simple-mode .tabs-container {
+  gap: 0;
+}

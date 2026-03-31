@@ -72,6 +72,7 @@
   let resizing = null;
   let snapEnabled = true;
   let gridEnabled = false;
+  let simpleMode = false;
 
   // Pre-cached images as data URLs for reliable export
   const imageCache = new Map();
@@ -144,6 +145,7 @@
     window.addEventListener("resize", fitCanvasToScreen);
     bindHamburger();
     initSplash();
+    bindModeToggle();
 
     // Data Fetching (Asynchronous background task)
     loadData();
@@ -1642,6 +1644,76 @@
         }
         showToast(snapEnabled ? "Magnetic Snapping: ON" : "Magnetic Snapping: OFF");
       });
+    }
+
+    // Simple Mode "Add Text" button (inside backdrop grid)
+    const addTextSimpleBtn = document.getElementById("btn-add-text-simple");
+    if (addTextSimpleBtn) {
+      addTextSimpleBtn.addEventListener("click", () => {
+        addTextToCanvas();
+        haptic("success");
+      });
+    }
+  }
+
+  // ─── Mode Toggle ─────────────────────────────────────────
+  function bindModeToggle() {
+    const btnSimple = document.getElementById("btn-mode-simple");
+    const btnPro = document.getElementById("btn-mode-pro");
+
+    if (!btnSimple || !btnPro) return;
+
+    // Load persisted mode
+    const savedMode = localStorage.getItem("faithcard_mode");
+    if (savedMode === "simple") {
+      simpleMode = true;
+    }
+
+    applyMode();
+
+    btnSimple.addEventListener("click", () => {
+      if (simpleMode) return;
+      simpleMode = true;
+      localStorage.setItem("faithcard_mode", "simple");
+      haptic("medium");
+      applyMode();
+      showToast("Simple Mode Activated");
+    });
+
+    btnPro.addEventListener("click", () => {
+      if (!simpleMode) return;
+      simpleMode = false;
+      localStorage.setItem("faithcard_mode", "pro");
+      haptic("medium");
+      applyMode();
+      showToast("Pro Mode Activated");
+    });
+  }
+
+  function applyMode() {
+    const btnSimple = document.getElementById("btn-mode-simple");
+    const btnPro = document.getElementById("btn-mode-pro");
+
+    if (simpleMode) {
+      document.body.classList.add("simple-mode");
+      btnSimple.classList.add("active");
+      btnPro.classList.remove("active");
+
+      // Force backdrop tab if on a hidden tab
+      const activeTabBtn = document.querySelector(".tab-btn.active");
+      if (activeTabBtn && (activeTabBtn.dataset.tab === "elements" || activeTabBtn.dataset.tab === "decor" || activeTabBtn.dataset.tab === "text")) {
+        const backdropTab = document.querySelector('.tab-btn[data-tab="main"]');
+        if (backdropTab) backdropTab.click();
+      }
+
+      // Close panels that might clutter
+      if (typeof layersPanelOpen !== "undefined" && layersPanelOpen) {
+        toggleLayersPanel();
+      }
+    } else {
+      document.body.classList.remove("simple-mode");
+      btnSimple.classList.remove("active");
+      btnPro.classList.add("active");
     }
   }
 
