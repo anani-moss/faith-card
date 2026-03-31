@@ -2038,32 +2038,31 @@ input[type="color"] {
 
 /* ===== Simple Mode Styles ===== */
 #top-toggle-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 8px 16px;
-  background: var(--md-sys-color-surface-container-lowest);
-  z-index: 100;
-  flex-shrink: 0;
-  transition: opacity 0.3s ease, margin-top 0.3s ease, height 0.3s ease, padding 0.3s ease;
+  padding: 16px;
+  z-index: 1001; /* Overlaid on workspace, below modals (9999) */
+  pointer-events: none; /* Let clicks pass through outside the toggle box */
+  transition: opacity 0.3s ease, transform 0.3s ease;
   overflow: hidden;
-  height: auto;
-  min-height: 52px;
 }
 
 #top-toggle-bar.hidden-soft {
   opacity: 0;
-  height: 0;
-  min-height: 0;
-  padding: 0;
   pointer-events: none;
-  margin-top: -10px;
+  transform: translateY(-20px);
 }
 
 .mode-toggle-container {
   display: flex;
   width: auto;
   max-width: 220px;
+  pointer-events: auto; /* Active for the toggle itself */
 }
 
 .mode-toggle {
