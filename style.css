@@ -73,9 +73,9 @@
   --hover-overlay: rgba(255, 255, 255, 0.08);
   --pressed-overlay: rgba(255, 255, 255, 0.12);
   --focus-overlay: rgba(255, 255, 255, 0.12);
-  --transition: 250ms cubic-bezier(0.2, 0, 0, 1);
-  --transition-fast: 150ms cubic-bezier(0.2, 0, 0, 1);
-  --transition-spring: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 500ms cubic-bezier(0.22, 1.0, 0.36, 1);
 }
 
 /* ===== Reset & Base ===== */
@@ -166,7 +166,7 @@ body {
 }
 
 .switch:active .switch-box {
-  transform: scale(0.92);
+  transform: scale(0.95);
 }
 
 /* Hover (subtle) */
@@ -295,7 +295,7 @@ body {
 
 .m3-btn-tonal:active {
   box-shadow: inset 0 0 0 100px var(--pressed-overlay);
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* Error Button */
@@ -314,7 +314,7 @@ body {
 
 .m3-btn-error:active {
   box-shadow: inset 0 0 0 100px var(--pressed-overlay);
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 /* Icon Button (Top App Bar usually) */
@@ -392,8 +392,7 @@ body {
 }
 
 .fab:active {
-  transform: scale(0.93);
-  transition-duration: 80ms;
+  transform: scale(0.96);
 }
 
 /* Secondary FAB (Add Text) */
@@ -658,7 +657,7 @@ body {
 }
 
 .tab-btn:active {
-  transform: scale(0.92);
+  transform: scale(0.96);
 }
 
 .tab-indicator {
@@ -669,7 +668,7 @@ body {
   justify-content: center;
   border-radius: 16px;
   /* Pill */
-  transition: background-color 200ms ease;
+  transition: background-color var(--transition);
 }
 
 .tab-btn.active .tab-indicator {
@@ -695,8 +694,8 @@ body {
   letter-spacing: 0.2px;
   font-weight: 500;
   transition:
-    color 200ms ease,
-    font-weight 200ms ease;
+    color var(--transition),
+    font-weight var(--transition);
 }
 
 #panel-content {
@@ -806,9 +805,8 @@ body {
 
 .image-thumb:active {
   border-color: var(--md-sys-color-primary);
-  transform: scale(0.93);
+  transform: scale(0.96);
   box-shadow: var(--md-sys-elevation-1);
-  transition-duration: 80ms;
 }
 
 /* Placed overlay indicator */
@@ -860,9 +858,8 @@ body {
 
 .text-thumb:active {
   border-color: var(--md-sys-color-primary);
-  transform: scale(0.93);
+  transform: scale(0.96);
   box-shadow: var(--md-sys-elevation-1);
-  transition-duration: 80ms;
 }
 
 .text-thumb-icon {
@@ -886,7 +883,7 @@ body {
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   box-shadow: var(--md-sys-elevation-3);
   z-index: 300;
-  animation: sheetSlideUp 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: sheetSlideUp 450ms cubic-bezier(0.22, 1.0, 0.36, 1);
   max-height: 80dvh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
@@ -1312,6 +1309,7 @@ input[type="color"] {
 #splash-overlay {
   position: fixed;
   inset: 0;
+  transition: opacity 0.5s ease;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -1319,12 +1317,12 @@ input[type="color"] {
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  animation: splashFadeIn 0.4s ease;
+  animation: splashFadeIn 0.6s ease;
   pointer-events: auto; /* Required for mouse/touch on children */
 }
 
 #splash-overlay.closing {
-  animation: splashFadeOut 0.35s ease forwards;
+  animation: splashFadeOut 0.5s ease forwards;
   pointer-events: none;
 }
 
@@ -1345,7 +1343,7 @@ input[type="color"] {
   border-radius: 28px;
   padding: 32px 24px 24px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
-  animation: splashCardIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: splashCardIn 0.7s cubic-bezier(0.22, 1.0, 0.36, 1);
   position: relative;
   pointer-events: auto;
   z-index: 10000;
@@ -1355,7 +1353,7 @@ input[type="color"] {
 @keyframes splashCardIn {
   from {
     opacity: 0;
-    transform: translateY(50px) scale(0.88);
+    transform: translateY(30px) scale(0.94);
   }
   to {
     opacity: 1;
@@ -1369,7 +1367,7 @@ input[type="color"] {
 
 .splash-slides {
   display: flex;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.5s cubic-bezier(0.22, 1.0, 0.36, 1);
   will-change: transform;
 }
 
@@ -1383,11 +1381,11 @@ input[type="color"] {
 .splash-emoji {
   font-size: 3.5rem;
   margin-bottom: 12px;
-  animation: splashBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  animation: splashBounce 0.6s cubic-bezier(0.22, 1.0, 0.36, 1) 0.3s both;
 }
 
 @keyframes splashBounce {
-  0% { transform: scale(0) rotate(-10deg); }
+  0% { transform: scale(0.5) rotate(-5deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
 
@@ -1424,12 +1422,12 @@ input[type="color"] {
   height: 8px;
   border-radius: 50%;
   background: var(--md-sys-color-outline);
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s cubic-bezier(0.22, 1.0, 0.36, 1);
   cursor: pointer;
 }
 
 .splash-dot:active {
-  transform: scale(0.8);
+  transform: scale(0.88);
 }
 
 .splash-dot.active {
@@ -1481,12 +1479,11 @@ input[type="color"] {
   border-radius: 20px;
   font-size: 0.88rem;
   font-weight: 500;
-  transition: all var(--transition-fast);
+  transition: all var(--transition);
 }
 
 .splash-buttons .btn:active {
-  transform: scale(0.93);
-  transition-duration: 80ms;
+  transform: scale(0.97);
 }
 
 /* ===== Reduced Motion ===== */
