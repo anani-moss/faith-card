@@ -97,27 +97,37 @@
 
   async function loadManifest() {
     try {
-      // 1. Fetch latest commit SHA to form an immutable jsDelivr URL.
+      // 1. Fetch latest commit SHA with a cache-buster (?t=)
       // This instantly bypasses jsDelivr's 12-hour cache limit for new updates,
       // while preserving permanent CDN edge caching for the specific commit.
-      const commitRes = await fetch("https://api.github.com/repos/thenewlegend/faithcard-cdn/commits/main");
+      const commitRes = await fetch(`https://api.github.com/repos/thenewlegend/faithcard-cdn/commits/main?t=${Date.now()}`);
+
+      // Log Rate Limits to the console
+      const remaining = commitRes.headers.get("x-ratelimit-remaining");
+      if (remaining !== null) {
+        console.log(`GitHub API Rate Limit Remaining: ${remaining}`);
+      }
+
       if (commitRes.ok) {
         const commitData = await commitRes.json();
         const sha = commitData.sha;
+        console.log(`⚡ CDN Version Detected (SHA): ${sha}`);
         CDN_BASE = `https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@${sha}`;
       } else {
-        console.warn("GitHub API limit reached or repo not found. Falling back to @main cache.");
+        console.warn(`⚠️ GitHub API call failed (Status: ${commitRes.status}). Falling back to @main cache.`);
       }
 
       // 2. Load the manifest.json using the fresh URL
-      const res = await fetch(`${CDN_BASE}/manifest.json`);
+      // Also add a cache-buster to the manifest itself to ensure we see new files immediately
+      const res = await fetch(`${CDN_BASE}/manifest.json?t=${Date.now()}`);
       if (res.ok) {
         manifest = await res.json();
+        console.log("✅ CDN Manifest loaded successfully:", manifest);
       } else {
-        console.warn("Could not load manifest.json from CDN, falling back to probing:", res.status);
+        console.warn(`⚠️ Could not load manifest.json from CDN (Status: ${res.status}), falling back to probing.`);
       }
     } catch (e) {
-      console.error("Manifest load error:", e);
+      console.error("❌ Manifest/CDN loading error:", e);
     }
   }
 
@@ -2105,7 +2115,13 @@
       if (el.type === "text") {
         label = el.text.length > 18 ? el.text.substring(0, 18) + "…" : el.text;
       } else {
-        label = el.category === "main" ? "Backdrop" : `Element ${el.id}`;
+        if (el.category === "main") {
+          label = "Backdrop";
+        } else {
+          // Extract filename from src (e.g., cross_01.png -> cross_01)
+          const fileName = el.src ? el.src.split("/").pop().split(".")[0] : "";
+          label = fileName || `Element ${el.id}`;
+        }
       }
 
       row.innerHTML = `
@@ -2125,6 +2141,13 @@
       row.addEventListener("click", (e) => {
         if (e.target.closest(".layer-btn")) return;
         selectElement(el.id);
+      });
+
+      // Double-click row to open settings
+      row.addEventListener("dblclick", (e) => {
+        if (e.target.closest(".layer-btn")) return;
+        selectElement(el.id);
+        openSettingsPanel();
       });
 
       // Move up (increase z-index = move later in array)
