@@ -2060,10 +2060,26 @@
     offscreen.height = CANVAS_SIZE;
     const ctx = offscreen.getContext("2d");
 
+    // ─── Helper for Decoding HTML Entities ───
+    function decodeHTMLEntities(text) {
+      if (!text) return "";
+      return text
+        .replace(/&nbsp;/gi, " ")
+        .replace(/&amp;/gi, "&")
+        .replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">")
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;/gi, "'");
+    }
+
     // ─── Helper for Rich Text Rendering on Canvas ───
     function drawRichText(ctx, el) {
       const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity, w } = el;
-      const safeText = text || "";
+      // Normalize cross-browser line breaks from contenteditable
+      let safeText = (text || "")
+        .replace(/<div>/gi, "<br>")
+        .replace(/<\/div>/gi, "");
+        
       const PADDING_X = 12;
       const PADDING_Y = 8;
       const tokens = safeText.split(/(<br>|<b>|<\/b>|<i>|<\/i>|<u>|<\/u>)/gi);
@@ -2107,8 +2123,11 @@
         else if (lowerToken === "<br>") {
           pushLine();
         } else {
+          // Decode HTML entities (like &nbsp;) in text tokens
+          const decodedToken = decodeHTMLEntities(token);
+          
           // Text content: split by spaces but KEEP the spaces
-          const words = token.split(/(\s+)/);
+          const words = decodedToken.split(/(\s+)/);
           
           words.forEach(word => {
             if (!word) return;
@@ -2366,8 +2385,8 @@
       let label = "";
       if (el.type === "text") {
         const safeText = el.text || "";
-        // Strip HTML tags for the layer label to keep it clean
-        const plainText = safeText.replace(/<[^>]*>/g, "");
+        // Normalize tags and Strip HTML for the layer label to keep it clean
+        const plainText = decodeHTMLEntities(safeText.replace(/<div>/gi, " ").replace(/<[^>]*>/g, ""));
         label = plainText.length > 18 ? plainText.substring(0, 18) + "…" : (plainText || "Text");
       } else {
         if (el.category === "main") {
