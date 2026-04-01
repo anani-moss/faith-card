@@ -908,6 +908,7 @@
         div.style.fontWeight = el.fontWeight;
         div.style.color = el.color;
         if (el.w > 0) div.style.width = el.w + "px";
+        div.style.maxWidth = (CANVAS_SIZE - el.x) + "px";
         // Successive formatting with null safety
         const safeText = el.text || "";
         div.innerHTML = safeText.replace(/\n/g, "<br>");
@@ -919,28 +920,6 @@
       handle.dataset.resize = el.id;
       handle.dataset.type = "scale"; // Standard scaling (font-size or image size)
       div.appendChild(handle);
-
-      if (el.type === "text") {
-        const wHandle = document.createElement("div");
-        wHandle.className = "width-handle";
-        wHandle.dataset.resize = el.id;
-        wHandle.dataset.type = "width"; // Boundary width resizing
-        div.appendChild(wHandle);
-
-        wHandle.addEventListener("mousedown", (e) => {
-          e.stopPropagation();
-          selectElement(el.id);
-          startResize(e.clientX, e.clientY, el.id, "width");
-        });
-
-        wHandle.addEventListener("touchstart", (e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          const t = e.touches[0];
-          selectElement(el.id);
-          startResize(t.clientX, t.clientY, el.id, "width");
-        });
-      }
 
       // ── Mouse events ──
       div.addEventListener("mousedown", (e) => {
@@ -1426,6 +1405,15 @@
       setDisplay("prop-text-rotation-val", el.rotation + "°");
       setVal("prop-text-opacity", el.opacity);
       setDisplay("prop-text-opacity-val", el.opacity + "%");
+      
+      const maxWidthVal = CANVAS_SIZE - el.x;
+      const widthInput = document.getElementById("prop-text-width");
+      if (widthInput) {
+        widthInput.max = maxWidthVal;
+        widthInput.value = el.w || 400;
+      }
+      setDisplay("prop-text-width-val", (el.w || "Auto") + (el.w ? "px" : ""));
+      
       syncTextColorPicker();
       renderTextPresets();
     }

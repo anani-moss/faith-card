@@ -804,7 +804,7 @@ body {
 /* Resize handle - Fat finger friendly */
 /* Visual handle, but actual touch area is bigger via padding/border trick if needed. We use a 32x32px handle visually but large enough to touch. */
 
-.resize-handle, .width-handle {
+.resize-handle {
   position: absolute;
   background: var(--md-sys-color-primary-container);
   border: 3px solid var(--md-sys-color-surface);
@@ -816,9 +816,6 @@ body {
     background-color 150ms ease;
   box-shadow: var(--md-sys-elevation-2);
   touch-action: none;
-}
-
-.resize-handle {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -827,31 +824,13 @@ body {
   right: -14px;
 }
 
-.width-handle {
-  width: 12px;
-  height: 40px;
-  border-radius: var(--radius-full);
-  cursor: ew-resize;
-  top: 50%;
-  right: -6px;
-  transform: translateY(-50%);
-}
-
 .resize-handle:hover,
-.resize-handle:active,
-.width-handle:hover,
-.width-handle:active {
-  transform: scale(1.1) translateY(calc(-50% * var(--is-width, 0))); /* Adjusted in JS if needed */
+.resize-handle:active {
+  transform: scale(1.1);
   background: var(--md-sys-color-primary);
 }
 
-/* Need a specific transform for width handle hover to keep the vertical centering */
-.width-handle:hover, .width-handle:active {
-  transform: translateY(-50%) scale(1.2);
-}
-
-.canvas-element.selected .resize-handle,
-.canvas-element.selected .width-handle {
+.canvas-element.selected .resize-handle {
   opacity: 1;
 }
 
