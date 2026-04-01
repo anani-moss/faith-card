@@ -1715,11 +1715,31 @@ input[type="color"] {
   max-height: 50vh; /* Specific scroll height */
   overflow-y: auto;
   padding: 0 12px 10px 0;
-  margin: 0 -4px 0 0;
-  text-align: justify;
+  margin: 0 -4px 16px 0;
+  text-align: center; /* Center text by default now */
   hyphens: auto;
   touch-action: pan-y; /* Prioritize vertical scrolling */
   overscroll-behavior-y: contain; /* Prevent parent scrolling */
+}
+
+.splash-inline-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 24px;
+  height: 24px;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-primary);
+  border-radius: 6px;
+  margin: 0 4px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.splash-inline-icon svg {
+  width: 100%;
+  height: 100%;
 }
 
 /* Custom scrollbar for the splash area */

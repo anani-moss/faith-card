@@ -366,19 +366,6 @@
       e.stopPropagation();
       resetAutoPlay();
 
-      // Check for progressive scrolling in Slide 1 or any scrollable slide
-      const scrollArea = slides[current].querySelector(".splash-scroll-area");
-      if (scrollArea) {
-        // Tolerance for floating point or sub-pixel differences
-        const isAtBottom = Math.abs(scrollArea.scrollHeight - scrollArea.clientHeight - scrollArea.scrollTop) < 10;
-        if (!isAtBottom) {
-          // Scroll instead of advancing
-          scrollArea.scrollBy({ top: scrollArea.clientHeight * 0.75, behavior: "smooth" });
-          haptic('light');
-          return;
-        }
-      }
-
       if (current < totalSlides - 1) {
         goToSlide(current + 1);
       } else {
