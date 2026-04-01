@@ -2002,6 +2002,116 @@
     offscreen.height = CANVAS_SIZE;
     const ctx = offscreen.getContext("2d");
 
+    // ─── Helper for Rich Text Rendering on Canvas ───
+    function drawRichText(ctx, el) {
+      const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity } = el;
+      const safeText = text || "";
+      const tokens = safeText.split(/(<br>|<b>|<\/b>|<i>|<\/i>|<u>|<\/u>)/gi);
+      const lineHeight = fontSize * 1.25;
+
+      // First pass: Calculate bounding box for rotation center
+      let maxWidth = 0;
+      let totalHeight = 0;
+      let curX = 0;
+      let curY = 0;
+      let lines = [0]; // Width of each line
+
+      ctx.save();
+      let tempBold = fontWeight >= 700 || fontWeight === "bold";
+      let tempItalic = false;
+
+      const setTempFont = () => {
+        const style = tempItalic ? "italic" : "normal";
+        const weight = tempBold ? "700" : fontWeight;
+        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
+      };
+
+      tokens.forEach(token => {
+        if (!token) return;
+        const lt = token.toLowerCase();
+        if (lt === "<b>") tempBold = true;
+        else if (lt === "</b>") tempBold = fontWeight >= 700 || fontWeight === "bold";
+        else if (lt === "<i>") tempItalic = true;
+        else if (lt === "</i>") tempItalic = false;
+        else if (lt === "<br>") {
+          maxWidth = Math.max(maxWidth, curX);
+          curX = 0;
+          curY += lineHeight;
+          lines.push(0);
+        } else if (lt !== "<u>" && lt !== "</u>") {
+          setTempFont();
+          curX += ctx.measureText(token).width;
+          lines[lines.length - 1] = curX;
+        }
+      });
+      maxWidth = Math.max(maxWidth, curX);
+      totalHeight = curY + fontSize; // Approximate height
+      ctx.restore();
+
+      // Second pass: Draw
+      ctx.save();
+      ctx.globalAlpha = opacity / 100;
+      
+      if (rotation !== 0) {
+        const cx = x + maxWidth / 2;
+        const cy = y + totalHeight / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((rotation * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
+
+      ctx.textBaseline = "top";
+      ctx.fillStyle = color;
+
+      let state = {
+        bold: fontWeight >= 700 || fontWeight === "bold",
+        italic: false,
+        underline: false
+      };
+
+      let currentX = x;
+      let currentY = y;
+
+      const updateFont = () => {
+        const style = state.italic ? "italic" : "normal";
+        const weight = state.bold ? "700" : fontWeight;
+        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
+      };
+
+      tokens.forEach(token => {
+        if (!token) return;
+
+        const lowerToken = token.toLowerCase();
+        if (lowerToken === "<b>") { state.bold = true; updateFont(); }
+        else if (lowerToken === "</b>") { state.bold = fontWeight >= 700 || fontWeight === "bold"; updateFont(); }
+        else if (lowerToken === "<i>") { state.italic = true; updateFont(); }
+        else if (lowerToken === "</i>") { state.italic = false; updateFont(); }
+        else if (lowerToken === "<u>") { state.underline = true; }
+        else if (lowerToken === "</u>") { state.underline = false; }
+        else if (lowerToken === "<br>") {
+          currentX = x;
+          currentY += lineHeight;
+        } else {
+          updateFont();
+          const metrics = ctx.measureText(token);
+          ctx.fillText(token, currentX, currentY);
+
+          if (state.underline) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1, fontSize / 20);
+            ctx.moveTo(currentX, currentY + fontSize * 0.95);
+            ctx.lineTo(currentX + metrics.width, currentY + fontSize * 0.95);
+            ctx.stroke();
+          }
+
+          currentX += metrics.width;
+        }
+      });
+
+      ctx.restore();
+    }
+
     // Apply Solid or Gradient Background natively to HTML5 canvas engine
     if (bgConfig.type === "solid") {
       ctx.fillStyle = bgConfig.solidColor;
@@ -2079,28 +2189,20 @@
         ctx.save();
         ctx.globalAlpha = el.opacity / 100;
 
-        if (el.type === "image" && img) {
-          if (el.rotation !== 0) {
-            const cx = el.x + el.w / 2;
-            const cy = el.y + el.h / 2;
-            ctx.translate(cx, cy);
-            ctx.rotate((el.rotation * Math.PI) / 180);
-            ctx.drawImage(img, -el.w / 2, -el.h / 2, el.w, el.h);
-          } else {
-            ctx.drawImage(img, el.x, el.y, el.w, el.h);
+        if (el.type === "image") {
+          if (img) {
+            if (el.rotation !== 0) {
+              const cx = el.x + el.w / 2;
+              const cy = el.y + el.h / 2;
+              ctx.translate(cx, cy);
+              ctx.rotate((el.rotation * Math.PI) / 180);
+              ctx.drawImage(img, -el.w / 2, -el.h / 2, el.w, el.h);
+            } else {
+              ctx.drawImage(img, el.x, el.y, el.w, el.h);
+            }
           }
         } else if (el.type === "text") {
-          ctx.font = `${el.fontWeight} ${el.fontSize}px '${el.fontFamily}', sans-serif`;
-          ctx.fillStyle = el.color;
-          ctx.textBaseline = "top";
-
-          if (el.rotation !== 0) {
-            ctx.translate(el.x, el.y);
-            ctx.rotate((el.rotation * Math.PI) / 180);
-            ctx.fillText(el.text, 0, 0);
-          } else {
-            ctx.fillText(el.text, el.x, el.y);
-          }
+          drawRichText(ctx, el);
         }
 
         ctx.restore();

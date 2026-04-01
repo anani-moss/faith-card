@@ -476,16 +476,13 @@
               <button id="btn-format-underline" class="btn-format" title="Underline"><u>U</u></button>
             </div>
             <div class="input-with-done">
-              <div id="prop-text-input" contenteditable="true" class="rich-text-input" placeholder="Enter text..."></div>
+              <div id="prop-text-input" contenteditable="true" class="rich-text-input" placeholder="Enter text...">
+              </div>
               <button id="btn-text-done" class="btn-done" title="Done">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               </button>
-            </div>
-            <div class="text-presets-group">
-              <label class="prop-sublabel">Quick Presets</label>
-              <div id="text-presets-container" class="text-presets-row"></div>
             </div>
           </div>
 
@@ -516,8 +513,6 @@
               </div>
               <div id="text-color-picker-mount" class="hidden"></div>
               <div id="text-color-presets" class="color-presets hidden"></div>
-              <input type="text" id="text-color-hex" value="#333333" placeholder="#HEX"
-                style="width: 100%; text-align: center; font-family: monospace; font-size: 0.85rem; margin-top: 8px; min-height: 36px; padding: 6px 8px;">
             </div>
           </div>
           <div class="prop-row-inline">
@@ -567,6 +562,12 @@
               </select>
             </div>
           </div>
+
+          <div class="text-presets-group">
+            <label class="prop-sublabel">Quick Presets</label>
+            <div id="text-presets-container" class="text-presets-row"></div>
+          </div>
+
           <div class="prop-row">
             <label>Rotation</label>
             <input type="range" id="prop-text-rotation" min="0" max="360" value="0" step="1">
