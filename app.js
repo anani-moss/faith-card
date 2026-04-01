@@ -807,7 +807,7 @@
     const el = {
       id: nextId++,
       type: "text",
-      text: "Tap to edit",
+      text: "Double tap to edit",
       x: Math.round(CANVAS_SIZE * 0.25),
       y: Math.round(CANVAS_SIZE * 0.45),
       w: 0,
@@ -1216,7 +1216,7 @@
         e.target.tagName === "INPUT" ||
         e.target.tagName === "TEXTAREA" ||
         e.target.tagName === "SELECT" ||
-        e.target.isContentEditable || 
+        e.target.isContentEditable ||
         e.target.closest('[contenteditable]')
       )
         return;
@@ -2044,7 +2044,7 @@
       // Second pass: Draw
       ctx.save();
       ctx.globalAlpha = opacity / 100;
-      
+
       if (rotation !== 0) {
         const cx = x + maxWidth / 2;
         const cy = y + totalHeight / 2;
@@ -2497,7 +2497,7 @@
     TEXT_PRESETS_DATA.forEach(preset => {
       const chip = document.createElement("div");
       chip.className = "text-preset-chip";
-      
+
       // Dynamic preview: apply internal tags if the preset has them
       let chipContent = previewText;
       if (preset.isMix) {
@@ -2509,7 +2509,7 @@
       } else if (preset.name.includes("<b>")) {
         chipContent = `<b>${previewText}</b>`;
       }
-      
+
       chip.innerHTML = chipContent;
       chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
       chip.style.color = preset.color;
@@ -2559,7 +2559,7 @@
       // Keep plain but strip other formatting tags for pure style presets
       el.text = (el.text || "").replace(/<[^>]*>/g, "");
     }
-    
+
     el.fontFamily = preset.fontFamily;
     el.color = preset.color;
     el.fontSize = preset.fontSize;
