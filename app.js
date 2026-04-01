@@ -803,21 +803,22 @@
   }
 
   // ─── Add Text ─────────────────────────────────────────
-  function addTextToCanvas() {
+  // ─── Add Text ─────────────────────────────────────────
+  function addTextElement(props = {}) {
     const el = {
       id: nextId++,
       type: "text",
-      text: "Double tap to edit",
-      x: Math.round(CANVAS_SIZE * 0.25),
-      y: Math.round(CANVAS_SIZE * 0.45),
+      text: props.text || "Double tap to edit",
+      x: props.x !== undefined ? props.x : Math.round(CANVAS_SIZE * 0.25),
+      y: props.y !== undefined ? props.y : Math.round(CANVAS_SIZE * 0.45),
       w: 0,
       h: 0,
-      rotation: 0,
-      opacity: 100,
-      fontSize: 30,
-      fontFamily: "Inter",
-      fontWeight: "600",
-      color: "#333333",
+      rotation: props.rotation !== undefined ? props.rotation : 0,
+      opacity: props.opacity !== undefined ? props.opacity : 100,
+      fontSize: props.fontSize || 40,
+      fontFamily: props.fontFamily || "Inter",
+      fontWeight: props.fontWeight || "600",
+      color: props.color || "#333333",
     };
     elements.push(el);
     renderCanvas();
@@ -825,6 +826,70 @@
     openSettingsPanel();
     placeholder.classList.add("hidden");
     haptic('medium');
+    return el;
+  }
+
+  function addTextToCanvas() {
+    addTextElement();
+  }
+
+  const TEXT_TEMPLATES = [
+    { name: "Modern", fontFamily: "Montserrat", fontWeight: "700", color: "#d0bcff", rotation: 0, fontSize: 50 },
+    { name: "Elegant", fontFamily: "Dancing Script", fontWeight: "700", color: "#f9a8d4", rotation: 0, fontSize: 60 },
+    { name: "Classic", fontFamily: "Playfair Display", fontWeight: "700", color: "#ffffff", rotation: 0, fontSize: 50 },
+    { name: "Fun", fontFamily: "Pacifico", fontWeight: "400", color: "#fde047", rotation: 0, fontSize: 55 },
+    { name: "Badge", fontFamily: "Inter", fontWeight: "600", color: "#2196F3", rotation: 45, fontSize: 40 },
+    { name: "Minimal", fontFamily: "Roboto", fontWeight: "300", color: "#cac4d0", rotation: 0, fontSize: 40 },
+    { name: "Cyber", fontFamily: "Righteous", fontWeight: "400", color: "#00FFCC", rotation: 0, fontSize: 45 },
+    { name: "Royal", fontFamily: "Cinzel", fontWeight: "700", color: "#D4AF37", rotation: 0, fontSize: 45 },
+    { name: "Hand", fontFamily: "Caveat", fontWeight: "700", color: "#87CEFA", rotation: -15, fontSize: 50 },
+    { name: "Impact", fontFamily: "Bangers", fontWeight: "400", color: "#FF4444", rotation: 5, fontSize: 55 },
+    { name: "Soft", fontFamily: "Poppins", fontWeight: "500", color: "#b69df8", rotation: 0, fontSize: 45 },
+    { name: "Vintage", fontFamily: "Merriweather", fontWeight: "700", color: "#682a51", rotation: 0, fontSize: 45 },
+    { name: "Sweet", fontFamily: "Satisfy", fontWeight: "400", color: "#ffb6c1", rotation: 10, fontSize: 55 },
+    { name: "Glitch", fontFamily: "Russo One", fontWeight: "400", color: "#e6e1e5", rotation: 0, fontSize: 45 },
+    { name: "Pro", fontFamily: "Open Sans", fontWeight: "700", color: "#381e72", rotation: -45, fontSize: 40 }
+  ];
+
+  function renderTextTemplates() {
+    const grid = document.getElementById("grid-text");
+    if (!grid) return;
+
+    // We keep the "Add Text" button and add templates after it
+    TEXT_TEMPLATES.forEach(tpl => {
+      const thumb = document.createElement("div");
+      thumb.className = "text-template-thumb";
+      thumb.title = `Add ${tpl.name} Text`;
+      thumb.style.fontFamily = `'${tpl.fontFamily}', sans-serif`;
+      thumb.style.color = tpl.color;
+      thumb.style.fontWeight = tpl.fontWeight;
+      
+      // Create a subtle background glow or themed container feel
+      thumb.style.borderColor = "transparent";
+      thumb.style.position = "relative";
+      
+      // Use the template color for a very subtle border/glow
+      thumb.style.boxShadow = `0 4px 12px ${tpl.color}15`; 
+      
+      // Rotate the preview slightly for visual variety but keep it readable
+      const previewRot = tpl.rotation / 2;
+      thumb.innerHTML = `
+        <span style="transform: rotate(${previewRot}deg); display: inline-block;">Aa</span>
+        <span style="position: absolute; bottom: 6px; font-size: 0.6rem; font-weight: 700; color: var(--md-sys-color-on-surface-variant); opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px;">${tpl.name}</span>
+      `;
+      
+      thumb.addEventListener("click", () => {
+        const el = addTextElement({
+          fontFamily: tpl.fontFamily,
+          fontWeight: tpl.fontWeight,
+          color: tpl.color,
+          rotation: tpl.rotation,
+          fontSize: tpl.fontSize,
+          text: tpl.name
+        });
+      });
+      grid.appendChild(thumb);
+    });
   }
 
 
@@ -1661,8 +1726,9 @@
       .querySelectorAll("#btn-delete-el")
       .forEach((btn) => btn.addEventListener("click", deleteSelected));
 
-    // Initialize text presets
+    // Initialize text presets and templates
     renderTextPresets();
+    renderTextTemplates();
   }
 
   function bindRange(inputId, valId, suffix, callback) {
