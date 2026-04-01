@@ -842,10 +842,6 @@
       div.style.transform = `rotate(${el.rotation}deg)`;
       div.style.opacity = el.opacity / 100;
 
-      // Pointer-events isolation: only the selected element receives touch/mouse
-      if (selectedId !== null && el.id !== selectedId) {
-        div.style.pointerEvents = "none";
-      }
 
       if (el.type === "image") {
         div.style.width = el.w + "px";
@@ -944,10 +940,8 @@
       const elId = parseInt(elDiv.dataset.id);
       if (elId === id) {
         elDiv.classList.add("selected");
-        elDiv.style.pointerEvents = "";
       } else {
         elDiv.classList.remove("selected");
-        elDiv.style.pointerEvents = "none";
       }
     });
 
@@ -962,7 +956,6 @@
     // Restore pointer-events on all elements + remove selection
     canvasEl.querySelectorAll(".canvas-element").forEach((elDiv) => {
       elDiv.classList.remove("selected");
-      elDiv.style.pointerEvents = "";
     });
 
     closeSettingsPanel();
