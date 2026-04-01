@@ -1062,6 +1062,7 @@
       elStartY: el.y,
       scale,
     };
+    setPropertiesPanelVisibility(false);
   }
 
   function startResize(clientX, clientY, id, type = "scale") {
@@ -1079,6 +1080,7 @@
       startH: el.h,
       startFontSize: el.fontSize || 36,
     };
+    setPropertiesPanelVisibility(false);
   }
 
   let rafPending = false;
@@ -1246,6 +1248,8 @@
     dragging = null;
     resizing = null;
     rafPending = false;
+
+    setPropertiesPanelVisibility(true);
 
     // Hide snap guides on release
     const guideX = document.getElementById("guide-x");
@@ -2708,6 +2712,18 @@
       bar.classList.remove("hidden-soft");
     } else {
       bar.classList.add("hidden-soft");
+    }
+  }
+
+  function setPropertiesPanelVisibility(visible) {
+    if (!propertiesPanel) return;
+    if (visible) {
+      propertiesPanel.classList.remove("panel-drag-hide");
+    } else {
+      // Only hide if it's currently showing
+      if (!propertiesPanel.classList.contains("hidden")) {
+        propertiesPanel.classList.add("panel-drag-hide");
+      }
     }
   }
 

@@ -1187,7 +1187,8 @@ body {
 }
 
 /* Slider active fading (10% opacity for non-slider parts) */
-#properties-panel.slider-active {
+#properties-panel.slider-active,
+#properties-panel.panel-drag-hide {
   background-color: rgba(29, 27, 32, 0.1);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -1195,10 +1196,18 @@ body {
   box-shadow: none;
 }
 
+#properties-panel.panel-drag-hide {
+  pointer-events: none;
+}
+
 #properties-panel.slider-active .panel-drag-handle,
 #properties-panel.slider-active .panel-header,
 #properties-panel.slider-active .panel-actions,
-#properties-panel.slider-active .prop-group>* {
+#properties-panel.slider-active .prop-group>*,
+#properties-panel.panel-drag-hide .panel-drag-handle,
+#properties-panel.panel-drag-hide .panel-header,
+#properties-panel.panel-drag-hide .panel-actions,
+#properties-panel.panel-drag-hide .prop-group>* {
   opacity: 0.1;
   pointer-events: none;
   transition: opacity 200ms ease;
