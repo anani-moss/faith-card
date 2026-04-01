@@ -1810,522 +1810,522 @@
 
   // ─── Mode Toggle ─────────────────────────────────────────
   function bindModeToggle() {
-  const btnSimple = document.getElementById("btn-mode-simple");
-  const btnPro = document.getElementById("btn-mode-pro");
+    const btnSimple = document.getElementById("btn-mode-simple");
+    const btnPro = document.getElementById("btn-mode-pro");
 
-  if (!btnSimple || !btnPro) return;
+    if (!btnSimple || !btnPro) return;
 
-  // Start as Simple by default on every load
-  simpleMode = true;
-  applyMode();
-
-  btnSimple.addEventListener("click", () => {
-    if (simpleMode) return;
+    // Start as Simple by default on every load
     simpleMode = true;
-    localStorage.setItem("faithcard_mode", "simple");
-    haptic("medium");
     applyMode();
-    showToast("Simple Mode");
-  });
 
-  btnPro.addEventListener("click", () => {
-    if (!simpleMode) return;
-    simpleMode = false;
-    localStorage.setItem("faithcard_mode", "pro");
-    haptic("medium");
-    applyMode();
-    showToast("Pro Mode");
-  });
-}
-
-function applyMode() {
-  const btnSimple = document.getElementById("btn-mode-simple");
-  const btnPro = document.getElementById("btn-mode-pro");
-
-  if (simpleMode) {
-    document.body.classList.add("simple-mode");
-    btnSimple.classList.add("active");
-    btnPro.classList.remove("active");
-
-    // Force templates tab in simple mode
-    const backdropTab = document.querySelector('.tab-btn[data-tab="temp"]');
-    if (backdropTab) backdropTab.click();
-
-    // Close panels that might clutter
-    if (typeof layersPanelOpen !== "undefined" && layersPanelOpen) {
-      toggleLayersPanel();
-    }
-  } else {
-    document.body.classList.remove("simple-mode");
-    btnSimple.classList.remove("active");
-    btnPro.classList.add("active");
-
-    // Return to backdrops when switching to Pro
-    const backdropTab = document.querySelector('.tab-btn[data-tab="main"]');
-    if (backdropTab) backdropTab.click();
-  }
-}
-
-// ─── Toast Notifications ─────────────────────────────────
-let toastTimeout;
-window.showToast = function (message) {
-  const container = document.getElementById("toast-container");
-  const msgEl = document.getElementById("toast-message");
-  if (!container || !msgEl) return;
-
-  msgEl.textContent = message;
-  container.classList.remove("hidden");
-
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    container.classList.add("hidden");
-  }, 2000);
-};
-
-// ─── Download Modal ────────────────────────────────────
-function bindModal() {
-  document
-    .getElementById("btn-modal-cancel")
-    .addEventListener("click", hideDownloadModal);
-  document
-    .getElementById("btn-modal-save")
-    .addEventListener("click", executeDownload);
-
-  // Press Enter to save
-  downloadNameInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      executeDownload();
-    }
-    if (e.key === "Escape") {
-      hideDownloadModal();
-    }
-  });
-
-  // Click overlay to close
-  downloadModal.addEventListener("click", (e) => {
-    if (e.target === downloadModal) {
-      hideDownloadModal();
-    }
-  });
-
-  document.querySelectorAll(".btn-custom-bg").forEach(btn => {
-    btn.addEventListener("click", () => {
-      haptic("light");
-      setToggleVisibility(false);
-      document.getElementById("bgcolor-modal").classList.remove("hidden");
+    btnSimple.addEventListener("click", () => {
+      if (simpleMode) return;
+      simpleMode = true;
+      localStorage.setItem("faithcard_mode", "simple");
+      haptic("medium");
+      applyMode();
+      showToast("Simple Mode");
     });
-  });
-}
 
-function bindBgColorModal() {
-  const modal = document.getElementById("bgcolor-modal");
-  if (!modal) return;
+    btnPro.addEventListener("click", () => {
+      if (!simpleMode) return;
+      simpleMode = false;
+      localStorage.setItem("faithcard_mode", "pro");
+      haptic("medium");
+      applyMode();
+      showToast("Pro Mode");
+    });
+  }
 
-  document.getElementById("btn-bgcolor-close").addEventListener("click", () => {
-    haptic("light");
-    setToggleVisibility(true);
-    modal.classList.add("hidden");
-  });
+  function applyMode() {
+    const btnSimple = document.getElementById("btn-mode-simple");
+    const btnPro = document.getElementById("btn-mode-pro");
 
-  // Tabs
-  const tabSolid = document.getElementById("btn-tab-solid");
-  const tabGrad = document.getElementById("btn-tab-gradient");
-  const secSolid = document.getElementById("bgcolor-solid-section");
-  const secGrad = document.getElementById("bgcolor-gradient-section");
+    if (simpleMode) {
+      document.body.classList.add("simple-mode");
+      btnSimple.classList.add("active");
+      btnPro.classList.remove("active");
 
-  function setTab(type) {
-    haptic("light");
-    bgConfig.type = type;
-    if (type === "solid") {
-      tabSolid.style.background = "var(--md-sys-color-primary)";
-      tabSolid.style.color = "white";
-      tabGrad.style.background = "transparent";
-      tabGrad.style.color = "var(--md-sys-color-on-surface)";
-      secSolid.classList.remove("hidden");
-      secGrad.classList.add("hidden");
+      // Force templates tab in simple mode
+      const backdropTab = document.querySelector('.tab-btn[data-tab="temp"]');
+      if (backdropTab) backdropTab.click();
+
+      // Close panels that might clutter
+      if (typeof layersPanelOpen !== "undefined" && layersPanelOpen) {
+        toggleLayersPanel();
+      }
     } else {
-      tabGrad.style.background = "var(--md-sys-color-primary)";
-      tabGrad.style.color = "white";
-      tabSolid.style.background = "transparent";
-      tabSolid.style.color = "var(--md-sys-color-on-surface)";
-      secGrad.classList.remove("hidden");
-      secSolid.classList.add("hidden");
+      document.body.classList.remove("simple-mode");
+      btnSimple.classList.remove("active");
+      btnPro.classList.add("active");
+
+      // Return to backdrops when switching to Pro
+      const backdropTab = document.querySelector('.tab-btn[data-tab="main"]');
+      if (backdropTab) backdropTab.click();
     }
   }
 
-  tabSolid.addEventListener("click", () => setTab("solid"));
-  tabGrad.addEventListener("click", () => setTab("gradient"));
+  // ─── Toast Notifications ─────────────────────────────────
+  let toastTimeout;
+  window.showToast = function (message) {
+    const container = document.getElementById("toast-container");
+    const msgEl = document.getElementById("toast-message");
+    if (!container || !msgEl) return;
 
-  const gradAngle = document.getElementById("bg-color-grad-angle");
-  const gradAngleVal = document.getElementById("bg-color-grad-angle-val");
-  gradAngle.addEventListener("input", (e) => {
-    gradAngleVal.textContent = e.target.value + "°";
-  });
+    msgEl.textContent = message;
+    container.classList.remove("hidden");
 
-  // Swatches for BG Color Modal
-  bindSwatch("swatch-bg-solid", "bg-color-solid-picker", (color) => {
-    // Logic handled by apply button or live?
-    // In this app, it seems most things are live or handled in the Apply button
-  });
-  bindSwatch("swatch-bg-grad-1", "bg-color-grad-1", (color) => { });
-  bindSwatch("swatch-bg-grad-2", "bg-color-grad-2", (color) => { });
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      container.classList.add("hidden");
+    }, 2000);
+  };
 
-  // Apply button
-  document.getElementById("btn-bgcolor-apply").addEventListener("click", () => {
-    setToggleVisibility(true);
-    bgConfig.solidColor = document.getElementById("bg-color-solid-picker").value;
-    bgConfig.gradColor1 = document.getElementById("bg-color-grad-1").value;
-    bgConfig.gradColor2 = document.getElementById("bg-color-grad-2").value;
-    bgConfig.gradAngle = parseInt(gradAngle.value, 10);
+  // ─── Download Modal ────────────────────────────────────
+  function bindModal() {
+    document
+      .getElementById("btn-modal-cancel")
+      .addEventListener("click", hideDownloadModal);
+    document
+      .getElementById("btn-modal-save")
+      .addEventListener("click", executeDownload);
 
-    applyCanvasBackground();
-    modal.classList.add("hidden");
-    haptic("success");
-  });
-}
-
-function applyCanvasBackground() {
-  if (bgConfig.type === "solid") {
-    canvasEl.style.background = bgConfig.solidColor;
-  } else {
-    canvasEl.style.background = `linear-gradient(${bgConfig.gradAngle}deg, ${bgConfig.gradColor1}, ${bgConfig.gradColor2})`;
-  }
-}
-
-let saveTimer = null;
-function showDownloadModal() {
-  setToggleVisibility(false);
-  haptic("light");
-  deselectAll();
-  downloadNameInput.value = "";
-  downloadModal.classList.remove("hidden");
-}
-
-function hideDownloadModal() {
-  setToggleVisibility(true);
-  haptic("light");
-  downloadModal.classList.add("hidden");
-
-  // Reset save button if closed mid-timer
-  if (saveTimer) clearInterval(saveTimer);
-  const saveBtn = document.getElementById("btn-modal-save");
-  const saveBtnText = document.getElementById("save-button-text");
-  if (saveBtn && saveBtnText) {
-    saveBtn.disabled = false;
-    saveBtn.style.opacity = "1";
-    saveBtn.style.cursor = "pointer";
-    saveBtnText.textContent = "Save";
-  }
-}
-
-function executeDownload() {
-  const nameVal = downloadNameInput.value.trim();
-  const filename = nameVal ? `${nameVal}-card.png` : "card.png";
-  hideDownloadModal();
-  downloadPNG(filename);
-}
-
-// ─── Export to PNG (fixed: uses cached data URLs) ──────
-function downloadPNG(filename) {
-  const offscreen = document.createElement("canvas");
-  offscreen.width = CANVAS_SIZE;
-  offscreen.height = CANVAS_SIZE;
-  const ctx = offscreen.getContext("2d");
-
-  // ─── Helper for Rich Text Rendering on Canvas ───
-  function drawRichText(ctx, el) {
-    const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity } = el;
-    const safeText = text || "";
-    const tokens = safeText.split(/(<br>|<b>|<\/b>|<i>|<\/i>|<u>|<\/u>)/gi);
-    const lineHeight = fontSize * 1.25;
-
-    // First pass: Calculate bounding box for rotation center
-    let maxWidth = 0;
-    let totalHeight = 0;
-    let curX = 0;
-    let curY = 0;
-    let lines = [0]; // Width of each line
-
-    ctx.save();
-    let tempBold = fontWeight >= 700 || fontWeight === "bold";
-    let tempItalic = false;
-
-    const setTempFont = () => {
-      const style = tempItalic ? "italic" : "normal";
-      const weight = tempBold ? "700" : fontWeight;
-      ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
-    };
-
-    tokens.forEach(token => {
-      if (!token) return;
-      const lt = token.toLowerCase();
-      if (lt === "<b>") tempBold = true;
-      else if (lt === "</b>") tempBold = fontWeight >= 700 || fontWeight === "bold";
-      else if (lt === "<i>") tempItalic = true;
-      else if (lt === "</i>") tempItalic = false;
-      else if (lt === "<br>") {
-        maxWidth = Math.max(maxWidth, curX);
-        curX = 0;
-        curY += lineHeight;
-        lines.push(0);
-      } else if (lt !== "<u>" && lt !== "</u>") {
-        setTempFont();
-        curX += ctx.measureText(token).width;
-        lines[lines.length - 1] = curX;
+    // Press Enter to save
+    downloadNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        executeDownload();
       }
-    });
-    maxWidth = Math.max(maxWidth, curX);
-    totalHeight = curY + fontSize; // Approximate height
-    ctx.restore();
-
-    // Second pass: Draw
-    ctx.save();
-    ctx.globalAlpha = opacity / 100;
-
-    if (rotation !== 0) {
-      const cx = x + maxWidth / 2;
-      const cy = y + totalHeight / 2;
-      ctx.translate(cx, cy);
-      ctx.rotate((rotation * Math.PI) / 180);
-      ctx.translate(-cx, -cy);
-    }
-
-    ctx.textBaseline = "top";
-    ctx.fillStyle = color;
-
-    let state = {
-      bold: fontWeight >= 700 || fontWeight === "bold",
-      italic: false,
-      underline: false
-    };
-
-    let currentX = x;
-    let currentY = y;
-
-    const updateFont = () => {
-      const style = state.italic ? "italic" : "normal";
-      const weight = state.bold ? "700" : fontWeight;
-      ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
-    };
-
-    tokens.forEach(token => {
-      if (!token) return;
-
-      const lowerToken = token.toLowerCase();
-      if (lowerToken === "<b>") { state.bold = true; updateFont(); }
-      else if (lowerToken === "</b>") { state.bold = fontWeight >= 700 || fontWeight === "bold"; updateFont(); }
-      else if (lowerToken === "<i>") { state.italic = true; updateFont(); }
-      else if (lowerToken === "</i>") { state.italic = false; updateFont(); }
-      else if (lowerToken === "<u>") { state.underline = true; }
-      else if (lowerToken === "</u>") { state.underline = false; }
-      else if (lowerToken === "<br>") {
-        currentX = x;
-        currentY += lineHeight;
-      } else {
-        updateFont();
-        const metrics = ctx.measureText(token);
-        ctx.fillText(token, currentX, currentY);
-
-        if (state.underline) {
-          ctx.beginPath();
-          ctx.strokeStyle = color;
-          ctx.lineWidth = Math.max(1, fontSize / 20);
-          ctx.moveTo(currentX, currentY + fontSize * 0.95);
-          ctx.lineTo(currentX + metrics.width, currentY + fontSize * 0.95);
-          ctx.stroke();
-        }
-
-        currentX += metrics.width;
+      if (e.key === "Escape") {
+        hideDownloadModal();
       }
     });
 
-    ctx.restore();
-  }
+    // Click overlay to close
+    downloadModal.addEventListener("click", (e) => {
+      if (e.target === downloadModal) {
+        hideDownloadModal();
+      }
+    });
 
-  // Apply Solid or Gradient Background natively to HTML5 canvas engine
-  if (bgConfig.type === "solid") {
-    ctx.fillStyle = bgConfig.solidColor;
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  } else {
-    // Correctly map CSS linear-gradient angle to HTML5 Cartesian coordinates within a square
-    const cx = CANVAS_SIZE / 2;
-    const cy = CANVAS_SIZE / 2;
-    const angleRad = bgConfig.gradAngle * Math.PI / 180;
-    // Calculate radius that bounds the square for corner-to-corner filling
-    const r = Math.abs((CANVAS_SIZE / 2) * Math.sin(angleRad)) + Math.abs((CANVAS_SIZE / 2) * Math.cos(angleRad));
-
-    const x1 = cx - Math.sin(angleRad) * r;
-    const y1 = cy + Math.cos(angleRad) * r;
-    const x2 = cx + Math.sin(angleRad) * r;
-    const y2 = cy - Math.cos(angleRad) * r;
-
-    const grad = ctx.createLinearGradient(x1, y1, x2, y2);
-    grad.addColorStop(0, bgConfig.gradColor1);
-    grad.addColorStop(1, bgConfig.gradColor2);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-  }
-
-  // Load all image elements using cached blob URLs
-  const loadPromises = elements.map((el) => {
-    if (el.type === "image") {
-      return new Promise((resolve) => {
-        const cached = imageCache.get(el.src);
-        if (!cached) {
-          // Fallback: fetch the image fresh as a blob
-          fetch(el.src)
-            .then((r) => r.blob())
-            .then((blob) => {
-              const url = URL.createObjectURL(blob);
-              const img = new Image();
-              img.onload = () => resolve({ el, img });
-              img.onerror = () => resolve({ el, img: null });
-              img.src = url;
-            })
-            .catch(() => resolve({ el, img: null }));
-          return;
-        }
-        const img = new Image();
-        img.onload = () => resolve({ el, img });
-        img.onerror = () => {
-          console.warn("Failed to load for export:", el.src);
-          resolve({ el, img: null });
-        };
-        img.src = cached.blobUrl;
+    document.querySelectorAll(".btn-custom-bg").forEach(btn => {
+      btn.addEventListener("click", () => {
+        haptic("light");
+        setToggleVisibility(false);
+        document.getElementById("bgcolor-modal").classList.remove("hidden");
       });
-    } else {
-      return Promise.resolve({ el, img: null });
-    }
-  });
-
-  const overlayToggle = document.getElementById("jy-overlay-toggle");
-  const overlaySelect = document.getElementById("jy-overlay-select");
-  if (overlayToggle && overlayToggle.checked && overlaySelect) {
-    const src = overlaySelect.value;
-    const p = new Promise((resolve) => {
-      const cached = imageCache.get(src);
-      const img = new Image();
-      img.onload = () => resolve({ isOverlay: true, img });
-      img.onerror = () => resolve({ isOverlay: true, img: null });
-      img.src = cached ? cached.blobUrl : src;
     });
-    loadPromises.push(p);
   }
 
-  Promise.all(loadPromises).then((results) => {
-    results.forEach((res) => {
-      if (res.isOverlay) return;
-      const { el, img } = res;
-      ctx.save();
-      ctx.globalAlpha = el.opacity / 100;
+  function bindBgColorModal() {
+    const modal = document.getElementById("bgcolor-modal");
+    if (!modal) return;
 
-      if (el.type === "image") {
-        if (img) {
-          if (el.rotation !== 0) {
-            const cx = el.x + el.w / 2;
-            const cy = el.y + el.h / 2;
-            ctx.translate(cx, cy);
-            ctx.rotate((el.rotation * Math.PI) / 180);
-            ctx.drawImage(img, -el.w / 2, -el.h / 2, el.w, el.h);
-          } else {
-            ctx.drawImage(img, el.x, el.y, el.w, el.h);
-          }
-        }
-      } else if (el.type === "text") {
-        drawRichText(ctx, el);
+    document.getElementById("btn-bgcolor-close").addEventListener("click", () => {
+      haptic("light");
+      setToggleVisibility(true);
+      modal.classList.add("hidden");
+    });
+
+    // Tabs
+    const tabSolid = document.getElementById("btn-tab-solid");
+    const tabGrad = document.getElementById("btn-tab-gradient");
+    const secSolid = document.getElementById("bgcolor-solid-section");
+    const secGrad = document.getElementById("bgcolor-gradient-section");
+
+    function setTab(type) {
+      haptic("light");
+      bgConfig.type = type;
+      if (type === "solid") {
+        tabSolid.style.background = "var(--md-sys-color-primary)";
+        tabSolid.style.color = "white";
+        tabGrad.style.background = "transparent";
+        tabGrad.style.color = "var(--md-sys-color-on-surface)";
+        secSolid.classList.remove("hidden");
+        secGrad.classList.add("hidden");
+      } else {
+        tabGrad.style.background = "var(--md-sys-color-primary)";
+        tabGrad.style.color = "white";
+        tabSolid.style.background = "transparent";
+        tabSolid.style.color = "var(--md-sys-color-on-surface)";
+        secGrad.classList.remove("hidden");
+        secSolid.classList.add("hidden");
       }
+    }
+
+    tabSolid.addEventListener("click", () => setTab("solid"));
+    tabGrad.addEventListener("click", () => setTab("gradient"));
+
+    const gradAngle = document.getElementById("bg-color-grad-angle");
+    const gradAngleVal = document.getElementById("bg-color-grad-angle-val");
+    gradAngle.addEventListener("input", (e) => {
+      gradAngleVal.textContent = e.target.value + "°";
+    });
+
+    // Swatches for BG Color Modal
+    bindSwatch("swatch-bg-solid", "bg-color-solid-picker", (color) => {
+      // Logic handled by apply button or live?
+      // In this app, it seems most things are live or handled in the Apply button
+    });
+    bindSwatch("swatch-bg-grad-1", "bg-color-grad-1", (color) => { });
+    bindSwatch("swatch-bg-grad-2", "bg-color-grad-2", (color) => { });
+
+    // Apply button
+    document.getElementById("btn-bgcolor-apply").addEventListener("click", () => {
+      setToggleVisibility(true);
+      bgConfig.solidColor = document.getElementById("bg-color-solid-picker").value;
+      bgConfig.gradColor1 = document.getElementById("bg-color-grad-1").value;
+      bgConfig.gradColor2 = document.getElementById("bg-color-grad-2").value;
+      bgConfig.gradAngle = parseInt(gradAngle.value, 10);
+
+      applyCanvasBackground();
+      modal.classList.add("hidden");
+      haptic("success");
+    });
+  }
+
+  function applyCanvasBackground() {
+    if (bgConfig.type === "solid") {
+      canvasEl.style.background = bgConfig.solidColor;
+    } else {
+      canvasEl.style.background = `linear-gradient(${bgConfig.gradAngle}deg, ${bgConfig.gradColor1}, ${bgConfig.gradColor2})`;
+    }
+  }
+
+  let saveTimer = null;
+  function showDownloadModal() {
+    setToggleVisibility(false);
+    haptic("light");
+    deselectAll();
+    downloadNameInput.value = "";
+    downloadModal.classList.remove("hidden");
+  }
+
+  function hideDownloadModal() {
+    setToggleVisibility(true);
+    haptic("light");
+    downloadModal.classList.add("hidden");
+
+    // Reset save button if closed mid-timer
+    if (saveTimer) clearInterval(saveTimer);
+    const saveBtn = document.getElementById("btn-modal-save");
+    const saveBtnText = document.getElementById("save-button-text");
+    if (saveBtn && saveBtnText) {
+      saveBtn.disabled = false;
+      saveBtn.style.opacity = "1";
+      saveBtn.style.cursor = "pointer";
+      saveBtnText.textContent = "Save";
+    }
+  }
+
+  function executeDownload() {
+    const nameVal = downloadNameInput.value.trim();
+    const filename = nameVal ? `${nameVal}-card.png` : "card.png";
+    hideDownloadModal();
+    downloadPNG(filename);
+  }
+
+  // ─── Export to PNG (fixed: uses cached data URLs) ──────
+  function downloadPNG(filename) {
+    const offscreen = document.createElement("canvas");
+    offscreen.width = CANVAS_SIZE;
+    offscreen.height = CANVAS_SIZE;
+    const ctx = offscreen.getContext("2d");
+
+    // ─── Helper for Rich Text Rendering on Canvas ───
+    function drawRichText(ctx, el) {
+      const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity } = el;
+      const safeText = text || "";
+      const tokens = safeText.split(/(<br>|<b>|<\/b>|<i>|<\/i>|<u>|<\/u>)/gi);
+      const lineHeight = fontSize * 1.25;
+
+      // First pass: Calculate bounding box for rotation center
+      let maxWidth = 0;
+      let totalHeight = 0;
+      let curX = 0;
+      let curY = 0;
+      let lines = [0]; // Width of each line
+
+      ctx.save();
+      let tempBold = fontWeight >= 700 || fontWeight === "bold";
+      let tempItalic = false;
+
+      const setTempFont = () => {
+        const style = tempItalic ? "italic" : "normal";
+        const weight = tempBold ? "700" : fontWeight;
+        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
+      };
+
+      tokens.forEach(token => {
+        if (!token) return;
+        const lt = token.toLowerCase();
+        if (lt === "<b>") tempBold = true;
+        else if (lt === "</b>") tempBold = fontWeight >= 700 || fontWeight === "bold";
+        else if (lt === "<i>") tempItalic = true;
+        else if (lt === "</i>") tempItalic = false;
+        else if (lt === "<br>") {
+          maxWidth = Math.max(maxWidth, curX);
+          curX = 0;
+          curY += lineHeight;
+          lines.push(0);
+        } else if (lt !== "<u>" && lt !== "</u>") {
+          setTempFont();
+          curX += ctx.measureText(token).width;
+          lines[lines.length - 1] = curX;
+        }
+      });
+      maxWidth = Math.max(maxWidth, curX);
+      totalHeight = curY + fontSize; // Approximate height
+      ctx.restore();
+
+      // Second pass: Draw
+      ctx.save();
+      ctx.globalAlpha = opacity / 100;
+
+      if (rotation !== 0) {
+        const cx = x + maxWidth / 2;
+        const cy = y + totalHeight / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate((rotation * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
+
+      ctx.textBaseline = "top";
+      ctx.fillStyle = color;
+
+      let state = {
+        bold: fontWeight >= 700 || fontWeight === "bold",
+        italic: false,
+        underline: false
+      };
+
+      let currentX = x;
+      let currentY = y;
+
+      const updateFont = () => {
+        const style = state.italic ? "italic" : "normal";
+        const weight = state.bold ? "700" : fontWeight;
+        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
+      };
+
+      tokens.forEach(token => {
+        if (!token) return;
+
+        const lowerToken = token.toLowerCase();
+        if (lowerToken === "<b>") { state.bold = true; updateFont(); }
+        else if (lowerToken === "</b>") { state.bold = fontWeight >= 700 || fontWeight === "bold"; updateFont(); }
+        else if (lowerToken === "<i>") { state.italic = true; updateFont(); }
+        else if (lowerToken === "</i>") { state.italic = false; updateFont(); }
+        else if (lowerToken === "<u>") { state.underline = true; }
+        else if (lowerToken === "</u>") { state.underline = false; }
+        else if (lowerToken === "<br>") {
+          currentX = x;
+          currentY += lineHeight;
+        } else {
+          updateFont();
+          const metrics = ctx.measureText(token);
+          ctx.fillText(token, currentX, currentY);
+
+          if (state.underline) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1, fontSize / 20);
+            ctx.moveTo(currentX, currentY + fontSize * 0.95);
+            ctx.lineTo(currentX + metrics.width, currentY + fontSize * 0.95);
+            ctx.stroke();
+          }
+
+          currentX += metrics.width;
+        }
+      });
 
       ctx.restore();
+    }
+
+    // Apply Solid or Gradient Background natively to HTML5 canvas engine
+    if (bgConfig.type === "solid") {
+      ctx.fillStyle = bgConfig.solidColor;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    } else {
+      // Correctly map CSS linear-gradient angle to HTML5 Cartesian coordinates within a square
+      const cx = CANVAS_SIZE / 2;
+      const cy = CANVAS_SIZE / 2;
+      const angleRad = bgConfig.gradAngle * Math.PI / 180;
+      // Calculate radius that bounds the square for corner-to-corner filling
+      const r = Math.abs((CANVAS_SIZE / 2) * Math.sin(angleRad)) + Math.abs((CANVAS_SIZE / 2) * Math.cos(angleRad));
+
+      const x1 = cx - Math.sin(angleRad) * r;
+      const y1 = cy + Math.cos(angleRad) * r;
+      const x2 = cx + Math.sin(angleRad) * r;
+      const y2 = cy - Math.cos(angleRad) * r;
+
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+      grad.addColorStop(0, bgConfig.gradColor1);
+      grad.addColorStop(1, bgConfig.gradColor2);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
+
+    // Load all image elements using cached blob URLs
+    const loadPromises = elements.map((el) => {
+      if (el.type === "image") {
+        return new Promise((resolve) => {
+          const cached = imageCache.get(el.src);
+          if (!cached) {
+            // Fallback: fetch the image fresh as a blob
+            fetch(el.src)
+              .then((r) => r.blob())
+              .then((blob) => {
+                const url = URL.createObjectURL(blob);
+                const img = new Image();
+                img.onload = () => resolve({ el, img });
+                img.onerror = () => resolve({ el, img: null });
+                img.src = url;
+              })
+              .catch(() => resolve({ el, img: null }));
+            return;
+          }
+          const img = new Image();
+          img.onload = () => resolve({ el, img });
+          img.onerror = () => {
+            console.warn("Failed to load for export:", el.src);
+            resolve({ el, img: null });
+          };
+          img.src = cached.blobUrl;
+        });
+      } else {
+        return Promise.resolve({ el, img: null });
+      }
     });
 
-    // Overlay rendering must go on top
-    const overlayRes = results.find((r) => r.isOverlay);
-    if (overlayRes && overlayRes.img) {
-      ctx.globalAlpha = 1; // force 100% opacity for top overlay
-      ctx.drawImage(overlayRes.img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    const overlayToggle = document.getElementById("jy-overlay-toggle");
+    const overlaySelect = document.getElementById("jy-overlay-select");
+    if (overlayToggle && overlayToggle.checked && overlaySelect) {
+      const src = overlaySelect.value;
+      const p = new Promise((resolve) => {
+        const cached = imageCache.get(src);
+        const img = new Image();
+        img.onload = () => resolve({ isOverlay: true, img });
+        img.onerror = () => resolve({ isOverlay: true, img: null });
+        img.src = cached ? cached.blobUrl : src;
+      });
+      loadPromises.push(p);
     }
 
-    // Trigger download
-    offscreen.toBlob((blob) => {
-      if (!blob) {
-        alert("Failed to generate image. Please try again.");
-        return;
+    Promise.all(loadPromises).then((results) => {
+      results.forEach((res) => {
+        if (res.isOverlay) return;
+        const { el, img } = res;
+        ctx.save();
+        ctx.globalAlpha = el.opacity / 100;
+
+        if (el.type === "image") {
+          if (img) {
+            if (el.rotation !== 0) {
+              const cx = el.x + el.w / 2;
+              const cy = el.y + el.h / 2;
+              ctx.translate(cx, cy);
+              ctx.rotate((el.rotation * Math.PI) / 180);
+              ctx.drawImage(img, -el.w / 2, -el.h / 2, el.w, el.h);
+            } else {
+              ctx.drawImage(img, el.x, el.y, el.w, el.h);
+            }
+          }
+        } else if (el.type === "text") {
+          drawRichText(ctx, el);
+        }
+
+        ctx.restore();
+      });
+
+      // Overlay rendering must go on top
+      const overlayRes = results.find((r) => r.isOverlay);
+      if (overlayRes && overlayRes.img) {
+        ctx.globalAlpha = 1; // force 100% opacity for top overlay
+        ctx.drawImage(overlayRes.img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
       }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }, "image/png");
-  });
-}
 
-// ─── Layers Panel ──────────────────────────────────────
-let layersPanelOpen = false;
-
-function toggleLayersPanel() {
-  const panel = document.getElementById("layers-panel");
-  const btn = document.getElementById("btn-toggle-layers");
-  if (!panel) return;
-
-  layersPanelOpen = !layersPanelOpen;
-  if (layersPanelOpen) {
-    panel.classList.remove("hidden");
-    if (btn) {
-      btn.style.background = "var(--md-sys-color-primary-container)";
-      btn.style.color = "var(--md-sys-color-on-primary-container)";
-    }
-    renderLayersPanel();
-  } else {
-    panel.classList.add("hidden");
-    if (btn) {
-      btn.style.background = "";
-      btn.style.color = "";
-    }
-  }
-}
-
-function renderLayersPanel() {
-  const list = document.getElementById("layers-list");
-  if (!list || !layersPanelOpen) return;
-
-  list.innerHTML = "";
-
-  if (elements.length === 0) {
-    list.innerHTML = '<div class="layers-empty">No elements on canvas</div>';
-    return;
+      // Trigger download
+      offscreen.toBlob((blob) => {
+        if (!blob) {
+          alert("Failed to generate image. Please try again.");
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, "image/png");
+    });
   }
 
-  // Show in reverse order (top layer first)
-  const reversed = [...elements].reverse();
-  reversed.forEach((el, visualIdx) => {
-    const actualIdx = elements.length - 1 - visualIdx;
-    const row = document.createElement("div");
-    row.className = "layer-row" + (el.id === selectedId ? " layer-selected" : "");
-    row.dataset.id = el.id;
+  // ─── Layers Panel ──────────────────────────────────────
+  let layersPanelOpen = false;
 
-    const icon = el.type === "image" ? "🖼️" : "🔤";
-    let label = "";
-    if (el.type === "text") {
-      const safeText = el.text || "";
-      // Strip HTML tags for the layer label to keep it clean
-      const plainText = safeText.replace(/<[^>]*>/g, "");
-      label = plainText.length > 18 ? plainText.substring(0, 18) + "…" : (plainText || "Text");
+  function toggleLayersPanel() {
+    const panel = document.getElementById("layers-panel");
+    const btn = document.getElementById("btn-toggle-layers");
+    if (!panel) return;
+
+    layersPanelOpen = !layersPanelOpen;
+    if (layersPanelOpen) {
+      panel.classList.remove("hidden");
+      if (btn) {
+        btn.style.background = "var(--md-sys-color-primary-container)";
+        btn.style.color = "var(--md-sys-color-on-primary-container)";
+      }
+      renderLayersPanel();
     } else {
-      if (el.category === "main") {
-        label = "Backdrop";
-      } else {
-        // Extract filename from src (e.g., cross_01.png -> cross_01)
-        const fileName = el.src ? el.src.split("/").pop().split(".")[0] : "";
-        label = fileName || `Element ${el.id}`;
+      panel.classList.add("hidden");
+      if (btn) {
+        btn.style.background = "";
+        btn.style.color = "";
       }
     }
+  }
 
-    row.innerHTML = `
+  function renderLayersPanel() {
+    const list = document.getElementById("layers-list");
+    if (!list || !layersPanelOpen) return;
+
+    list.innerHTML = "";
+
+    if (elements.length === 0) {
+      list.innerHTML = '<div class="layers-empty">No elements on canvas</div>';
+      return;
+    }
+
+    // Show in reverse order (top layer first)
+    const reversed = [...elements].reverse();
+    reversed.forEach((el, visualIdx) => {
+      const actualIdx = elements.length - 1 - visualIdx;
+      const row = document.createElement("div");
+      row.className = "layer-row" + (el.id === selectedId ? " layer-selected" : "");
+      row.dataset.id = el.id;
+
+      const icon = el.type === "image" ? "🖼️" : "🔤";
+      let label = "";
+      if (el.type === "text") {
+        const safeText = el.text || "";
+        // Strip HTML tags for the layer label to keep it clean
+        const plainText = safeText.replace(/<[^>]*>/g, "");
+        label = plainText.length > 18 ? plainText.substring(0, 18) + "…" : (plainText || "Text");
+      } else {
+        if (el.category === "main") {
+          label = "Backdrop";
+        } else {
+          // Extract filename from src (e.g., cross_01.png -> cross_01)
+          const fileName = el.src ? el.src.split("/").pop().split(".")[0] : "";
+          label = fileName || `Element ${el.id}`;
+        }
+      }
+
+      row.innerHTML = `
         <span class="layer-icon">${icon}</span>
         <span class="layer-label">${label}</span>
         <div class="layer-actions">
@@ -2338,344 +2338,344 @@ function renderLayersPanel() {
         </div>
       `;
 
-    // Click row to select
-    row.addEventListener("click", (e) => {
-      if (e.target.closest(".layer-btn")) return;
-      selectElement(el.id);
+      // Click row to select
+      row.addEventListener("click", (e) => {
+        if (e.target.closest(".layer-btn")) return;
+        selectElement(el.id);
+      });
+
+      // Double-click row to open settings
+      row.addEventListener("dblclick", (e) => {
+        if (e.target.closest(".layer-btn")) return;
+        selectElement(el.id);
+        openSettingsPanel();
+      });
+
+      // Move up (increase z-index = move later in array)
+      const upBtn = row.querySelector(".layer-up");
+      upBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (actualIdx < elements.length - 1) {
+          haptic("light");
+          const item = elements.splice(actualIdx, 1)[0];
+          elements.splice(actualIdx + 1, 0, item);
+          renderCanvas();
+        }
+      });
+
+      // Move down (decrease z-index = move earlier in array)
+      const downBtn = row.querySelector(".layer-down");
+      downBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (actualIdx > 0) {
+          haptic("light");
+          const item = elements.splice(actualIdx, 1)[0];
+          elements.splice(actualIdx - 1, 0, item);
+          renderCanvas();
+        }
+      });
+
+      list.appendChild(row);
     });
-
-    // Double-click row to open settings
-    row.addEventListener("dblclick", (e) => {
-      if (e.target.closest(".layer-btn")) return;
-      selectElement(el.id);
-      openSettingsPanel();
-    });
-
-    // Move up (increase z-index = move later in array)
-    const upBtn = row.querySelector(".layer-up");
-    upBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (actualIdx < elements.length - 1) {
-        haptic("light");
-        const item = elements.splice(actualIdx, 1)[0];
-        elements.splice(actualIdx + 1, 0, item);
-        renderCanvas();
-      }
-    });
-
-    // Move down (decrease z-index = move earlier in array)
-    const downBtn = row.querySelector(".layer-down");
-    downBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (actualIdx > 0) {
-        haptic("light");
-        const item = elements.splice(actualIdx, 1)[0];
-        elements.splice(actualIdx - 1, 0, item);
-        renderCanvas();
-      }
-    });
-
-    list.appendChild(row);
-  });
-}
-
-// ─── Color Picker (iro.js) ─────────────────────────────
-const COLOR_PRESETS = [
-  "#FFFFFF", "#000000", "#333333", "#666666",
-  "#FF4444", "#FF8800", "#FFCC00", "#44BB44",
-  "#2196F3", "#9C27B0", "#E91E63", "#00BCD4",
-  "#FFB6C1", "#DDA0DD", "#87CEFA", "#98FB98",
-  "#FFDAB9", "#F0E68C", "#D4AF37", "#C0C0C0"
-];
-
-function initColorPickers() {
-  if (typeof iro === "undefined") {
-    console.warn("iro.js not loaded, using native color inputs");
-    return;
   }
-  // We now use a global floating picker managed by openColorPopover
-}
 
-// Sync text color picker to selected element
-function syncTextColorPicker() {
-  const el = getSelected();
-  if (el && el.type === "text") {
+  // ─── Color Picker (iro.js) ─────────────────────────────
+  const COLOR_PRESETS = [
+    "#FFFFFF", "#000000", "#333333", "#666666",
+    "#FF4444", "#FF8800", "#FFCC00", "#44BB44",
+    "#2196F3", "#9C27B0", "#E91E63", "#00BCD4",
+    "#FFB6C1", "#DDA0DD", "#87CEFA", "#98FB98",
+    "#FFDAB9", "#F0E68C", "#D4AF37", "#C0C0C0"
+  ];
+
+  function initColorPickers() {
+    if (typeof iro === "undefined") {
+      console.warn("iro.js not loaded, using native color inputs");
+      return;
+    }
+    // We now use a global floating picker managed by openColorPopover
+  }
+
+  // Sync text color picker to selected element
+  function syncTextColorPicker() {
+    const el = getSelected();
+    if (el && el.type === "text") {
+      const swatch = document.getElementById("swatch-text-color");
+      if (swatch) swatch.style.background = el.color;
+      const hexInput = document.getElementById("text-color-hex");
+      if (hexInput) hexInput.value = el.color;
+    }
+  }
+
+  // ─── Floating Color Picker Manager ─────────────────────
+  let globalPicker = null;
+
+  function bindSwatch(swatchId, triggerInputId, callback) {
+    const swatch = document.getElementById(swatchId);
+    const input = document.getElementById(triggerInputId);
+    if (!swatch || !input) return;
+
+    swatch.addEventListener("click", () => {
+      haptic("light");
+      openColorPopover(swatch, input.value, (hex) => {
+        input.value = hex;
+        swatch.style.background = hex;
+        callback(hex);
+      });
+    });
+  }
+
+  function openColorPopover(anchorEl, initialColor, onColorChange) {
+    const popover = document.getElementById("color-popover");
+    const mount = document.getElementById("popover-picker-mount");
+    const hexInput = document.getElementById("popover-hex-input");
+    const presets = document.getElementById("popover-presets");
+    const closeBtn = document.getElementById("btn-popover-close");
+
+    if (!popover || !mount) return;
+
+    // Position popover
+    popover.classList.remove("hidden");
+
+    // "Centered" as requested: Centered horizontally on screen, fixed height from bottom
+    let left = (window.innerWidth - popover.offsetWidth) / 2;
+    let bottom = 80; // Above the navigation bar
+
+    popover.style.bottom = bottom + "px";
+    popover.style.top = "auto";
+    popover.style.left = left + "px";
+    popover.style.transformOrigin = "bottom center";
+
+    // Initialize or update iro picker
+    if (!globalPicker) {
+      globalPicker = new iro.ColorPicker(mount, {
+        width: 200,
+        color: initialColor,
+        borderWidth: 2,
+        borderColor: "rgba(255,255,255,0.15)",
+        // simple iro layout
+        layout: [
+          { component: iro.ui.Wheel, options: { wheelLightness: false } },
+          { component: iro.ui.Slider, options: { sliderType: "value" } },
+        ]
+      });
+
+      // Build presets once
+      presets.innerHTML = "";
+      COLOR_PRESETS.forEach(hex => {
+        const pSwatch = document.createElement("div");
+        pSwatch.className = "popover-swatch";
+        pSwatch.style.background = hex;
+        pSwatch.addEventListener("click", () => {
+          haptic("light");
+          globalPicker.color.hexString = hex;
+        });
+        presets.appendChild(pSwatch);
+      });
+
+      hexInput.addEventListener("input", () => {
+        let val = hexInput.value.trim();
+        if (val && !val.startsWith("#")) val = "#" + val;
+
+        // Support #RGB and #RRGGBB
+        if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(val)) {
+          // Prevent unnecessary updates if the color is already the same
+          if (globalPicker.color.hexString.toLowerCase() !== val.toLowerCase()) {
+            globalPicker.color.hexString = val;
+          }
+        }
+      });
+
+      closeBtn.addEventListener("click", () => {
+        haptic("medium");
+        popover.classList.add("hidden");
+      });
+
+      // Click outside to close
+      document.addEventListener("mousedown", (e) => {
+        if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
+          popover.classList.add("hidden");
+        }
+      });
+      document.addEventListener("touchstart", (e) => {
+        if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
+          popover.classList.add("hidden");
+        }
+      }, { passive: true });
+    } else {
+      globalPicker.color.hexString = initialColor;
+    }
+
+    hexInput.value = initialColor.toUpperCase();
+
+    // Remove previous listeners using a clever trick: re-cloning or just updating a reference
+    // Actually, we can just update the 'onColorChange' logic
+    globalPicker.off("color:change"); // iro.js supports this
+    globalPicker.on("color:change", (color) => {
+      onColorChange(color.hexString);
+      hexInput.value = color.hexString.toUpperCase();
+    });
+  }
+
+  // ─── Text Presets (Fixed 8 Best) ───────────────────────
+  const TEXT_PRESETS_DATA = [
+    { name: "Elegant", fontFamily: "Dancing Script", color: "#976affff", fontSize: 48, fontWeight: "700" },
+    { name: "<i>Italic</i>", fontFamily: "Playfair Display", color: "#e9222fff", fontSize: 44, fontWeight: "600" },
+    { name: "<u>Under</u>", fontFamily: "Montserrat", color: "#00a236ff", fontSize: 42, fontWeight: "500" },
+    { name: "Mix Style", fontFamily: "Cinzel", color: "#fde047", fontSize: 42, fontWeight: "700", isMix: true },
+    { name: "Modern", fontFamily: "Montserrat", color: "#be03b4ff", fontSize: 42, fontWeight: "700" },
+    { name: "Classic", fontFamily: "Playfair Display", color: "#f441a3ff", fontSize: 46, fontWeight: "600" },
+    { name: "<b>Boldly</b>", fontFamily: "Montserrat", color: "#94ff4dff", fontSize: 44, fontWeight: "700" },
+    { name: "Scripty", fontFamily: "Satisfy", color: "#007d4fff", fontSize: 48, fontWeight: "400" }
+  ];
+
+  function renderTextPresets() {
+    const container = document.getElementById("text-presets-container");
+    if (!container) return;
+
+    const el = getSelected();
+    const rawText = el ? (el.text || "").replace(/<[^>]*>/g, "") : "Sample";
+    const previewText = rawText.length > 12 ? rawText.substring(0, 10) + "…" : rawText;
+
+    container.innerHTML = "";
+    TEXT_PRESETS_DATA.forEach(preset => {
+      const chip = document.createElement("div");
+      chip.className = "text-preset-chip";
+
+      // Dynamic preview: apply internal tags if the preset has them
+      let chipContent = previewText;
+      if (preset.isMix) {
+        chipContent = `<b>${previewText[0] || ""}</b><i>${previewText[1] || ""}</i><u>${previewText.slice(2)}</u>`;
+      } else if (preset.name.includes("<i>")) {
+        chipContent = `<i>${previewText}</i>`;
+      } else if (preset.name.includes("<u>")) {
+        chipContent = `<u>${previewText}</u>`;
+      } else if (preset.name.includes("<b>")) {
+        chipContent = `<b>${previewText}</b>`;
+      }
+
+      chip.innerHTML = chipContent;
+      chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
+      chip.style.color = preset.color;
+
+      chip.addEventListener("click", () => {
+        haptic("medium");
+        applyTextPreset(preset);
+        // Refresh previews after applying (in case text structure changed)
+        renderTextPresets();
+      });
+
+      container.appendChild(chip);
+    });
+  }
+
+  function applyTextPreset(preset) {
+    const el = getSelected();
+    if (!el || el.type !== "text") {
+      // If no text selected, maybe create a new one? 
+      // For now, let's just toast
+      if (!el) showToast("Select a text element first");
+      return;
+    }
+
+    // Update data while preserving existing user text logic
+    if (preset.isMix) {
+      // Special logic for Mix Style: apply tags to segments of input text
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      const words = clean.split(/\s+/);
+      if (words.length >= 3) {
+        el.text = `<b>${words[0]}</b> <i>${words[1]}</i> <u>${words.slice(2).join(" ")}</u>`;
+      } else if (words.length === 2) {
+        el.text = `<b>${words[0]}</b> <i>${words[1]}</i>`;
+      } else {
+        el.text = `<b>${clean}</b>`;
+      }
+    } else if (preset.name.includes("<i>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<i>${clean}</i>`;
+    } else if (preset.name.includes("<u>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<u>${clean}</u>`;
+    } else if (preset.name.includes("<b>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<b>${clean}</b>`;
+    } else {
+      // Keep plain but strip other formatting tags for pure style presets
+      el.text = (el.text || "").replace(/<[^>]*>/g, "");
+    }
+
+    el.fontFamily = preset.fontFamily;
+    el.color = preset.color;
+    el.fontSize = preset.fontSize;
+    el.fontWeight = preset.fontWeight;
+
+    // Update UI inputs
+    const richInput = document.getElementById("prop-text-input");
+    if (richInput) richInput.innerHTML = el.text;
+
+    const fontFamilySelect = document.getElementById("prop-font-family");
+    if (fontFamilySelect) fontFamilySelect.value = el.fontFamily;
+
+    const fontSizeRange = document.getElementById("prop-font-size");
+    if (fontSizeRange) {
+      fontSizeRange.value = el.fontSize;
+      const valLabel = document.getElementById("prop-font-size-val");
+      if (valLabel) valLabel.textContent = el.fontSize + "px";
+    }
+
+    const fontWeightSelect = document.getElementById("prop-font-weight");
+    if (fontWeightSelect) fontWeightSelect.value = el.fontWeight;
+
+    const colorInput = document.getElementById("prop-text-color");
+    if (colorInput) colorInput.value = el.color;
+
+    const hexInput = document.getElementById("text-color-hex");
+    if (hexInput) hexInput.value = el.color.toUpperCase();
+
     const swatch = document.getElementById("swatch-text-color");
     if (swatch) swatch.style.background = el.color;
-    const hexInput = document.getElementById("text-color-hex");
-    if (hexInput) hexInput.value = el.color;
-  }
-}
 
-// ─── Floating Color Picker Manager ─────────────────────
-let globalPicker = null;
-
-function bindSwatch(swatchId, triggerInputId, callback) {
-  const swatch = document.getElementById(swatchId);
-  const input = document.getElementById(triggerInputId);
-  if (!swatch || !input) return;
-
-  swatch.addEventListener("click", () => {
-    haptic("light");
-    openColorPopover(swatch, input.value, (hex) => {
-      input.value = hex;
-      swatch.style.background = hex;
-      callback(hex);
-    });
-  });
-}
-
-function openColorPopover(anchorEl, initialColor, onColorChange) {
-  const popover = document.getElementById("color-popover");
-  const mount = document.getElementById("popover-picker-mount");
-  const hexInput = document.getElementById("popover-hex-input");
-  const presets = document.getElementById("popover-presets");
-  const closeBtn = document.getElementById("btn-popover-close");
-
-  if (!popover || !mount) return;
-
-  // Position popover
-  popover.classList.remove("hidden");
-
-  // "Centered" as requested: Centered horizontally on screen, fixed height from bottom
-  let left = (window.innerWidth - popover.offsetWidth) / 2;
-  let bottom = 80; // Above the navigation bar
-
-  popover.style.bottom = bottom + "px";
-  popover.style.top = "auto";
-  popover.style.left = left + "px";
-  popover.style.transformOrigin = "bottom center";
-
-  // Initialize or update iro picker
-  if (!globalPicker) {
-    globalPicker = new iro.ColorPicker(mount, {
-      width: 200,
-      color: initialColor,
-      borderWidth: 2,
-      borderColor: "rgba(255,255,255,0.15)",
-      // simple iro layout
-      layout: [
-        { component: iro.ui.Wheel, options: { wheelLightness: false } },
-        { component: iro.ui.Slider, options: { sliderType: "value" } },
-      ]
-    });
-
-    // Build presets once
-    presets.innerHTML = "";
-    COLOR_PRESETS.forEach(hex => {
-      const pSwatch = document.createElement("div");
-      pSwatch.className = "popover-swatch";
-      pSwatch.style.background = hex;
-      pSwatch.addEventListener("click", () => {
-        haptic("light");
-        globalPicker.color.hexString = hex;
-      });
-      presets.appendChild(pSwatch);
-    });
-
-    hexInput.addEventListener("input", () => {
-      let val = hexInput.value.trim();
-      if (val && !val.startsWith("#")) val = "#" + val;
-
-      // Support #RGB and #RRGGBB
-      if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(val)) {
-        // Prevent unnecessary updates if the color is already the same
-        if (globalPicker.color.hexString.toLowerCase() !== val.toLowerCase()) {
-          globalPicker.color.hexString = val;
-        }
-      }
-    });
-
-    closeBtn.addEventListener("click", () => {
-      haptic("medium");
-      popover.classList.add("hidden");
-    });
-
-    // Click outside to close
-    document.addEventListener("mousedown", (e) => {
-      if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
-        popover.classList.add("hidden");
-      }
-    });
-    document.addEventListener("touchstart", (e) => {
-      if (!popover.classList.contains("hidden") && !popover.contains(e.target) && !anchorEl.contains(e.target)) {
-        popover.classList.add("hidden");
-      }
-    }, { passive: true });
-  } else {
-    globalPicker.color.hexString = initialColor;
-  }
-
-  hexInput.value = initialColor.toUpperCase();
-
-  // Remove previous listeners using a clever trick: re-cloning or just updating a reference
-  // Actually, we can just update the 'onColorChange' logic
-  globalPicker.off("color:change"); // iro.js supports this
-  globalPicker.on("color:change", (color) => {
-    onColorChange(color.hexString);
-    hexInput.value = color.hexString.toUpperCase();
-  });
-}
-
-// ─── Text Presets (Fixed 8 Best) ───────────────────────
-const TEXT_PRESETS_DATA = [
-  { name: "Elegant", fontFamily: "Dancing Script", color: "#976affff", fontSize: 48, fontWeight: "700" },
-  { name: "<i>Italic</i>", fontFamily: "Playfair Display", color: "#e9222fff", fontSize: 44, fontWeight: "600" },
-  { name: "<u>Under</u>", fontFamily: "Montserrat", color: "#00a236ff", fontSize: 42, fontWeight: "500" },
-  { name: "Mix Style", fontFamily: "Cinzel", color: "#fde047", fontSize: 42, fontWeight: "700", isMix: true },
-  { name: "Modern", fontFamily: "Montserrat", color: "#be03b4ff", fontSize: 42, fontWeight: "700" },
-  { name: "Classic", fontFamily: "Playfair Display", color: "#f441a3ff", fontSize: 46, fontWeight: "600" },
-  { name: "<b>Boldly</b>", fontFamily: "Montserrat", color: "#94ff4dff", fontSize: 44, fontWeight: "700" },
-  { name: "Scripty", fontFamily: "Satisfy", color: "#007d4fff", fontSize: 48, fontWeight: "400" }
-];
-
-function renderTextPresets() {
-  const container = document.getElementById("text-presets-container");
-  if (!container) return;
-
-  const el = getSelected();
-  const rawText = el ? (el.text || "").replace(/<[^>]*>/g, "") : "Sample";
-  const previewText = rawText.length > 12 ? rawText.substring(0, 10) + "…" : rawText;
-
-  container.innerHTML = "";
-  TEXT_PRESETS_DATA.forEach(preset => {
-    const chip = document.createElement("div");
-    chip.className = "text-preset-chip";
-
-    // Dynamic preview: apply internal tags if the preset has them
-    let chipContent = previewText;
-    if (preset.isMix) {
-      chipContent = `<b>${previewText[0] || ""}</b><i>${previewText[1] || ""}</i><u>${previewText.slice(2)}</u>`;
-    } else if (preset.name.includes("<i>")) {
-      chipContent = `<i>${previewText}</i>`;
-    } else if (preset.name.includes("<u>")) {
-      chipContent = `<u>${previewText}</u>`;
-    } else if (preset.name.includes("<b>")) {
-      chipContent = `<b>${previewText}</b>`;
+    // Update DOM element directly for immediate feedback
+    const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+    if (div) {
+      div.innerHTML = el.text;
+      div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
+      div.style.color = el.color;
+      div.style.fontSize = el.fontSize + "px";
+      div.style.fontWeight = el.fontWeight;
     }
 
-    chip.innerHTML = chipContent;
-    chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
-    chip.style.color = preset.color;
+    // Sync global picker if open
+    if (globalPicker) {
+      globalPicker.color.hexString = el.color;
+    }
 
-    chip.addEventListener("click", () => {
-      haptic("medium");
-      applyTextPreset(preset);
-      // Refresh previews after applying (in case text structure changed)
-      renderTextPresets();
-    });
-
-    container.appendChild(chip);
-  });
-}
-
-function applyTextPreset(preset) {
-  const el = getSelected();
-  if (!el || el.type !== "text") {
-    // If no text selected, maybe create a new one? 
-    // For now, let's just toast
-    if (!el) showToast("Select a text element first");
-    return;
+    showToast(`Applied ${preset.name} style`);
   }
 
-  // Update data while preserving existing user text logic
-  if (preset.isMix) {
-    // Special logic for Mix Style: apply tags to segments of input text
-    const clean = (el.text || "").replace(/<[^>]*>/g, "");
-    const words = clean.split(/\s+/);
-    if (words.length >= 3) {
-      el.text = `<b>${words[0]}</b> <i>${words[1]}</i> <u>${words.slice(2).join(" ")}</u>`;
-    } else if (words.length === 2) {
-      el.text = `<b>${words[0]}</b> <i>${words[1]}</i>`;
+  // ─── Helpers ───────────────────────────────────────────
+  function getSelected() {
+    return elements.find((e) => e.id === selectedId) || null;
+  }
+
+  function deleteSelected() {
+    if (!selectedId) return;
+    haptic('medium');
+    elements = elements.filter((e) => e.id !== selectedId);
+    deselectAll();
+    renderCanvas();
+  }
+
+  function setToggleVisibility(visible) {
+    const bar = document.getElementById("top-toggle-bar");
+    if (!bar) return;
+    if (visible) {
+      bar.classList.remove("hidden-soft");
     } else {
-      el.text = `<b>${clean}</b>`;
+      bar.classList.add("hidden-soft");
     }
-  } else if (preset.name.includes("<i>")) {
-    const clean = (el.text || "").replace(/<[^>]*>/g, "");
-    el.text = `<i>${clean}</i>`;
-  } else if (preset.name.includes("<u>")) {
-    const clean = (el.text || "").replace(/<[^>]*>/g, "");
-    el.text = `<u>${clean}</u>`;
-  } else if (preset.name.includes("<b>")) {
-    const clean = (el.text || "").replace(/<[^>]*>/g, "");
-    el.text = `<b>${clean}</b>`;
-  } else {
-    // Keep plain but strip other formatting tags for pure style presets
-    el.text = (el.text || "").replace(/<[^>]*>/g, "");
   }
 
-  el.fontFamily = preset.fontFamily;
-  el.color = preset.color;
-  el.fontSize = preset.fontSize;
-  el.fontWeight = preset.fontWeight;
-
-  // Update UI inputs
-  const richInput = document.getElementById("prop-text-input");
-  if (richInput) richInput.innerHTML = el.text;
-
-  const fontFamilySelect = document.getElementById("prop-font-family");
-  if (fontFamilySelect) fontFamilySelect.value = el.fontFamily;
-
-  const fontSizeRange = document.getElementById("prop-font-size");
-  if (fontSizeRange) {
-    fontSizeRange.value = el.fontSize;
-    const valLabel = document.getElementById("prop-font-size-val");
-    if (valLabel) valLabel.textContent = el.fontSize + "px";
-  }
-
-  const fontWeightSelect = document.getElementById("prop-font-weight");
-  if (fontWeightSelect) fontWeightSelect.value = el.fontWeight;
-
-  const colorInput = document.getElementById("prop-text-color");
-  if (colorInput) colorInput.value = el.color;
-
-  const hexInput = document.getElementById("text-color-hex");
-  if (hexInput) hexInput.value = el.color.toUpperCase();
-
-  const swatch = document.getElementById("swatch-text-color");
-  if (swatch) swatch.style.background = el.color;
-
-  // Update DOM element directly for immediate feedback
-  const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
-  if (div) {
-    div.innerHTML = el.text;
-    div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
-    div.style.color = el.color;
-    div.style.fontSize = el.fontSize + "px";
-    div.style.fontWeight = el.fontWeight;
-  }
-
-  // Sync global picker if open
-  if (globalPicker) {
-    globalPicker.color.hexString = el.color;
-  }
-
-  showToast(`Applied ${preset.name} style`);
-}
-
-// ─── Helpers ───────────────────────────────────────────
-function getSelected() {
-  return elements.find((e) => e.id === selectedId) || null;
-}
-
-function deleteSelected() {
-  if (!selectedId) return;
-  haptic('medium');
-  elements = elements.filter((e) => e.id !== selectedId);
-  deselectAll();
-  renderCanvas();
-}
-
-function setToggleVisibility(visible) {
-  const bar = document.getElementById("top-toggle-bar");
-  if (!bar) return;
-  if (visible) {
-    bar.classList.remove("hidden-soft");
-  } else {
-    bar.classList.add("hidden-soft");
-  }
-}
-
-// ─── Kick Off ──────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", init);
+  // ─── Kick Off ──────────────────────────────────────────
+  document.addEventListener("DOMContentLoaded", init);
 })();
