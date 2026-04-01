@@ -807,7 +807,7 @@
     const el = {
       id: nextId++,
       type: "text",
-      text: "To my dearest, <NAME>",
+      text: "Tap to edit",
       x: Math.round(CANVAS_SIZE * 0.25),
       y: Math.round(CANVAS_SIZE * 0.45),
       w: 0,
@@ -1222,11 +1222,20 @@
   // ─── Keyboard ──────────────────────────────────────────
   function bindKeyboard() {
     document.addEventListener("keydown", (e) => {
+      // 1. If no element is selected, shortcuts are disabled anyway
       if (!selectedId) return;
+
+      // 2. Ignore shortcuts if a modal is open (Prevents deleting background items while in a modal)
+      const visibleModal = document.querySelector(".modal-overlay:not(.hidden)");
+      if (visibleModal) return;
+
+      // 3. Ignore shortcuts if focus is in a text input or editable element
       if (
         e.target.tagName === "INPUT" ||
         e.target.tagName === "TEXTAREA" ||
-        e.target.tagName === "SELECT"
+        e.target.tagName === "SELECT" ||
+        e.target.isContentEditable || 
+        e.target.closest('[contenteditable]')
       )
         return;
 
@@ -1330,6 +1339,7 @@
       setVal("prop-text-opacity", el.opacity);
       setDisplay("prop-text-opacity-val", el.opacity + "%");
       syncTextColorPicker();
+      renderTextPresets();
     }
   }
 
@@ -1508,6 +1518,7 @@
         el.text = richInput.innerHTML;
         const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
         if (div) div.innerHTML = el.text;
+        renderTextPresets();
       });
 
       // Special paste handler to prevent rich formatting from other sites
@@ -2482,31 +2493,50 @@
 
   // ─── Text Presets (Fixed 8 Best) ───────────────────────
   const TEXT_PRESETS_DATA = [
-    { name: "Elegant", text: "He is risen", fontFamily: "Dancing Script", color: "#976affff", fontSize: 48, fontWeight: "700" },
-    { name: "<i>Italic</i>", text: "<i>He is risen</i>", fontFamily: "Playfair Display", color: "#e9222fff", fontSize: 44, fontWeight: "600" },
-    { name: "<u>Under</u>", text: "<u>He is risen</u>", fontFamily: "Montserrat", color: "#00a236ff", fontSize: 42, fontWeight: "500" },
-    { name: "Mix Style", text: "<b>He</b> <i>is</i> <u>risen</u>", fontFamily: "Cinzel", color: "#fde047", fontSize: 42, fontWeight: "700" },
-    { name: "Modern", text: "He is risen", fontFamily: "Montserrat", color: "#be03b4ff", fontSize: 42, fontWeight: "700" },
-    { name: "Classic", text: "He is risen", fontFamily: "Playfair Display", color: "#f441a3ff", fontSize: 46, fontWeight: "600" },
-    { name: "<b>Boldly</b>", text: "<b>He</b> is risen", fontFamily: "Montserrat", color: "#94ff4dff", fontSize: 44, fontWeight: "700" },
-    { name: "Scripty", text: "He is <i>risen</i>", fontFamily: "Satisfy", color: "#007d4fff", fontSize: 48, fontWeight: "400" }
+    { name: "Elegant", fontFamily: "Dancing Script", color: "#976affff", fontSize: 48, fontWeight: "700" },
+    { name: "<i>Italic</i>", fontFamily: "Playfair Display", color: "#e9222fff", fontSize: 44, fontWeight: "600" },
+    { name: "<u>Under</u>", fontFamily: "Montserrat", color: "#00a236ff", fontSize: 42, fontWeight: "500" },
+    { name: "Mix Style", fontFamily: "Cinzel", color: "#fde047", fontSize: 42, fontWeight: "700", isMix: true },
+    { name: "Modern", fontFamily: "Montserrat", color: "#be03b4ff", fontSize: 42, fontWeight: "700" },
+    { name: "Classic", fontFamily: "Playfair Display", color: "#f441a3ff", fontSize: 46, fontWeight: "600" },
+    { name: "<b>Boldly</b>", fontFamily: "Montserrat", color: "#94ff4dff", fontSize: 44, fontWeight: "700" },
+    { name: "Scripty", fontFamily: "Satisfy", color: "#007d4fff", fontSize: 48, fontWeight: "400" }
   ];
 
   function renderTextPresets() {
     const container = document.getElementById("text-presets-container");
     if (!container) return;
 
-    // Fixed 8 presets instead of randomizing
+    const el = getSelected();
+    const rawText = el ? (el.text || "").replace(/<[^>]*>/g, "") : "Sample";
+    const previewText = rawText.length > 12 ? rawText.substring(0, 10) + "…" : rawText;
+
     container.innerHTML = "";
     TEXT_PRESETS_DATA.forEach(preset => {
       const chip = document.createElement("div");
       chip.className = "text-preset-chip";
-      chip.innerHTML = preset.name;
+      
+      // Dynamic preview: apply internal tags if the preset has them
+      let chipContent = previewText;
+      if (preset.isMix) {
+        chipContent = `<b>${previewText[0] || ""}</b><i>${previewText[1] || ""}</i><u>${previewText.slice(2)}</u>`;
+      } else if (preset.name.includes("<i>")) {
+        chipContent = `<i>${previewText}</i>`;
+      } else if (preset.name.includes("<u>")) {
+        chipContent = `<u>${previewText}</u>`;
+      } else if (preset.name.includes("<b>")) {
+        chipContent = `<b>${previewText}</b>`;
+      }
+      
+      chip.innerHTML = chipContent;
       chip.style.fontFamily = `'${preset.fontFamily}', sans-serif`;
+      chip.style.color = preset.color;
 
       chip.addEventListener("click", () => {
         haptic("medium");
         applyTextPreset(preset);
+        // Refresh previews after applying (in case text structure changed)
+        renderTextPresets();
       });
 
       container.appendChild(chip);
@@ -2522,8 +2552,32 @@
       return;
     }
 
-    // Update data
-    el.text = preset.text;
+    // Update data while preserving existing user text logic
+    if (preset.isMix) {
+      // Special logic for Mix Style: apply tags to segments of input text
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      const words = clean.split(/\s+/);
+      if (words.length >= 3) {
+        el.text = `<b>${words[0]}</b> <i>${words[1]}</i> <u>${words.slice(2).join(" ")}</u>`;
+      } else if (words.length === 2) {
+        el.text = `<b>${words[0]}</b> <i>${words[1]}</i>`;
+      } else {
+        el.text = `<b>${clean}</b>`;
+      }
+    } else if (preset.name.includes("<i>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<i>${clean}</i>`;
+    } else if (preset.name.includes("<u>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<u>${clean}</u>`;
+    } else if (preset.name.includes("<b>")) {
+      const clean = (el.text || "").replace(/<[^>]*>/g, "");
+      el.text = `<b>${clean}</b>`;
+    } else {
+      // Keep plain but strip other formatting tags for pure style presets
+      el.text = (el.text || "").replace(/<[^>]*>/g, "");
+    }
+    
     el.fontFamily = preset.fontFamily;
     el.color = preset.color;
     el.fontSize = preset.fontSize;

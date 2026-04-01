@@ -469,12 +469,6 @@
         <div id="props-text" class="prop-group hidden">
 
           <div class="prop-row">
-            <label>Text</label>
-            <div class="text-formatting-toolbar">
-              <button id="btn-format-bold" class="btn-format" title="Bold"><b>B</b></button>
-              <button id="btn-format-italic" class="btn-format" title="Italic"><i>I</i></button>
-              <button id="btn-format-underline" class="btn-format" title="Underline"><u>U</u></button>
-            </div>
             <div class="input-with-done">
               <div id="prop-text-input" contenteditable="true" class="rich-text-input" placeholder="Enter text...">
               </div>
@@ -484,6 +478,12 @@
                 </svg>
               </button>
             </div>
+          </div>
+
+          <div class="text-formatting-toolbar">
+            <button id="btn-format-bold" class="btn-format" title="Bold"><b>B</b></button>
+            <button id="btn-format-italic" class="btn-format" title="Italic"><i>I</i></button>
+            <button id="btn-format-underline" class="btn-format" title="Underline"><u>U</u></button>
           </div>
 
           <div class="panel-actions">
@@ -563,7 +563,7 @@
             </div>
           </div>
 
-          <div class="text-presets-group">
+          <div class="text-presets-group" style="display: none;">
             <label class="prop-sublabel">Quick Presets</label>
             <div id="text-presets-container" class="text-presets-row"></div>
           </div>
@@ -588,12 +588,6 @@
     <div id="download-modal" class="modal-overlay hidden">
       <div class="modal-card">
         <h3>Save Your Card</h3>
-        <p class="modal-subtitle">Enter a name for your card (optional)</p>
-        <div class="modal-input-row">
-          <input type="text" id="download-name-input" placeholder="e.g. for john" autocomplete="off" spellcheck="false">
-          <span class="input-suffix"></span>
-        </div>
-
         <div class="developer-credit">
           <p class="credit-primary">
             Remember to pray for the person too.
@@ -603,12 +597,21 @@
             A card for you —
             <a href="https://cdn.jsdelivr.net/gh/thenewlegend/faithcard-cdn@master/img/wish/for%20you.png"
               target="_blank">
-              (click)
+              <i>(click)</i>
             </a>
           </p>
 
           </br>
         </div>
+
+        <p class="modal-subtitle">Enter Filename &nbsp;<i>(optional)</i></p>
+
+        <div class="modal-input-row">
+          <input type="text" id="download-name-input" placeholder="e.g. for john" autocomplete="off" spellcheck="false">
+          <span class="input-suffix"></span>
+        </div>
+
+
 
         <div class="modal-actions">
           <button id="btn-modal-cancel" class="btn m3-btn-tonal">Cancel</button>
