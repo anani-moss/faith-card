@@ -2406,10 +2406,16 @@
         presets.appendChild(pSwatch);
       });
 
-      hexInput.addEventListener("change", () => {
-        const val = hexInput.value.trim();
-        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
-          globalPicker.color.hexString = val;
+      hexInput.addEventListener("input", () => {
+        let val = hexInput.value.trim();
+        if (val && !val.startsWith("#")) val = "#" + val;
+        
+        // Support #RGB and #RRGGBB
+        if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(val)) {
+          // Prevent unnecessary updates if the color is already the same
+          if (globalPicker.color.hexString.toLowerCase() !== val.toLowerCase()) {
+            globalPicker.color.hexString = val;
+          }
         }
       });
 
