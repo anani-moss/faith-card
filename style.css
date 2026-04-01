@@ -803,32 +803,55 @@ body {
 
 /* Resize handle - Fat finger friendly */
 /* Visual handle, but actual touch area is bigger via padding/border trick if needed. We use a 32x32px handle visually but large enough to touch. */
-.resize-handle {
+
+.resize-handle, .width-handle {
   position: absolute;
-  width: 32px;
-  height: 32px;
   background: var(--md-sys-color-primary-container);
   border: 3px solid var(--md-sys-color-surface);
-  border-radius: 50%;
-  cursor: nwse-resize;
-  bottom: -16px;
-  right: -16px;
   z-index: 10;
   opacity: 0;
   transition:
     opacity 150ms ease,
-    transform 150ms ease;
+    transform 150ms ease,
+    background-color 150ms ease;
   box-shadow: var(--md-sys-elevation-2);
   touch-action: none;
 }
 
+.resize-handle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  bottom: -14px;
+  right: -14px;
+}
+
+.width-handle {
+  width: 12px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  cursor: ew-resize;
+  top: 50%;
+  right: -6px;
+  transform: translateY(-50%);
+}
+
 .resize-handle:hover,
-.resize-handle:active {
-  transform: scale(1.1);
+.resize-handle:active,
+.width-handle:hover,
+.width-handle:active {
+  transform: scale(1.1) translateY(calc(-50% * var(--is-width, 0))); /* Adjusted in JS if needed */
   background: var(--md-sys-color-primary);
 }
 
-.canvas-element.selected .resize-handle {
+/* Need a specific transform for width handle hover to keep the vertical centering */
+.width-handle:hover, .width-handle:active {
+  transform: translateY(-50%) scale(1.2);
+}
+
+.canvas-element.selected .resize-handle,
+.canvas-element.selected .width-handle {
   opacity: 1;
 }
 
@@ -838,6 +861,9 @@ body {
   padding: 8px 12px;
   min-width: 60px;
   min-height: 48px;
+  word-wrap: break-word;
+  overflow-wrap: break-word; /* Force wrapping on long words */
+  white-space: pre-wrap;    /* Preserve line breaks but wrap otherwise */
 }
 
 /* ===== M3 Navigation Bar (Bottom Panel) ===== */

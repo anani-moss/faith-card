@@ -798,7 +798,7 @@
       text: props.text || "Double tap to edit",
       x: props.x !== undefined ? props.x : Math.round(CANVAS_SIZE * 0.25),
       y: props.y !== undefined ? props.y : Math.round(CANVAS_SIZE * 0.45),
-      w: 0,
+      w: props.w || 0, // 0 means auto-width until manually resized
       h: 0,
       rotation: props.rotation !== undefined ? props.rotation : 0,
       opacity: props.opacity !== undefined ? props.opacity : 100,
@@ -907,16 +907,40 @@
         div.style.fontFamily = `'${el.fontFamily}', sans-serif`;
         div.style.fontWeight = el.fontWeight;
         div.style.color = el.color;
+        if (el.w > 0) div.style.width = el.w + "px";
         // Successive formatting with null safety
         const safeText = el.text || "";
         div.innerHTML = safeText.replace(/\n/g, "<br>");
       }
 
-      // Resize handle
+      // Resize handles
       const handle = document.createElement("div");
       handle.className = "resize-handle";
       handle.dataset.resize = el.id;
+      handle.dataset.type = "scale"; // Standard scaling (font-size or image size)
       div.appendChild(handle);
+
+      if (el.type === "text") {
+        const wHandle = document.createElement("div");
+        wHandle.className = "width-handle";
+        wHandle.dataset.resize = el.id;
+        wHandle.dataset.type = "width"; // Boundary width resizing
+        div.appendChild(wHandle);
+
+        wHandle.addEventListener("mousedown", (e) => {
+          e.stopPropagation();
+          selectElement(el.id);
+          startResize(e.clientX, e.clientY, el.id, "width");
+        });
+
+        wHandle.addEventListener("touchstart", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const t = e.touches[0];
+          selectElement(el.id);
+          startResize(t.clientX, t.clientY, el.id, "width");
+        });
+      }
 
       // ── Mouse events ──
       div.addEventListener("mousedown", (e) => {
@@ -1040,7 +1064,7 @@
     };
   }
 
-  function startResize(clientX, clientY, id) {
+  function startResize(clientX, clientY, id, type = "scale") {
     // Mutex: block if already dragging
     if (dragging) return;
     const el = elements.find((e) => e.id === id);
@@ -1048,6 +1072,7 @@
 
     resizing = {
       id,
+      type,
       startX: clientX,
       startY: clientY,
       startW: el.w,
@@ -1174,12 +1199,27 @@
           div.style.height = el.h + "px";
         }
       } else if (el.type === "text") {
-        el.fontSize = Math.max(
-          12,
-          Math.min(120, Math.round(resizing.startFontSize + dx * 0.5)),
-        );
-        if (div) {
-          div.style.fontSize = el.fontSize + "px";
+        if (resizing.type === "width") {
+          // Boundary width resizing
+          // Note: if startW was 0 (auto), we need to get current offsetWidth first
+          let startW = resizing.startW;
+          if (startW <= 0 && div) {
+            startW = div.offsetWidth;
+          }
+          let newW = Math.max(50, startW + dx);
+          el.w = Math.round(newW);
+          if (div) {
+            div.style.width = el.w + "px";
+          }
+        } else {
+          // Standard scale (font-size) resizing
+          el.fontSize = Math.max(
+            12,
+            Math.min(120, Math.round(resizing.startFontSize + dx * 0.5)),
+          );
+          if (div) {
+            div.style.fontSize = el.fontSize + "px";
+          }
         }
       }
 
@@ -1598,6 +1638,14 @@
       el.fontSize = val;
       const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
       if (div) div.style.fontSize = el.fontSize + "px";
+    });
+
+    bindRange("prop-text-width", "prop-text-width-val", "px", (val) => {
+      const el = getSelected();
+      if (!el || el.type !== "text") return;
+      el.w = val;
+      const div = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+      if (div) div.style.width = el.w + "px";
     });
 
     document
