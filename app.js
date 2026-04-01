@@ -827,17 +827,6 @@
     haptic('medium');
   }
 
-  const textarea = document.getElementById("prop-text-input");
-  if (textarea) {
-    textarea.addEventListener("focus", function () {
-      // For contenteditable, we can't just call .select(), but we can select all nodes
-      const range = document.createRange();
-      range.selectNodeContents(this);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    });
-  }
 
   // ─── Render Canvas ─────────────────────────────────────
   function renderCanvas() {
