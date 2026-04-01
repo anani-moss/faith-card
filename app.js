@@ -1037,8 +1037,19 @@
 
       if (snapEnabled) {
         const threshold = 16 / dragging.scale; // Magnetic proximity auto-adjusts based on zoom
-        const cx = newX + el.w / 2;
-        const cy = newY + el.h / 2;
+        // Accurate dimensions for text elements (which don't have fixed w/h in state)
+        let elW = el.w;
+        let elH = el.h;
+        if (el.type === "text") {
+          const domEl = document.querySelector(`.canvas-element[data-id="${el.id}"]`);
+          if (domEl) {
+            elW = domEl.offsetWidth;
+            elH = domEl.offsetHeight;
+          }
+        }
+
+        const cx = newX + elW / 2;
+        const cy = newY + elH / 2;
 
         let snappedX = false;
         let snappedY = false;
@@ -1047,16 +1058,16 @@
         const snapPointsX = [0, CANVAS_SIZE / 2, CANVAS_SIZE];
         for (let p of snapPointsX) {
           if (Math.abs(newX - p) < threshold) { newX = p; snappedX = p; break; } // Left snap
-          if (Math.abs(newX + el.w - p) < threshold) { newX = p - el.w; snappedX = p; break; } // Right snap
-          if (Math.abs(cx - p) < threshold) { newX = p - el.w / 2; snappedX = p; break; } // Center snap
+          if (Math.abs(newX + elW - p) < threshold) { newX = p - elW; snappedX = p; break; } // Right snap
+          if (Math.abs(cx - p) < threshold) { newX = p - elW / 2; snappedX = p; break; } // Center snap
         }
 
         // Y-axis mapping (Center, Top edge, Bottom edge)
         const snapPointsY = [0, CANVAS_SIZE / 2, CANVAS_SIZE];
         for (let p of snapPointsY) {
           if (Math.abs(newY - p) < threshold) { newY = p; snappedY = p; break; } // Top snap
-          if (Math.abs(newY + el.h - p) < threshold) { newY = p - el.h; snappedY = p; break; } // Bottom snap
-          if (Math.abs(cy - p) < threshold) { newY = p - el.h / 2; snappedY = p; break; } // Center snap
+          if (Math.abs(newY + elH - p) < threshold) { newY = p - elH; snappedY = p; break; } // Bottom snap
+          if (Math.abs(cy - p) < threshold) { newY = p - elH / 2; snappedY = p; break; } // Center snap
         }
 
         // Show/Hide DOM Guide lines with Haptics on contact
