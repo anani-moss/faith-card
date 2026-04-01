@@ -1806,9 +1806,7 @@
         showToast(snapEnabled ? "Magnetic Snapping: ON" : "Magnetic Snapping: OFF");
       });
     }
-
   }
-}
 
   // ─── Mode Toggle ─────────────────────────────────────────
   function bindModeToggle() {
@@ -2680,4 +2678,4 @@ function setToggleVisibility(visible) {
 
 // ─── Kick Off ──────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", init);
-}) ();
+})();
