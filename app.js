@@ -2062,109 +2062,136 @@
 
     // ─── Helper for Rich Text Rendering on Canvas ───
     function drawRichText(ctx, el) {
-      const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity } = el;
+      const { text, x, y, fontSize, fontFamily, fontWeight, color, rotation, opacity, w } = el;
       const safeText = text || "";
+      const PADDING_X = 12;
+      const PADDING_Y = 8;
       const tokens = safeText.split(/(<br>|<b>|<\/b>|<i>|<\/i>|<u>|<\/u>)/gi);
       const lineHeight = fontSize * 1.25;
 
-      // First pass: Calculate bounding box for rotation center
-      let maxWidth = 0;
-      let totalHeight = 0;
-      let curX = 0;
-      let curY = 0;
-      let lines = [0]; // Width of each line
-
-      ctx.save();
-      let tempBold = fontWeight >= 700 || fontWeight === "bold";
-      let tempItalic = false;
-
-      const setTempFont = () => {
-        const style = tempItalic ? "italic" : "normal";
-        const weight = tempBold ? "700" : fontWeight;
-        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
-      };
-
-      tokens.forEach(token => {
-        if (!token) return;
-        const lt = token.toLowerCase();
-        if (lt === "<b>") tempBold = true;
-        else if (lt === "</b>") tempBold = fontWeight >= 700 || fontWeight === "bold";
-        else if (lt === "<i>") tempItalic = true;
-        else if (lt === "</i>") tempItalic = false;
-        else if (lt === "<br>") {
-          maxWidth = Math.max(maxWidth, curX);
-          curX = 0;
-          curY += lineHeight;
-          lines.push(0);
-        } else if (lt !== "<u>" && lt !== "</u>") {
-          setTempFont();
-          curX += ctx.measureText(token).width;
-          lines[lines.length - 1] = curX;
-        }
-      });
-      maxWidth = Math.max(maxWidth, curX);
-      totalHeight = curY + fontSize; // Approximate height
-      ctx.restore();
-
-      // Second pass: Draw
-      ctx.save();
-      ctx.globalAlpha = opacity / 100;
-
-      if (rotation !== 0) {
-        const cx = x + maxWidth / 2;
-        const cy = y + totalHeight / 2;
-        ctx.translate(cx, cy);
-        ctx.rotate((rotation * Math.PI) / 180);
-        ctx.translate(-cx, -cy);
-      }
-
-      ctx.textBaseline = "top";
-      ctx.fillStyle = color;
-
+      // Current state for styling
       let state = {
         bold: fontWeight >= 700 || fontWeight === "bold",
         italic: false,
         underline: false
       };
 
-      let currentX = x;
-      let currentY = y;
-
       const updateFont = () => {
         const style = state.italic ? "italic" : "normal";
-        const weight = state.bold ? "700" : fontWeight;
-        ctx.font = `${style} ${weight} ${fontSize}px '${fontFamily}', sans-serif`;
+        const fontW = state.bold ? "700" : fontWeight;
+        ctx.font = `${style} ${fontW} ${fontSize}px '${fontFamily}', sans-serif`;
+      };
+
+      // Determine container width
+      const containerWidth = w > 0 ? w : (CANVAS_SIZE - x);
+      const maxTextAreaWidth = containerWidth - (PADDING_X * 2);
+
+      // Pass 1: Layout calculation (wrap text)
+      let layoutLines = [];
+      let currentLine = { width: 0, tokens: [] };
+
+      const pushLine = () => {
+        layoutLines.push(currentLine);
+        currentLine = { width: 0, tokens: [] };
       };
 
       tokens.forEach(token => {
         if (!token) return;
-
         const lowerToken = token.toLowerCase();
-        if (lowerToken === "<b>") { state.bold = true; updateFont(); }
-        else if (lowerToken === "</b>") { state.bold = fontWeight >= 700 || fontWeight === "bold"; updateFont(); }
-        else if (lowerToken === "<i>") { state.italic = true; updateFont(); }
-        else if (lowerToken === "</i>") { state.italic = false; updateFont(); }
+        if (lowerToken === "<b>") { state.bold = true; }
+        else if (lowerToken === "</b>") { state.bold = fontWeight >= 700 || fontWeight === "bold"; }
+        else if (lowerToken === "<i>") { state.italic = true; }
+        else if (lowerToken === "</i>") { state.italic = false; }
         else if (lowerToken === "<u>") { state.underline = true; }
         else if (lowerToken === "</u>") { state.underline = false; }
         else if (lowerToken === "<br>") {
-          currentX = x;
-          currentY += lineHeight;
+          pushLine();
         } else {
-          updateFont();
-          const metrics = ctx.measureText(token);
-          ctx.fillText(token, currentX, currentY);
+          // Text content: split by spaces but KEEP the spaces
+          const words = token.split(/(\s+)/);
+          
+          words.forEach(word => {
+            if (!word) return;
+            updateFont();
+            let metrics = ctx.measureText(word);
+            
+            // If word exceeds available width on current line
+            if (currentLine.width + metrics.width > maxTextAreaWidth && currentLine.width > 0) {
+              pushLine();
+            }
 
-          if (state.underline) {
+            // Handle "break-word" if single word is too long
+            if (metrics.width > maxTextAreaWidth) {
+              let chars = word.split("");
+              let tempWord = "";
+              chars.forEach(char => {
+                let testWord = tempWord + char;
+                let testMetrics = ctx.measureText(testWord);
+                if (testMetrics.width > maxTextAreaWidth && tempWord !== "") {
+                  currentLine.tokens.push({ text: tempWord, width: ctx.measureText(tempWord).width, state: { ...state } });
+                  pushLine();
+                  tempWord = char;
+                } else {
+                  tempWord = testWord;
+                }
+              });
+              word = tempWord;
+              metrics = ctx.measureText(word);
+            }
+
+            currentLine.tokens.push({ text: word, width: metrics.width, state: { ...state } });
+            currentLine.width += metrics.width;
+          });
+        }
+      });
+      // Push the last current line if it has any content
+      layoutLines.push(currentLine);
+
+      // Calculate bounding box based on layout results
+      let maxMeasuredWidth = 0;
+      layoutLines.forEach(line => {
+        if (line.width > maxMeasuredWidth) maxMeasuredWidth = line.width;
+      });
+
+      const finalContentWidth = w > 0 ? w : (maxMeasuredWidth + PADDING_X * 2);
+      const finalContentHeight = (layoutLines.length * lineHeight) + (PADDING_Y * 2);
+
+      // Center for rotation (mirroring div transform-origin: center)
+      const cx = x + finalContentWidth / 2;
+      const cy = y + finalContentHeight / 2;
+
+      ctx.save();
+      ctx.globalAlpha = opacity / 100;
+
+      if (rotation !== 0) {
+        ctx.translate(cx, cy);
+        ctx.rotate((rotation * Math.PI) / 180);
+        ctx.translate(-cx, -cy);
+      }
+
+      ctx.textBaseline = "top";
+      
+      layoutLines.forEach((line, lineIdx) => {
+        let curX = x + PADDING_X;
+        let curY = y + PADDING_Y + (lineIdx * lineHeight);
+        
+        line.tokens.forEach(t => {
+          const style = t.state.italic ? "italic" : "normal";
+          const fontW = t.state.bold ? "700" : fontWeight;
+          ctx.font = `${style} ${fontW} ${fontSize}px '${fontFamily}', sans-serif`;
+          ctx.fillStyle = color;
+          ctx.fillText(t.text, curX, curY);
+
+          if (t.state.underline) {
             ctx.beginPath();
             ctx.strokeStyle = color;
             ctx.lineWidth = Math.max(1, fontSize / 20);
-            ctx.moveTo(currentX, currentY + fontSize * 0.95);
-            ctx.lineTo(currentX + metrics.width, currentY + fontSize * 0.95);
+            ctx.moveTo(curX, curY + fontSize * 0.95);
+            ctx.lineTo(curX + t.width, curY + fontSize * 0.95);
             ctx.stroke();
           }
-
-          currentX += metrics.width;
-        }
+          curX += t.width;
+        });
       });
 
       ctx.restore();
